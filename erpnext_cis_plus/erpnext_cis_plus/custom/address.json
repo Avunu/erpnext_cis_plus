@@ -1,0 +1,39 @@
+{
+    "custom_fields": [
+        {
+            "dt": "Address",
+            "fieldname": "geolocation",
+            "fieldtype": "Section Break",
+            "insert_after": "links",
+            "label": "Location"
+        },
+        {
+            "dt": "Address",
+            "fieldname": "location",
+            "fieldtype": "Geolocation",
+            "insert_after": "geolocation",
+            "label": "Map"
+        },
+        {
+            "dt": "Address",
+            "fieldname": "latitude",
+            "fieldtype": "Float",
+            "hidden": 1,
+            "insert_after": "location",
+            "label": "Latitude",
+            "precision": "6"
+        },
+        {
+            "dt": "Address",
+            "fieldname": "longitude",
+            "fieldtype": "Float",
+            "hidden": 1,
+            "insert_after": "latitude",
+            "label": "Longitude",
+            "precision": "6"
+        }
+    ],
+    "property_setters": [],
+    "sync_on_migrate": 1,
+    "doctype": "Address"
+}
