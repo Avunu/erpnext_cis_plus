@@ -18,7 +18,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_address_line2",
             "fieldtype": "Data",
-            "insert_after": "address_address_line1",
+            "insert_after": "customer_primary_address_address_line1",
             "label": "Address Line 1",
             "module": "ERPNext CIS Plus"
         },
@@ -29,7 +29,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_city",
             "fieldtype": "Data",
-            "insert_after": "address_address_line2",
+            "insert_after": "customer_primary_address_address_line2",
             "label": "City/Town",
             "module": "ERPNext CIS Plus"
         },
@@ -40,7 +40,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_state",
             "fieldtype": "Data",
-            "insert_after": "address_city",
+            "insert_after": "customer_primary_address_city",
             "label": "State/Province",
             "module": "ERPNext CIS Plus"
         },
@@ -51,7 +51,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_pincode",
             "fieldtype": "Data",
-            "insert_after": "address_state",
+            "insert_after": "customer_primary_address_state",
             "label": "Postal Code",
             "module": "ERPNext CIS Plus"
         },
@@ -62,7 +62,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_email_id",
             "fieldtype": "Data",
-            "insert_after": "address_pincode",
+            "insert_after": "customer_primary_address_pincode",
             "label": "Email Address",
             "module": "ERPNext CIS Plus",
             "options": "Email"
@@ -74,7 +74,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_phone",
             "fieldtype": "Data",
-            "insert_after": "address_email_id",
+            "insert_after": "customer_primary_address_email_id",
             "label": "Customer Phone",
             "module": "ERPNext CIS Plus",
             "options": "Phone"
@@ -86,7 +86,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_address_fax",
             "fieldtype": "Data",
-            "insert_after": "customer_fax",
+            "insert_after": "customer_primary_address_phone",
             "label": "Customer Fax",
             "module": "ERPNext CIS Plus",
             "options": "Phone"
@@ -99,7 +99,7 @@
             "fieldname": "customer_primary_contact_first_name",
             "fieldtype": "Data",
             "insert_after": "customer_primary_contact",
-            "label": "Email Address",
+            "label": "First Name",
             "module": "ERPNext CIS Plus"
         },
         {
@@ -109,8 +109,8 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_contact_last_name",
             "fieldtype": "Data",
-            "insert_after": "contact_first_name",
-            "label": "Email Address",
+            "insert_after": "customer_primary_contact_first_name",
+            "label": "Last Name",
             "module": "ERPNext CIS Plus"
         },
         {
@@ -120,7 +120,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_contact_email_id",
             "fieldtype": "Data",
-            "insert_after": "contact_last_name",
+            "insert_after": "customer_primary_contact_last_name",
             "label": "Email Address",
             "module": "ERPNext CIS Plus",
             "options": "Email"
@@ -132,7 +132,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_contact_phone",
             "fieldtype": "Data",
-            "insert_after": "contact_email_id",
+            "insert_after": "customer_primary_contact_email_id",
             "label": "Phone",
             "module": "ERPNext CIS Plus",
             "options": "Phone"
@@ -144,7 +144,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_contact_mobile_no",
             "fieldtype": "Data",
-            "insert_after": "contact_phone",
+            "insert_after": "customer_primary_contact_phone",
             "label": "Mobile No",
             "module": "ERPNext CIS Plus",
             "options": "Phone"
@@ -156,7 +156,7 @@
             "fetch_if_empty": 1,
             "fieldname": "customer_primary_contact_department",
             "fieldtype": "Data",
-            "insert_after": "contact_mobile_no",
+            "insert_after": "customer_primary_contact_mobile_no",
             "label": "Department",
             "module": "ERPNext CIS Plus"
         },
