@@ -19,7 +19,7 @@
             "fieldname": "customer_primary_address_address_line2",
             "fieldtype": "Data",
             "insert_after": "customer_primary_address_address_line1",
-            "label": "Address Line 1",
+            "label": "Address Line 2",
             "module": "ERPNext CIS Plus"
         },
         {

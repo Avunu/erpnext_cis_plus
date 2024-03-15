@@ -54,8 +54,57 @@ frappe.ui.form.on("Customer", {
             console.error("Error in setup: ", error);
             frappe.msgprint(__("There was an error setting up the customer form. Please contact support."));
         }
+        // setup the form layout
+        setup_form_layout(frm);
     }
 });
+
+async function setup_form_layout(frm) {
+    frm.layout.sections_dict.primary_address_and_contact_detail.columns.forEach(column => {
+        let column_form = column.wrapper[0].children[0];
+        console.log("column_form: ", column_form);
+        $(column_form).addClass("input-group");
+    });
+    const layout_fields = {
+        "customer_primary_address_address_line1": 6,
+        "customer_primary_address_address_line2": 6,
+        "customer_primary_address_city": 5,
+        "customer_primary_address_state": 5,
+        "customer_primary_address_pincode": 2,
+        "customer_primary_address_email_id": 6,
+        "customer_primary_address_phone": 6,
+        "customer_primary_address_fax": 6,
+        "customer_primary_contact_first_name": 6,
+        "customer_primary_contact_last_name": 6,
+        "customer_primary_contact_email_id": 6,
+        "customer_primary_contact_phone": 6,
+        "customer_primary_contact_mobile_no": 6,
+        "customer_primary_contact_department": 6
+    };
+    const colend_fields = [
+        "customer_primary_address_address_line2",
+        "customer_primary_address_pincode",
+        "customer_primary_address_phone",
+        "customer_primary_contact_last_name",
+        "customer_primary_contact_phone",
+        "customer_primary_contact_department",
+    ];
+    // assign each field the classes col-md-{width} float-left pl-0
+    // except for the fields in colend_fields, which should have the class col-md-{width} float-left px-0
+    for (let field in layout_fields) {
+        let width = layout_fields[field];
+        let classes = "col-md-" + width + " float-left clearfix";
+        if (colend_fields.includes(field)) {
+            classes += " px-0";
+        } else {
+            classes += " pl-0";
+        }
+        // Ensure frm.fields_dict[field] exists before attempting to add classes to avoid potential errors
+        if(frm.fields_dict[field] && frm.fields_dict[field].$wrapper) {
+            frm.fields_dict[field].$wrapper.addClass(classes);
+        }
+    }
+}
 
 async function get_customer_records(dt, customer_name) {
     return new Promise((resolve, reject) => {
