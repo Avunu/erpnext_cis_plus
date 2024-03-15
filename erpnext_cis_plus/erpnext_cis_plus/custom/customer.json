@@ -42,8 +42,7 @@
             "fieldtype": "Data",
             "insert_after": "address_city",
             "label": "State/Province",
-            "module": "ERPNext CIS Plus",
-            "options": "Email"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -54,8 +53,7 @@
             "fieldtype": "Data",
             "insert_after": "address_state",
             "label": "Postal Code",
-            "module": "ERPNext CIS Plus",
-            "options": "Email"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -102,8 +100,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_primary_contact",
             "label": "Email Address",
-            "module": "ERPNext CIS Plus",
-            "options": "Email"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
