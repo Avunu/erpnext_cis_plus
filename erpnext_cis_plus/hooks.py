@@ -1,5 +1,5 @@
 app_name = "erpnext_cis_plus"
-app_title = "ERPNext Customer Plus"
+app_title = "ERPNext CIS+"
 app_publisher = "Avunu LLC"
 app_description = "Various enhancements to the customer, contact, and address management for ERPNext."
 app_email = "mail@avu.nu"

@@ -9,7 +9,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_primary_address",
             "label": "Address Line 1",
-            "module": "erpnext_cis_plus"
+            "module": "ERPNext CIS+"
         },
         {
             "dt": "Customer",
@@ -20,7 +20,7 @@
             "fieldtype": "Data",
             "insert_after": "address_address_line1",
             "label": "Address Line 1",
-            "module": "erpnext_cis_plus"
+            "module": "ERPNext CIS+"
         },
         {
             "dt": "Customer",
@@ -31,7 +31,7 @@
             "fieldtype": "Data",
             "insert_after": "address_address_line2",
             "label": "City/Town",
-            "module": "erpnext_cis_plus"
+            "module": "ERPNext CIS+"
         },
         {
             "dt": "Customer",
@@ -42,7 +42,7 @@
             "fieldtype": "Data",
             "insert_after": "address_city",
             "label": "State/Province",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Email"
         },
         {
@@ -54,7 +54,7 @@
             "fieldtype": "Data",
             "insert_after": "address_state",
             "label": "Postal Code",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Email"
         },
         {
@@ -66,7 +66,7 @@
             "fieldtype": "Data",
             "insert_after": "address_pincode",
             "label": "Email Address",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Email"
         },
         {
@@ -78,7 +78,7 @@
             "fieldtype": "Data",
             "insert_after": "address_email_id",
             "label": "Customer Phone",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Phone"
         },
         {
@@ -90,7 +90,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_fax",
             "label": "Customer Fax",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Phone"
         },
         {
@@ -102,7 +102,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_primary_contact",
             "label": "Email Address",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Email"
         },
         {
@@ -114,7 +114,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_first_name",
             "label": "Email Address",
-            "module": "erpnext_cis_plus"
+            "module": "ERPNext CIS+"
         },
         {
             "dt": "Customer",
@@ -125,7 +125,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_last_name",
             "label": "Email Address",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Email"
         },
         {
@@ -137,7 +137,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_email_id",
             "label": "Phone",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Phone"
         },
         {
@@ -149,7 +149,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_phone",
             "label": "Mobile No",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "options": "Phone"
         },
         {
@@ -161,7 +161,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_mobile_no",
             "label": "Department",
-            "module": "erpnext_cis_plus"
+            "module": "ERPNext CIS+"
         },
         {
             "dt": "Customer",
@@ -170,7 +170,7 @@
             "fieldtype": "Section Break",
             "insert_after": "email_id",
             "label": "Location",
-            "module": "erpnext_cis_plus"
+            "module": "ERPNext CIS+"
         },
         {
             "dt": "Customer",
@@ -181,7 +181,7 @@
             "hidden": 1,
             "insert_after": "geolocation",
             "label": "Latitude",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "precision": "6",
             "read_only": 1
         },
@@ -194,7 +194,7 @@
             "hidden": 1,
             "insert_after": "latitude",
             "label": "Longitude",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "precision": "6",
             "read_only": 1
         },
@@ -206,38 +206,38 @@
             "fieldtype": "Geolocation",
             "insert_after": "longitude",
             "label": "Map",
-            "module": "erpnext_cis_plus",
+            "module": "ERPNext CIS+",
             "read_only": 1
         }
     ],
     "property_setters": [
-		{
-			"doc_type": "Customer",
-			"doctype_or_field": "DocField",
-			"field_name": "primary_address",
-			"name": "Customer-primary_address-hidden",
-			"property": "hidden",
-			"property_type": "Check",
-			"value": "1"
-		},
-		{
-			"doc_type": "Customer",
-			"doctype_or_field": "DocField",
-			"field_name": "mobile_no",
-			"name": "Customer-mobile_no-hidden",
-			"property": "hidden",
-			"property_type": "Check",
-			"value": "1"
-		},
-		{
-			"doc_type": "Customer",
-			"doctype_or_field": "DocField",
-			"field_name": "email_id",
-			"name": "Customer-email_id-hidden",
-			"property": "hidden",
-			"property_type": "Check",
-			"value": "1"
-		}
+        {
+            "doc_type": "Customer",
+            "doctype_or_field": "DocField",
+            "field_name": "primary_address",
+            "name": "Customer-primary_address-hidden",
+            "property": "hidden",
+            "property_type": "Check",
+            "value": "1"
+        },
+        {
+            "doc_type": "Customer",
+            "doctype_or_field": "DocField",
+            "field_name": "mobile_no",
+            "name": "Customer-mobile_no-hidden",
+            "property": "hidden",
+            "property_type": "Check",
+            "value": "1"
+        },
+        {
+            "doc_type": "Customer",
+            "doctype_or_field": "DocField",
+            "field_name": "email_id",
+            "name": "Customer-email_id-hidden",
+            "property": "hidden",
+            "property_type": "Check",
+            "value": "1"
+        }
     ],
     "sync_on_migrate": 1,
     "doctype": "Customer"
