@@ -22,7 +22,7 @@ doc_events = {
         "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.generate_point",
 		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.geolocate_address"
 	},
-    # "Customer": {
-    #     "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.validate"
-    # }
+    "Customer": {
+        "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.before_save"
+    }
 }

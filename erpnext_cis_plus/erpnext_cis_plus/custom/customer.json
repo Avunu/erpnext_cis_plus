@@ -2,46 +2,165 @@
     "custom_fields": [
         {
             "dt": "Customer",
-            "depends_on": "eval:doc.customer_primary_contact",
-            "fetch_from": "customer_primary_contact.phone",
+            "depends_on": "eval:doc.customer_primary_address",
+            "fetch_from": "customer_primary_address.address_line1",
             "fetch_if_empty": 1,
-            "fieldname": "contact_phone",
-            "fieldtype": "Read Only",
-            "insert_after": "customer_primary_contact",
-            "label": "Phone",
+            "fieldname": "customer_primary_address_address_line1",
+            "fieldtype": "Data",
+            "insert_after": "customer_primary_address",
+            "label": "Address Line 1",
             "module": "erpnext_cis_plus"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_address",
+            "fetch_from": "customer_primary_address.address_line2",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_address_address_line2",
+            "fieldtype": "Data",
+            "insert_after": "address_address_line1",
+            "label": "Address Line 1",
+            "module": "erpnext_cis_plus"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_address",
+            "fetch_from": "customer_primary_address.city",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_address_city",
+            "fieldtype": "Data",
+            "insert_after": "address_address_line2",
+            "label": "City/Town",
+            "module": "erpnext_cis_plus"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_address",
+            "fetch_from": "customer_primary_address.state",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_address_state",
+            "fieldtype": "Data",
+            "insert_after": "address_city",
+            "label": "State/Province",
+            "module": "erpnext_cis_plus",
+            "options": "Email"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_address",
+            "fetch_from": "customer_primary_address.pincode",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_address_pincode",
+            "fieldtype": "Data",
+            "insert_after": "address_state",
+            "label": "Postal Code",
+            "module": "erpnext_cis_plus",
+            "options": "Email"
         },
         {
             "dt": "Customer",
             "depends_on": "eval:doc.customer_primary_address",
             "fetch_from": "customer_primary_address.email_id",
             "fetch_if_empty": 1,
-            "fieldname": "customer_email_address",
-            "fieldtype": "Read Only",
-            "insert_after": "primary_address",
-            "label": "Customer Email Address",
-            "module": "erpnext_cis_plus"
+            "fieldname": "customer_primary_address_email_id",
+            "fieldtype": "Data",
+            "insert_after": "address_pincode",
+            "label": "Email Address",
+            "module": "erpnext_cis_plus",
+            "options": "Email"
         },
         {
             "dt": "Customer",
             "depends_on": "eval:doc.customer_primary_address",
             "fetch_from": "customer_primary_address.phone",
             "fetch_if_empty": 1,
-            "fieldname": "customer_phone",
-            "fieldtype": "Read Only",
-            "insert_after": "customer_email_address",
+            "fieldname": "customer_primary_address_phone",
+            "fieldtype": "Data",
+            "insert_after": "address_email_id",
             "label": "Customer Phone",
-            "module": "erpnext_cis_plus"
+            "module": "erpnext_cis_plus",
+            "options": "Phone"
         },
         {
             "dt": "Customer",
             "depends_on": "eval:doc.customer_primary_address",
             "fetch_from": "customer_primary_address.fax",
             "fetch_if_empty": 1,
-            "fieldname": "customer_fax",
-            "fieldtype": "Read Only",
+            "fieldname": "customer_primary_address_fax",
+            "fieldtype": "Data",
             "insert_after": "customer_fax",
             "label": "Customer Fax",
+            "module": "erpnext_cis_plus",
+            "options": "Phone"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_contact",
+            "fetch_from": "customer_primary_contact.first_name",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_contact_first_name",
+            "fieldtype": "Data",
+            "insert_after": "customer_primary_contact",
+            "label": "Email Address",
+            "module": "erpnext_cis_plus",
+            "options": "Email"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_contact",
+            "fetch_from": "customer_primary_contact.last_name",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_contact_last_name",
+            "fieldtype": "Data",
+            "insert_after": "contact_first_name",
+            "label": "Email Address",
+            "module": "erpnext_cis_plus"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_contact",
+            "fetch_from": "customer_primary_contact.email_id",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_contact_email_id",
+            "fieldtype": "Data",
+            "insert_after": "contact_last_name",
+            "label": "Email Address",
+            "module": "erpnext_cis_plus",
+            "options": "Email"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_contact",
+            "fetch_from": "customer_primary_contact.phone",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_contact_phone",
+            "fieldtype": "Data",
+            "insert_after": "contact_email_id",
+            "label": "Phone",
+            "module": "erpnext_cis_plus",
+            "options": "Phone"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_contact",
+            "fetch_from": "customer_primary_contact.mobile_no",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_contact_mobile_no",
+            "fieldtype": "Data",
+            "insert_after": "contact_phone",
+            "label": "Mobile No",
+            "module": "erpnext_cis_plus",
+            "options": "Phone"
+        },
+        {
+            "dt": "Customer",
+            "depends_on": "eval:doc.customer_primary_contact",
+            "fetch_from": "customer_primary_contact.department",
+            "fetch_if_empty": 1,
+            "fieldname": "customer_primary_contact_department",
+            "fieldtype": "Data",
+            "insert_after": "contact_mobile_no",
+            "label": "Department",
             "module": "erpnext_cis_plus"
         },
         {
@@ -91,7 +210,35 @@
             "read_only": 1
         }
     ],
-    "property_setters": [],
+    "property_setters": [
+		{
+			"doc_type": "Customer",
+			"doctype_or_field": "DocField",
+			"field_name": "primary_address",
+			"name": "Customer-primary_address-hidden",
+			"property": "hidden",
+			"property_type": "Check",
+			"value": "1"
+		},
+		{
+			"doc_type": "Customer",
+			"doctype_or_field": "DocField",
+			"field_name": "mobile_no",
+			"name": "Customer-mobile_no-hidden",
+			"property": "hidden",
+			"property_type": "Check",
+			"value": "1"
+		},
+		{
+			"doc_type": "Customer",
+			"doctype_or_field": "DocField",
+			"field_name": "email_id",
+			"name": "Customer-email_id-hidden",
+			"property": "hidden",
+			"property_type": "Check",
+			"value": "1"
+		}
+    ],
     "sync_on_migrate": 1,
     "doctype": "Customer"
 }

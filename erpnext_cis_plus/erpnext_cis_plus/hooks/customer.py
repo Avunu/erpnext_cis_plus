@@ -49,6 +49,7 @@ def get_coords(filters):
     return geojson
 
 
+# get related records for the customer
 @frappe.whitelist()
 def get_customer_records(dt, customer_name):
 
@@ -64,3 +65,43 @@ def get_customer_records(dt, customer_name):
         )
         .run(as_dict=True)
     )
+
+
+# Update Address and Contact on customer save
+def before_save(doc, method=None):
+    address_fields = [
+        "address_line1", "address_line2", "city", "state", "pincode", "email_id", "phone", "fax"
+    ]
+    contact_fields = [
+        "first_name", "last_name", "email_id", "phone", "mobile_no", "department"
+    ]
+
+    # Update Address
+    if doc.customer_primary_address:
+        try:
+            address = frappe.get_doc("Address", doc.customer_primary_address)
+            has_changes = False
+            for field in address_fields:
+                doc_field = f"customer_primary_address_{field}"
+                if getattr(doc, doc_field, None) != getattr(address, field, None):
+                    setattr(address, field, getattr(doc, doc_field))
+                    has_changes = True
+            if has_changes:
+                address.save(ignore_permissions=True)
+        except Exception as e:
+            frappe.log_error(message=str(e), title="Failed to update Address in Contact hook")
+
+    # Update Contact
+    if doc.customer_primary_contact:
+        try:
+            contact = frappe.get_doc("Contact", doc.customer_primary_contact)
+            has_changes = False
+            for field in contact_fields:
+                doc_field = f"customer_primary_contact_{field}"
+                if getattr(doc, doc_field, None) != getattr(contact, field, None):
+                    setattr(contact, field, getattr(doc, doc_field))
+                    has_changes = True
+            if has_changes:
+                contact.save(ignore_permissions=True)
+        except Exception as e:
+            frappe.log_error(message=str(e), title="Failed to update Contact in Contact hook")
