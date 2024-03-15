@@ -3,6 +3,7 @@
 
 import frappe
 
+
 # Get a list of coordinates for the map view
 @frappe.whitelist()
 def get_coords(filters):
@@ -17,22 +18,49 @@ def get_coords(filters):
         """
     filters = frappe.parse_json(filters)
     doctype = "Customer"
-    customers = frappe.get_all(doctype, filters=filters, fields=["name", "customer_name", "customer_primary_contact", "primary_address", "latitude", "longitude"])
+    customers = frappe.get_all(
+        doctype,
+        filters=filters,
+        fields=[
+            "name",
+            "customer_name",
+            "customer_primary_contact",
+            "primary_address",
+            "latitude",
+            "longitude",
+        ],
+    )
     geojson = {"type": "FeatureCollection", "features": None}
     features = []
     for customer in customers:
         if customer.latitude and customer.longitude:
             popup_contents = frappe.render_template(popup_template, customer)
-            features.append({
-                "type": "Feature",
-                "properties": {
-                    "name": popup_contents
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [customer.longitude, customer.latitude]
+            features.append(
+                {
+                    "type": "Feature",
+                    "properties": {"name": popup_contents},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [customer.longitude, customer.latitude],
+                    },
                 }
-            })
+            )
     geojson["features"] = features
     return geojson
-    
+
+
+@frappe.whitelist()
+def get_customer_records(dt, customer_name):
+
+    dlink = frappe.qb.DocType("Dynamic Link")
+
+    return (
+        frappe.qb.from_(dlink)
+        .select(dlink.parent.as_("name"))
+        .where(
+            (dlink.parenttype == dt)
+            & (dlink.link_doctype == "Customer")
+            & (dlink.link_name == customer_name)
+        )
+        .run(as_dict=True)
+    )
