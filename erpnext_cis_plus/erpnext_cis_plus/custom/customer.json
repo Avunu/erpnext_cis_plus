@@ -9,7 +9,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_primary_address",
             "label": "Address Line 1",
-            "module": "ERPNext CIS+"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -20,7 +20,7 @@
             "fieldtype": "Data",
             "insert_after": "address_address_line1",
             "label": "Address Line 1",
-            "module": "ERPNext CIS+"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -31,7 +31,7 @@
             "fieldtype": "Data",
             "insert_after": "address_address_line2",
             "label": "City/Town",
-            "module": "ERPNext CIS+"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -42,7 +42,7 @@
             "fieldtype": "Data",
             "insert_after": "address_city",
             "label": "State/Province",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Email"
         },
         {
@@ -54,7 +54,7 @@
             "fieldtype": "Data",
             "insert_after": "address_state",
             "label": "Postal Code",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Email"
         },
         {
@@ -66,7 +66,7 @@
             "fieldtype": "Data",
             "insert_after": "address_pincode",
             "label": "Email Address",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Email"
         },
         {
@@ -78,7 +78,7 @@
             "fieldtype": "Data",
             "insert_after": "address_email_id",
             "label": "Customer Phone",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Phone"
         },
         {
@@ -90,7 +90,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_fax",
             "label": "Customer Fax",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Phone"
         },
         {
@@ -102,7 +102,7 @@
             "fieldtype": "Data",
             "insert_after": "customer_primary_contact",
             "label": "Email Address",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Email"
         },
         {
@@ -114,7 +114,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_first_name",
             "label": "Email Address",
-            "module": "ERPNext CIS+"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -125,7 +125,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_last_name",
             "label": "Email Address",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Email"
         },
         {
@@ -137,7 +137,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_email_id",
             "label": "Phone",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Phone"
         },
         {
@@ -149,7 +149,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_phone",
             "label": "Mobile No",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "options": "Phone"
         },
         {
@@ -161,7 +161,7 @@
             "fieldtype": "Data",
             "insert_after": "contact_mobile_no",
             "label": "Department",
-            "module": "ERPNext CIS+"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -170,7 +170,7 @@
             "fieldtype": "Section Break",
             "insert_after": "email_id",
             "label": "Location",
-            "module": "ERPNext CIS+"
+            "module": "ERPNext CIS Plus"
         },
         {
             "dt": "Customer",
@@ -181,7 +181,7 @@
             "hidden": 1,
             "insert_after": "geolocation",
             "label": "Latitude",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "precision": "6",
             "read_only": 1
         },
@@ -194,7 +194,7 @@
             "hidden": 1,
             "insert_after": "latitude",
             "label": "Longitude",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "precision": "6",
             "read_only": 1
         },
@@ -206,7 +206,7 @@
             "fieldtype": "Geolocation",
             "insert_after": "longitude",
             "label": "Map",
-            "module": "ERPNext CIS+",
+            "module": "ERPNext CIS Plus",
             "read_only": 1
         }
     ],

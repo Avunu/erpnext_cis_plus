@@ -1,4 +1,4 @@
-## ERPNext CIS+
+## ERPNext CIS Plus
 
 Various enhancements to the customer, contact, and address management for ERPNext.
 
