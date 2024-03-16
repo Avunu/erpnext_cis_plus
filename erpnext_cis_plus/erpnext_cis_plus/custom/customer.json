@@ -211,6 +211,15 @@
         {
             "doc_type": "Customer",
             "doctype_or_field": "DocField",
+            "field_name": "primary_address_and_contact_detail",
+            "name": "Customer-primary_address_and_contact_detail-description",
+            "property": "description",
+            "property_type": "Small Text",
+            "value": "Edit the primary address and contact details directly."
+        },
+        {
+            "doc_type": "Customer",
+            "doctype_or_field": "DocField",
             "field_name": "primary_address",
             "name": "Customer-primary_address-hidden",
             "property": "hidden",

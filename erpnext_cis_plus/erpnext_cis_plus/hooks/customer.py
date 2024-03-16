@@ -68,7 +68,7 @@ def get_customer_records(dt, customer_name):
 
 def before_save(doc, method=None):
     address_fields = [
-        "address_line1", "address_line2", "city", "state", "pincode", "fax"
+        "address_line1", "address_line2", "city", "state", "pincode", "email_id", "phone", "fax"
     ]
     contact_fields = [
         "first_name", "last_name", "department"
