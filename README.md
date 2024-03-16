@@ -1,6 +1,6 @@
 ## ERPNext CIS Plus
 
-Various enhancements to the customer, contact, and address management for ERPNext.
+Various enhancements to the customer, contact, and address management for ERPNext, especially suitable to small business, where a single contact and address per customer is common. Frappe geolocation is used to provide a map view of the customer's address.
 
 ## Features
 
