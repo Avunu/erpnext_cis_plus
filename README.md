@@ -26,7 +26,7 @@ bench --site [site-name] install-app erpnext_cis_plus
 
 ## Show me the code!
 
-Sure! The custom fields and properties doctype overrides are located in [erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/](erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/) and the doctype hooks are located in [erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/hooks/](erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/hooks/).
+Sure! The custom fields and properties doctype overrides are located in [erpnext_cis_plus/erpnext_cis_plus/custom/](erpnext_cis_plus/erpnext_cis_plus/custom/) and the doctype hooks are located in [erpnext_cis_plus/erpnext_cis_plus/hooks/](erpnext_cis_plus/erpnext_cis_plus/hooks/).
 
 #### License
 
