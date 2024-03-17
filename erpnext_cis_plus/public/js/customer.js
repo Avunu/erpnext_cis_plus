@@ -90,10 +90,10 @@ async function setup_form_layout(frm) {
         "customer_primary_contact_department",
     ];
     // assign each field the classes col-md-{width} float-left pl-0
-    // except for the fields in colend_fields, which should have the class col-md-{width} float-left px-0
     for (let field in layout_fields) {
         let width = layout_fields[field];
         let classes = "col-md-" + width + " float-left clearfix";
+        // colend_fields should have no padding on the left or right
         if (colend_fields.includes(field)) {
             classes += " px-0";
         } else {
