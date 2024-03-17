@@ -1,6 +1,6 @@
 ## Customer Information System Enhancements for ERPNext
 
-Various enhancements to the customer, contact, and address management for ERPNext, especially suitable to small business, where a single contact and address per customer is common. Frappe geolocation is used to provide a map view of the customer's address.
+This app adds various enhancements to the customer, contact, and address management for ERPNext. The target audience is small business, where a single contact and address per customer is common. Frappe geolocation is used to provide map views of the customer addresses.
 
 ## What does it do?
 
@@ -26,7 +26,10 @@ bench --site [site-name] install-app erpnext_cis_plus
 
 ## Show me the code!
 
-Sure! The custom fields and properties doctype overrides are located in [erpnext_cis_plus/erpnext_cis_plus/custom/](erpnext_cis_plus/erpnext_cis_plus/custom/) and the doctype hooks are located in [erpnext_cis_plus/erpnext_cis_plus/hooks/](erpnext_cis_plus/erpnext_cis_plus/hooks/).
+Sure!
+- The custom fields and properties Doctype overrides are located in [erpnext_cis_plus/erpnext_cis_plus/custom/](erpnext_cis_plus/erpnext_cis_plus/custom/).
+- The Doctype hooks are located in [erpnext_cis_plus/erpnext_cis_plus/hooks/](erpnext_cis_plus/erpnext_cis_plus/hooks/).
+- The Doctype js scripts are located in [erpnext_cis_plus/erpnext_cis_plus/public/js/](erpnext_cis_plus/erpnext_cis_plus/public/js/).
 
 #### License
 
