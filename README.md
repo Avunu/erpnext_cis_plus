@@ -13,7 +13,11 @@ This app adds various enhancements to the customer, contact, and address managem
 
 Here's a screenshot of the Customer Doctype with the new primary address and contact editing functionality:
 
-![screenshot](erpnext_cis_plus.png "ERPNext CIS Plus Screenshot")
+![Form Screenshot](erpnext_cis_plus_form.png "ERPNext CIS Plus Customer Form")
+
+Here's a screenshot of the Customer Doctype with the new map view functionality:
+
+![Map Screenshot](erpnext_cis_plus_map.png "ERPNext CIS Plus Customer Map")
 
 ## How to install?
 
