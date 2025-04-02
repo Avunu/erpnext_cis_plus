@@ -28,7 +28,7 @@ def geolocate_address(doc, method=None):
     # if doc.latitude and doc.longitude and doc.pincode:
     #     return doc
 
-    fields = ["address_line1", "city", "state", "country"]
+    fields = ["address_line1", "city", "state", "pincode", "country"]
     if not any([doc.get(f) for f in fields]):
         return doc
 
@@ -48,10 +48,10 @@ def geolocate_address(doc, method=None):
         results = response.json()
 
         if not results:
-            frappe.log_error(
-                "Geolocation Error", 
-                f"No geolocation found for address: {address_str}"
-            )
+            # frappe.log_error(
+            #     "Geolocation Error", 
+            #     f"No geolocation found for address: {address_str}"
+            # )
             return
 
         result = results[0]
