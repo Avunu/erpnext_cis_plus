@@ -9,6 +9,7 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     "us"
+    "phonenumbers"
 ]
 
 [build-system]

@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-
+import phonenumbers
 
 # Get a list of coordinates for the map view
 @frappe.whitelist()
@@ -17,9 +17,8 @@ def get_coords(filters):
         </div>
         """
     filters = frappe.parse_json(filters)
-    doctype = "Customer"
     customers = frappe.get_all(
-        doctype,
+        "Customer",
         filters=filters,
         fields=[
             "name",
@@ -79,6 +78,10 @@ def before_save(doc, method=None):
         "mobile_no": ("add_phone", {"is_primary_mobile_no": 1})
     }
 
+    # Validate and convert phone numbers to E164 format
+    country_code = get_country_code_for_customer(doc)
+    validate_customer_phone_numbers(doc, country_code)
+
     # Update Address
     if doc.customer_primary_address:
         address = frappe.get_doc("Address", doc.customer_primary_address)
@@ -112,3 +115,60 @@ def update_child_fields(contact, child_fields, source_doc):
             if hasattr(contact, method_name):
                 method = getattr(contact, method_name)
                 method(value, **kwargs)
+
+def get_country_code_for_customer(doc):
+    """Get country code for the customer's primary address"""
+    country = ""
+    if doc.customer_primary_address:
+        country = frappe.get_value("Address", doc.customer_primary_address, "country")
+    if not country:
+        country = frappe.db.get_single_value("System Settings", "country")
+    country_code = str(frappe.get_value("Country", country, "code")).upper()
+    return country_code
+
+
+def is_valid_E164_number(number):
+    """Check if number is in valid E.164 format"""
+    if not number or not number.startswith("+"):
+        return False
+    try:
+        numobj = phonenumbers.parse(number, "")
+    except:
+        return False
+    if phonenumbers.is_valid_number(numobj):
+        return (
+            phonenumbers.format_number(numobj, phonenumbers.PhoneNumberFormat.E164)
+            == number
+        )
+    return False
+
+
+def convert_to_e164(number, country_code):
+    """Convert a phone number to E.164 format"""
+    if not number:
+        return None
+    try:
+        numobj = phonenumbers.parse(number, country_code)
+    except:
+        return None
+    if phonenumbers.is_valid_number(numobj):
+        return phonenumbers.format_number(numobj, phonenumbers.PhoneNumberFormat.E164)
+    return None
+
+
+def validate_customer_phone_numbers(doc, country_code):
+    """Validate and convert phone numbers to E.164 format before saving"""
+    phone_fields = ["customer_primary_contact_phone", "customer_primary_contact_mobile_no"]
+    
+    for field in phone_fields:
+        phone_value = getattr(doc, field, None)
+        if phone_value:
+            if not is_valid_E164_number(phone_value):
+                e164_number = convert_to_e164(phone_value, country_code)
+                if e164_number:
+                    setattr(doc, field, e164_number)
+                else:
+                    frappe.msgprint(
+                        f"Invalid phone number format for {field}: {phone_value}",
+                        alert=True
+                    )
