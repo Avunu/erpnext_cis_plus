@@ -48,7 +48,7 @@ def is_valid_E164_number(number):
         return False
     try:
         numobj = phonenumbers.parse(number, "")
-    except:
+    except phonenumbers.NumberParseException:
         return False
     if phonenumbers.is_valid_number(numobj):
         return (
@@ -64,7 +64,7 @@ def convert_to_e164(number, country_code):
         return None
     try:
         numobj = phonenumbers.parse(number, country_code)
-    except:
+    except phonenumbers.NumberParseException:
         return None
     if phonenumbers.is_valid_number(numobj):
         return phonenumbers.format_number(numobj, phonenumbers.PhoneNumberFormat.E164)
