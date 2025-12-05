@@ -62,7 +62,6 @@ frappe.ui.form.on("Customer", {
 async function setup_form_layout(frm) {
     frm.layout.sections_dict.primary_address_and_contact_detail.columns.forEach(column => {
         let column_form = column.wrapper[0].children[0];
-        console.log("column_form: ", column_form);
         $(column_form).addClass("input-group");
     });
     const layout_fields = {
