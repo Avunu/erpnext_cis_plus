@@ -12,7 +12,10 @@ required_apps = ["erpnext"]
 # ------------------
 
 # include js in doctype views
-doctype_js = {"Customer": "public/js/customer.js"}
+doctype_js = {
+    "Customer": "public/js/customer.js",
+    "Supplier": "public/js/supplier.js"
+}
 doctype_list_js = {"Customer": "public/js/customer_list.js"}
 
 # Document Events
@@ -26,5 +29,8 @@ doc_events = {
     },
     "Customer": {
         "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.before_save"
+    },
+    "Supplier": {
+        "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.before_save"
     },
 }
