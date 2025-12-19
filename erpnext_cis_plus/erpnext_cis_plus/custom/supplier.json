@@ -2,7 +2,6 @@
     "custom_fields": [
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.address_line1",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_address_line1",
@@ -14,7 +13,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.address_line2",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_address_line2",
@@ -26,7 +24,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.city",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_city",
@@ -38,7 +35,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.state",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_state",
@@ -50,7 +46,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.pincode",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_pincode",
@@ -62,7 +57,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.email_id",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_email_id",
@@ -75,7 +69,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.phone",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_phone",
@@ -88,7 +81,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fetch_from": "supplier_primary_address.fax",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_address_fax",
@@ -101,7 +93,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_contact",
             "fetch_from": "supplier_primary_contact.first_name",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_contact_first_name",
@@ -113,7 +104,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_contact",
             "fetch_from": "supplier_primary_contact.last_name",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_contact_last_name",
@@ -125,7 +115,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_contact",
             "fetch_from": "supplier_primary_contact.email_id",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_contact_email_id",
@@ -138,7 +127,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_contact",
             "fetch_from": "supplier_primary_contact.phone",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_contact_phone",
@@ -151,7 +139,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_contact",
             "fetch_from": "supplier_primary_contact.mobile_no",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_contact_mobile_no",
@@ -164,7 +151,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_contact",
             "fetch_from": "supplier_primary_contact.department",
             "fetch_if_empty": 1,
             "fieldname": "supplier_primary_contact_department",
@@ -176,7 +162,6 @@
         },
         {
             "dt": "Supplier",
-            "depends_on": "eval:doc.supplier_primary_address",
             "fieldname": "geolocation",
             "fieldtype": "Section Break",
             "insert_after": "email_id",

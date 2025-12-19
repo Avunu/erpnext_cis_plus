@@ -87,6 +87,63 @@ def validate_party_phone_numbers(doc, phone_fields, country_code):
                     )
 
 
+def create_address(doc, address_fields, address_prefix, party_type, party_name):
+    """Create a new address record for a party"""
+    address = frappe.new_doc("Address")
+    
+    # Copy address fields from the party document
+    for field in address_fields:
+        value = getattr(doc, f"{address_prefix}{field}", None)
+        if value:
+            setattr(address, field, value)
+    
+    # Add the link to the party
+    address.append("links", {
+        "link_doctype": party_type,
+        "link_name": party_name
+    })
+    
+    # Set as primary address
+    address.is_primary_address = 1
+    
+    # Save the address
+    address.insert(ignore_permissions=True)
+    
+    return address
+
+
+def create_contact(doc, contact_fields, child_fields, contact_prefix, party_type, party_name):
+    """Create a new contact record for a party"""
+    contact = frappe.new_doc("Contact")
+    
+    # Copy simple contact fields from the party document
+    for field in contact_fields:
+        value = getattr(doc, f"{contact_prefix}{field}", None)
+        if value:
+            setattr(contact, field, value)
+    
+    # Add the link to the party
+    contact.append("links", {
+        "link_doctype": party_type,
+        "link_name": party_name
+    })
+    
+    # Set as primary contact
+    contact.is_primary_contact = 1
+    
+    # Handle child table fields (email, phone, mobile_no)
+    for field, (method_name, kwargs) in child_fields.items():
+        value = getattr(doc, f"{contact_prefix}{field}", None)
+        if value and hasattr(contact, method_name):
+            method = getattr(contact, method_name)
+            method(value, **kwargs)
+    
+    # Save the contact
+    contact.insert(ignore_permissions=True)
+    
+    return contact
+
+
 def update_party_address_and_contact(doc, primary_address_field, primary_contact_field, contact_prefix):
     """Generic method to update address and contact for a party (Customer/Supplier)"""
     address_fields = [
@@ -106,20 +163,44 @@ def update_party_address_and_contact(doc, primary_address_field, primary_contact
     phone_fields = [f"{contact_prefix}{field}" for field in ["phone", "mobile_no"]]
     validate_party_phone_numbers(doc, phone_fields, country_code)
 
-    # Update Address
-    primary_address = getattr(doc, primary_address_field, None)
-    if primary_address:
-        address = frappe.get_doc("Address", primary_address)
-        address_prefix = f"{primary_address_field}_"
-        update_doc_fields(address, address_fields, doc, address_prefix)
+    # Determine the party type and name from the doc
+    party_type = doc.doctype
+    party_name = doc.name
 
-    # Update Contact
+    # Update or Create Address
+    primary_address = getattr(doc, primary_address_field, None)
+    address_prefix = f"{primary_address_field}_"
+    
+    # Check if any address fields have data
+    has_address_data = any(getattr(doc, f"{address_prefix}{field}", None) for field in address_fields)
+    
+    if primary_address:
+        # Update existing address
+        address = frappe.get_doc("Address", primary_address)
+        update_doc_fields(address, address_fields, doc, address_prefix)
+    elif has_address_data and party_name:
+        # Create new address if data is provided but no primary address exists
+        address = create_address(doc, address_fields, address_prefix, party_type, party_name)
+        if address:
+            setattr(doc, primary_address_field, address.name)
+
+    # Update or Create Contact
     primary_contact = getattr(doc, primary_contact_field, None)
+    
+    # Check if any contact fields have data
+    has_contact_data = any(getattr(doc, f"{contact_prefix}{field}", None) for field in contact_fields + list(child_fields.keys()))
+    
     if primary_contact:
+        # Update existing contact
         contact = frappe.get_doc("Contact", primary_contact)
         update_doc_fields(contact, contact_fields, doc, contact_prefix)
         update_child_fields(contact, child_fields, doc, contact_prefix)
         contact.save(ignore_permissions=True)
+    elif has_contact_data and party_name:
+        # Create new contact if data is provided but no primary contact exists
+        contact = create_contact(doc, contact_fields, child_fields, contact_prefix, party_type, party_name)
+        if contact:
+            setattr(doc, primary_contact_field, contact.name)
 
 
 @frappe.whitelist()

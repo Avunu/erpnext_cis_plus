@@ -3,6 +3,10 @@
 
 // Customize the customer form
 frappe.ui.form.on("Customer", {
+    refresh: function (frm) {
+        // Refresh the form layout to ensure newly created address/contact fields are displayed
+        setup_form_layout(frm);
+    },
     setup: async function (frm) {
         try {
             if (frm.doc.customer_name && !frm.doc.customer_primary_address) {

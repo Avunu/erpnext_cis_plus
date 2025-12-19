@@ -3,6 +3,10 @@
 
 // Customize the supplier form
 frappe.ui.form.on("Supplier", {
+    refresh: function (frm) {
+        // Refresh the form layout to ensure newly created address/contact fields are displayed
+        setup_form_layout(frm);
+    },
     setup: async function (frm) {
         try {
             if (frm.doc.supplier_name && !frm.doc.supplier_primary_address) {
