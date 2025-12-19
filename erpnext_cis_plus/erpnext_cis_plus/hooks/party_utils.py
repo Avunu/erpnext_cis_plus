@@ -150,7 +150,18 @@ def create_contact(doc, contact_fields, child_fields, contact_prefix, party_type
 
 
 def update_party_address_and_contact(doc, primary_address_field, primary_contact_field, contact_prefix):
-    """Generic method to update address and contact for a party (Customer/Supplier)"""
+    """Generic method to update or create address and contact for a party (Customer/Supplier)
+    
+    This function handles both new and existing documents. It will:
+    - Update existing address/contact if they exist
+    - Create new address/contact if data is provided but no primary exists
+    - Validate that all required fields are present when creating new records
+    """
+    # Required fields for creating new address
+    required_address_fields = ["address_line1"]
+    # Required fields for creating new contact
+    required_contact_fields = ["first_name"]
+    
     address_fields = [
         "address_line1", "address_line2", "city", "state", "pincode", "email_id", "phone", "fax"
     ]
@@ -172,97 +183,64 @@ def update_party_address_and_contact(doc, primary_address_field, primary_contact
     party_type = doc.doctype
     party_name = doc.name
 
-    # Only update existing address/contact in before_save
-    # For new documents, we need to wait until after_insert when the party exists in DB
-    if not doc.is_new():
-        # Update or Create Address
-        primary_address = getattr(doc, primary_address_field, None)
-        address_prefix = f"{primary_address_field}_"
-        
-        # Check if any address fields have data
-        has_address_data = any(getattr(doc, f"{address_prefix}{field}", None) for field in address_fields)
-        
-        if primary_address:
-            # Update existing address
-            address = frappe.get_doc("Address", primary_address)
-            update_doc_fields(address, address_fields, doc, address_prefix)
-        elif has_address_data and party_name:
-            # Create new address if data is provided but no primary address exists
-            address = create_address(doc, address_fields, address_prefix, party_type, party_name)
-            if address:
-                setattr(doc, primary_address_field, address.name)
-
-        # Update or Create Contact
-        primary_contact = getattr(doc, primary_contact_field, None)
-        
-        # Check if any contact fields have data
-        has_contact_data = any(getattr(doc, f"{contact_prefix}{field}", None) for field in contact_fields + list(child_fields.keys()))
-        
-        if primary_contact:
-            # Update existing contact
-            contact = frappe.get_doc("Contact", primary_contact)
-            update_doc_fields(contact, contact_fields, doc, contact_prefix)
-            update_child_fields(contact, child_fields, doc, contact_prefix)
-            contact.save(ignore_permissions=True)
-        elif has_contact_data and party_name:
-            # Create new contact if data is provided but no primary contact exists
-            contact = create_contact(doc, contact_fields, child_fields, contact_prefix, party_type, party_name)
-            if contact:
-                setattr(doc, primary_contact_field, contact.name)
-
-
-def create_party_address_and_contact_on_insert(doc, primary_address_field, primary_contact_field, contact_prefix):
-    """Create address and contact for a new party (Customer/Supplier) after insert
-    
-    This function is called in the after_insert hook to handle new documents.
-    We use a dual-phase approach:
-    - before_save: Validates data but doesn't create records for new documents
-    - after_insert: Creates Address/Contact records after party exists in database
-    
-    This ensures the party document exists before we create linked records.
-    """
-    address_fields = [
-        "address_line1", "address_line2", "city", "state", "pincode", "email_id", "phone", "fax"
-    ]
-    contact_fields = [
-        "first_name", "last_name", "department"
-    ]
-    child_fields = {
-        "email_id": ("add_email", {}),
-        "phone": ("add_phone", {"is_primary_phone": 1}),
-        "mobile_no": ("add_phone", {"is_primary_mobile_no": 1})
-    }
-
-    # Determine the party type and name from the doc
-    party_type = doc.doctype
-    party_name = doc.name
-    
-    # Create Address if needed
+    # Handle Address - works for both new and existing documents
     primary_address = getattr(doc, primary_address_field, None)
     address_prefix = f"{primary_address_field}_"
     
     # Check if any address fields have data
     has_address_data = any(getattr(doc, f"{address_prefix}{field}", None) for field in address_fields)
     
-    if not primary_address and has_address_data and party_name:
+    if primary_address:
+        # Update existing address
+        address = frappe.get_doc("Address", primary_address)
+        update_doc_fields(address, address_fields, doc, address_prefix)
+    elif has_address_data:
+        # Validate required fields before creating new address
+        missing_fields = []
+        for field in required_address_fields:
+            if not getattr(doc, f"{address_prefix}{field}", None):
+                missing_fields.append(field.replace("_", " ").title())
+        
+        if missing_fields:
+            frappe.throw(
+                f"To create a new address, please provide: {', '.join(missing_fields)}"
+            )
+        
         # Create new address if data is provided but no primary address exists
-        address = create_address(doc, address_fields, address_prefix, party_type, party_name)
-        if address:
-            # Update the party document with the new address
-            frappe.db.set_value(party_type, party_name, primary_address_field, address.name, update_modified=False)
+        if party_name:
+            address = create_address(doc, address_fields, address_prefix, party_type, party_name)
+            if address:
+                setattr(doc, primary_address_field, address.name)
 
-    # Create Contact if needed
+    # Handle Contact - works for both new and existing documents
     primary_contact = getattr(doc, primary_contact_field, None)
     
     # Check if any contact fields have data
     has_contact_data = any(getattr(doc, f"{contact_prefix}{field}", None) for field in contact_fields + list(child_fields.keys()))
     
-    if not primary_contact and has_contact_data and party_name:
+    if primary_contact:
+        # Update existing contact
+        contact = frappe.get_doc("Contact", primary_contact)
+        update_doc_fields(contact, contact_fields, doc, contact_prefix)
+        update_child_fields(contact, child_fields, doc, contact_prefix)
+        contact.save(ignore_permissions=True)
+    elif has_contact_data:
+        # Validate required fields before creating new contact
+        missing_fields = []
+        for field in required_contact_fields:
+            if not getattr(doc, f"{contact_prefix}{field}", None):
+                missing_fields.append(field.replace("_", " ").title())
+        
+        if missing_fields:
+            frappe.throw(
+                f"To create a new contact, please provide: {', '.join(missing_fields)}"
+            )
+        
         # Create new contact if data is provided but no primary contact exists
-        contact = create_contact(doc, contact_fields, child_fields, contact_prefix, party_type, party_name)
-        if contact:
-            # Update the party document with the new contact
-            frappe.db.set_value(party_type, party_name, primary_contact_field, contact.name, update_modified=False)
+        if party_name:
+            contact = create_contact(doc, contact_fields, child_fields, contact_prefix, party_type, party_name)
+            if contact:
+                setattr(doc, primary_contact_field, contact.name)
 
 
 @frappe.whitelist()
