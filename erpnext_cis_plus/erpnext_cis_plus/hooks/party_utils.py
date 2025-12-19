@@ -113,7 +113,11 @@ def create_address(doc, address_fields, address_prefix, party_type, party_name):
 
 
 def create_contact(doc, contact_fields, child_fields, contact_prefix, party_type, party_name):
-    """Create a new contact record for a party"""
+    """Create a new contact record for a party
+    
+    Note: Since this is creating a new contact, we don't need to check for duplicate
+    child entries as the contact starts with empty child tables.
+    """
     contact = frappe.new_doc("Contact")
     
     # Copy simple contact fields from the party document
@@ -132,6 +136,7 @@ def create_contact(doc, contact_fields, child_fields, contact_prefix, party_type
     contact.is_primary_contact = 1
     
     # Handle child table fields (email, phone, mobile_no)
+    # Since this is a new contact, child tables are empty, so no need to check for duplicates
     for field, (method_name, kwargs) in child_fields.items():
         value = getattr(doc, f"{contact_prefix}{field}", None)
         if value and hasattr(contact, method_name):
@@ -207,7 +212,15 @@ def update_party_address_and_contact(doc, primary_address_field, primary_contact
 
 
 def create_party_address_and_contact_on_insert(doc, primary_address_field, primary_contact_field, contact_prefix):
-    """Create address and contact for a new party (Customer/Supplier) after insert"""
+    """Create address and contact for a new party (Customer/Supplier) after insert
+    
+    This function is called in the after_insert hook to handle new documents.
+    We use a dual-phase approach:
+    - before_save: Validates data but doesn't create records for new documents
+    - after_insert: Creates Address/Contact records after party exists in database
+    
+    This ensures the party document exists before we create linked records.
+    """
     address_fields = [
         "address_line1", "address_line2", "city", "state", "pincode", "email_id", "phone", "fax"
     ]
