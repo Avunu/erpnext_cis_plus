@@ -4,6 +4,7 @@
 import frappe
 from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import (
     update_party_address_and_contact,
+    create_party_address_and_contact_on_insert,
     get_party_records
 )
 
@@ -16,6 +17,15 @@ def get_supplier_records(dt, supplier_name):
 
 def before_save(doc, method=None):
     update_party_address_and_contact(
+        doc,
+        primary_address_field="supplier_primary_address",
+        primary_contact_field="supplier_primary_contact",
+        contact_prefix="supplier_primary_contact_"
+    )
+
+
+def after_insert(doc, method=None):
+    create_party_address_and_contact_on_insert(
         doc,
         primary_address_field="supplier_primary_address",
         primary_contact_field="supplier_primary_contact",

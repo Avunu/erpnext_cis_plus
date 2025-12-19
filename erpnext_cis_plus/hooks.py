@@ -28,9 +28,11 @@ doc_events = {
         "validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.geolocate_address",
     },
     "Customer": {
-        "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.before_save"
+        "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.before_save",
+        "after_insert": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.after_insert"
     },
     "Supplier": {
-        "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.before_save"
+        "before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.before_save",
+        "after_insert": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.after_insert"
     },
 }
