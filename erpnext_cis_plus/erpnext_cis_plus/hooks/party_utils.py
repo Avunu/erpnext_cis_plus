@@ -22,15 +22,80 @@ def update_doc_fields(target_doc, fields, source_doc, prefix):
 
 
 def update_child_fields(contact, child_fields, source_doc, prefix):
-    """Update child table fields in contact from source doc"""
+    """Update child table fields in contact from source doc
+    
+    This handles updating email_ids and phone_nos child tables properly:
+    - For existing entries, update the primary flags
+    - For new entries, clear other primary flags first to avoid validation errors
+    """
     for field, (method_name, kwargs) in child_fields.items():
         doc_field = f"{prefix}{field}"
         value = getattr(source_doc, doc_field, None)
-        if value:
-            # Check if the add_{field} method exists on the contact and call it
-            if hasattr(contact, method_name):
-                method = getattr(contact, method_name)
-                method(value, **kwargs)
+        if not value:
+            continue
+            
+        if method_name == "add_email":
+            # Handle email updates
+            is_primary = kwargs.get("is_primary", 0)
+            existing_email = None
+            for email_row in contact.email_ids:
+                if email_row.email_id == value:
+                    existing_email = email_row
+                    break
+            
+            if existing_email:
+                # Email already exists, update primary flag if needed
+                if is_primary and not existing_email.is_primary:
+                    # Clear other primaries first
+                    for email_row in contact.email_ids:
+                        email_row.is_primary = 0
+                    existing_email.is_primary = 1
+            else:
+                # New email - clear existing primaries if this should be primary
+                if is_primary:
+                    for email_row in contact.email_ids:
+                        email_row.is_primary = 0
+                contact.append("email_ids", {"email_id": value, "is_primary": is_primary})
+                
+        elif method_name == "add_phone":
+            # Handle phone updates
+            is_primary_phone = kwargs.get("is_primary_phone", 0)
+            is_primary_mobile_no = kwargs.get("is_primary_mobile_no", 0)
+            
+            existing_phone = None
+            for phone_row in contact.phone_nos:
+                if phone_row.phone == value:
+                    existing_phone = phone_row
+                    break
+            
+            if existing_phone:
+                # Phone already exists, update primary flags if needed
+                if is_primary_phone and not existing_phone.is_primary_phone:
+                    # Clear other primary phones first
+                    for phone_row in contact.phone_nos:
+                        phone_row.is_primary_phone = 0
+                    existing_phone.is_primary_phone = 1
+                if is_primary_mobile_no and not existing_phone.is_primary_mobile_no:
+                    # Clear other primary mobiles first
+                    for phone_row in contact.phone_nos:
+                        phone_row.is_primary_mobile_no = 0
+                    existing_phone.is_primary_mobile_no = 1
+            else:
+                # New phone - clear existing primaries if this should be primary
+                if is_primary_phone:
+                    for phone_row in contact.phone_nos:
+                        phone_row.is_primary_phone = 0
+                if is_primary_mobile_no:
+                    for phone_row in contact.phone_nos:
+                        phone_row.is_primary_mobile_no = 0
+                contact.append(
+                    "phone_nos",
+                    {
+                        "phone": value,
+                        "is_primary_phone": is_primary_phone,
+                        "is_primary_mobile_no": is_primary_mobile_no,
+                    },
+                )
 
 
 def get_country_code_for_party(doc, primary_address_field):
