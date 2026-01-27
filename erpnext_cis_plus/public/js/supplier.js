@@ -97,7 +97,7 @@ async function setup_form_layout(frm) {
     // assign each field the classes col-md-{width} float-left pl-0
     for (let field in layout_fields) {
         let width = layout_fields[field];
-        let classes = "col-md-" + width + " float-left clearfix";
+        let classes = "col-md-" + width + " float-left clearfix mx-0";
         // colend_fields should have no padding on the left or right
         if (colend_fields.includes(field)) {
             classes += " px-0";
