@@ -59,6 +59,9 @@ def get_customer_records(dt, customer_name):
 
 
 def validate(doc, method=None):
+    # Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
+    if doc.flags.get("is_new_doc"):
+        return
     validate_party_address_and_contact_fields(
         doc,
         primary_address_field="customer_primary_address",
@@ -73,6 +76,9 @@ def before_save(doc, method=None):
 
 
 def on_update(doc, method=None):
+    # Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
+    if doc.flags.get("is_new_doc"):
+        return
     update_party_address_and_contact(
         doc,
         primary_address_field="customer_primary_address",
