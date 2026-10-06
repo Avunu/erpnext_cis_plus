@@ -6,7 +6,7 @@ ERPNext CIS Plus is a Frappe app that makes customer, contact and address handli
 
 ## What does it do?
 
-- Adds geolocation and address validation to the Address Doctype (utilizes the free OpenStreetMap Nominatim service): on save, the address is looked up and its coordinates, postal code, state, county and city are filled in where they are blank. If the lookup fails, the save is stopped with an error.
+- Adds geolocation and address validation to the Address Doctype (utilizes the free OpenStreetMap Nominatim service): on save, the address is looked up, its coordinates are set, and its country, postal code, state, county and city are filled in where they are blank. If the service cannot be reached or returns an error, the save is stopped with an error; if it finds no match, the address is saved without coordinates.
 - Sets the default address and contact automatically on the Customer Doctype
 - Enables default address and contact editing on the Customer Doctype (and the Supplier Doctype): you can fill in the primary address and contact fields directly on the form, and the Address and Contact records are created or updated for you
 - Normalizes phone numbers on the primary contact to E.164 format (using the `phonenumbers` package, with the country taken from the primary address) and warns when a number cannot be parsed
