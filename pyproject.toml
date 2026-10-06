@@ -6,6 +6,10 @@ authors = [
 description = "Various enhancements to the customer, contact, and address management for ERPNext."
 requires-python = ">=3.10"
 readme = "README.md"
+license = { file = "license.txt" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
 dynamic = ["version"]
 dependencies = [
     "us",

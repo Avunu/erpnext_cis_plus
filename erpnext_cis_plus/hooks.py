@@ -5,7 +5,7 @@ app_description = (
     "Various enhancements to the customer, contact, and address management for ERPNext."
 )
 app_email = "mail@avu.nu"
-app_license = "mit"
+app_license = "MIT"
 required_apps = ["erpnext"]
 
 # Includes in <head>
