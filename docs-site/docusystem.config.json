@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/@avunu/docusystem/config.schema.json",
+  "name": "ERPNext CIS Plus",
+  "tagline": "Simpler customer, contact, and address management for ERPNext, with address validation, geolocation, and a map of your customers.",
+  "slug": "erpnext_cis_plus",
+  "platform": "frappe",
+  "repo": "https://github.com/Avunu/erpnext_cis_plus",
+  "domain": "erpnext-cis-plus.avunu.net",
+  "license": "MIT"
+}
