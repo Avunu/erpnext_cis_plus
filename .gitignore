@@ -5,3 +5,42 @@
 tags
 node_modules
 __pycache__
+# >>> frappe-nix >>> (managed block — edits here are overwritten)
+# The materialized dev bench: frappe copied out of the store, sites/, logs/,
+# config/pids, the env symlink. Runtime state, never source — deleting it costs
+# a re-copy of the apps, not the database, which lives in .devenv/state.
+#
+# NOT the whole of any directory that also holds nix/uv.lock: a flake's source
+# tree is exactly its tracked files, so an ignored lock is invisible to the build
+# and reads as missing.
+/.frappe-nix/
+
+# `bench build` compiles this app's bundles into its own public/dist — through
+# the symlink, so they land here rather than in the generated bench. They are a
+# build output, and leaving them tracked would dirty the flake's source tree on
+# every build and re-assemble the workspace on every evaluation.
+*/public/dist/
+node_modules
+
+# nix / direnv / devenv
+/.devenv/
+/.direnv/
+/result
+
+# The Nix-built dev virtualenv is symlinked into the bench, not here, but a
+# stray one from a classic `bench init` would shadow it.
+env
+
+# devenv reads .env (dotenv.enable) at eval time from this directory.
+.env
+.env.*
+!.env.example
+
+# The app standards: pinned trees and reports, the tsc --build cache, tool
+# caches, and the extra links `nix build` leaves for several outputs.
+/.dev-dist/
+*.tsbuildinfo
+.ruff_cache/
+__pycache__/
+/result-*
+# <<< frappe-nix <<<

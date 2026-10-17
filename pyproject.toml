@@ -1,25 +1,70 @@
 [project]
 name = "erpnext_cis_plus"
-authors = [
-    { name = "Avunu LLC", email = "mail@avu.nu"}
-]
+authors = [{ name = "Avunu LLC", email = "mail@avu.nu" }]
 description = "Various enhancements to the customer, contact, and address management for ERPNext."
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 readme = "README.md"
-license = { file = "license.txt" }
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-]
+license = "MIT"
+license-files = ["license.txt"]
 dynamic = ["version"]
-dependencies = [
-    "us",
-    "phonenumbers",
-]
+dependencies = ["us", "phonenumbers"]
 
 [build-system]
 requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
+[tool.bench.frappe-dependencies]
+frappe = ">=16.0.0,<17.0.0"
+erpnext = ">=16.0.0,<17.0.0"
+
 # These dependencies are only installed when developer mode is enabled
 [tool.bench.dev-dependencies]
 # package_name = "~=1.1.0"
+
+[tool.frappe-nix]
+schema = 1
+profile = "github:Avunu/frappe-standards-profile/main"
+frappe-major = 16
+siblings = ["erpnext"]
+
+[tool.frappe-nix.dev-shell]
+frappe-nix-url = "github:Avunu/frappe-nix/e95f67f97de1322c89df9ffbc9218c31d4ca83ba"
+
+[tool.ruff]
+line-length = 110
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "I", "UP", "B", "RUF", "SIM", "C4", "PIE", "PERF", "T20"]
+ignore = ["E501", "W191"]
+typing-modules = ["frappe.types.DF"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+docstring-code-format = true
+
+[tool.ty.environment]
+python-version = "3.14"
+
+[tool.ty.src]
+include = ["erpnext_cis_plus"]
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.coverage.run]
+omit = ["*/tests/*", "*/test_*.py", "*/patches/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+precision = 1
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@(abc\\.)?abstractmethod"]
+fail_under = 0
+
+[tool.vulture]
+exclude = [".venv/", "node_modules/", ".frappe-nix/", ".dev-dist/"]
+
+[tool.test_utils.static-analysis]
+whitelist = ["frappe.*", "erpnext.*"]
