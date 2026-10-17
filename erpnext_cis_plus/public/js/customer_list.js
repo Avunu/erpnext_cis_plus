@@ -2,8 +2,10 @@
 // For license information, please see license.txt
 
 /**
- * The Customer list's map view reads the points from get_coords. Merged into ERPNext's
- * settings for the list, which load first, rather than replacing them.
+ * On v16, get_coords_method only makes the Map view option appear in the Customer list;
+ * the map itself plots the list's own rows from their location fields and does not call
+ * get_coords. Merged into ERPNext's settings for the list, which load first, rather than
+ * replacing them.
  *
  * @type {frappe.views.ListViewSettings<"Customer">}
  */

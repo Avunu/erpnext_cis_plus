@@ -24,7 +24,11 @@ def render_map_popup(customer: dict) -> str:
 
 @frappe.whitelist()
 def get_coords(filters: str | dict | list | None = None) -> dict:
-	"""GeoJSON points for the Customer list's map view, for the customers the user may read."""
+	"""GeoJSON points for the customers the user may read.
+
+	The Customer list names this as its get_coords_method, which on v16 only makes the Map
+	view option appear; the map plots the list's rows itself and does not call this.
+	"""
 	customers = frappe.get_list(
 		"Customer",
 		filters=json.loads(filters) if isinstance(filters, str) else filters,
