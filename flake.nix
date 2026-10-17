@@ -4,7 +4,7 @@
   description = "erpnext_cis_plus: ERPNext CIS Plus";
 
   inputs = {
-    frappe-nix.url = "github:Avunu/frappe-nix/e95f67f97de1322c89df9ffbc9218c31d4ca83ba";
+    frappe-nix.url = "github:Avunu/frappe-nix/de60612a38409a61004f3d311a9e2748d2a3d341";
     nixpkgs.follows = "frappe-nix/nixpkgs";
     frappe = {
       url = "github:frappe/frappe/version-16";
@@ -42,7 +42,6 @@
         systems = [
           "aarch64-darwin"
           "aarch64-linux"
-          "x86_64-darwin"
           "x86_64-linux"
         ];
 
@@ -52,7 +51,7 @@
             formatter = pkgs.nixfmt;
             frappe-nix = {
               enable = true;
-              siteName = "erpnext-cis-plus.localhost";
+              defaultSite = "erpnext-cis-plus.localhost";
               app = {
                 enable = true;
                 frappeVersion = "version-16";

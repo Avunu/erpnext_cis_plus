@@ -99,6 +99,11 @@ repos:
         language: system
         entry: uv run --frozen --project tools committed --commit-file
         stages: [commit-msg]
+      - id: frappe-nix-commit-msg
+        name: no major bump through a commit message
+        language: system
+        entry: sh -c 'if command -v frappe-nix >/dev/null; then exec frappe-nix policy --commit-msg-file "$1"; fi; echo "frappe-nix-commit-msg skipped (frappe-nix not on PATH; pr-policy runs it)" >&2' --
+        stages: [commit-msg]
 
   # agritheory/test_utils: selected hooks only (S19). sql_registry/sql_rewriter abort the run,
   # mypy is replaced by ty, and validate_*_dependencies crash outside a bench, so none of those are here.
@@ -107,6 +112,26 @@ repos:
     hooks:
       - id: validate_frappe_project
       - id: static_analysis
+        # Its own walk of the checkout skips the dev bench, devenv's state and the other unmanaged directories.
+        entry: |-
+          python -c '
+          import fnmatch, importlib, os, pathlib, sys
+          skip = {".git", "__pycache__", ".venv", "node_modules", ".frappe-nix", ".dev-dist", ".devenv", ".direnv"}
+          def pruned(top, topdown=True, onerror=None, followlinks=False):
+              for root, dirs, files in walk(top, topdown, onerror, followlinks):
+                  dirs[:] = [d for d in dirs if d not in skip]
+                  yield root, dirs, files
+          def rglob(self, pattern, **kwargs):
+              if "/" in pattern:
+                  return (p for p in glob(self, pattern, **kwargs) if skip.isdisjoint(p.relative_to(self).parts))
+              return (type(self)(root, name) for root, dirs, files in pruned(self) for name in dirs + files if fnmatch.fnmatchcase(name, pattern))
+          walk, glob = os.walk, pathlib.Path.rglob
+          os.walk, pathlib.Path.rglob = pruned, rglob
+          hook = sys.argv.pop(1)
+          module = importlib.import_module("test_utils.pre_commit." + hook)
+          sys.argv[0] = hook
+          sys.exit(module.main())
+          ' static_analysis
         args: ["."]
       - id: validate_doctype_python_types
       - id: validate_copyright
