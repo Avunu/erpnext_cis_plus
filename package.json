@@ -1,0 +1,33 @@
+{
+	"name": "erpnext-cis-plus",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Various enhancements to the customer, contact, and address management for ERPNext.",
+	"license": "MIT",
+	"author": "Avunu LLC",
+	"type": "module",
+	"scripts": {
+		"format": "oxfmt",
+		"format:check": "oxfmt --check",
+		"lint": "oxlint",
+		"typecheck": "tsc --build tsconfig.json",
+		"lint:py": "uv run --frozen --project tools ruff check . && uv run --frozen --project tools ruff format --check .",
+		"typecheck:py": "uv run --frozen --project tools ty check --python \"${FRAPPE_BENCH_ROOT:-.frappe-nix/bench}/env\"",
+		"check": "yarn -s format:check && yarn -s lint && yarn -s typecheck"
+	},
+	"devDependencies": {
+		"@types/node": "^26.6.4",
+		"frappe-types": "^16.5.0",
+		"oxfmt": "^0.72.0",
+		"oxlint": "^1.87.0",
+		"typescript": "^7.0.2"
+	},
+	"engines": {
+		"node": ">=24"
+	},
+	"packageManager": "yarn@1.22.22",
+	"frappe": {
+		"major": "16",
+		"branch": "version-16"
+	}
+}

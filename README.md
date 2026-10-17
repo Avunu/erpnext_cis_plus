@@ -1,3 +1,6 @@
+<!-- Copyright (c) 2026, Avunu LLC and contributors
+For license information, please see license.txt-->
+
 ## ERPNext CIS Plus
 
 ERPNext CIS Plus is a Frappe app that makes customer, contact and address handling in ERPNext easier for small businesses, where one contact and one address per customer is the normal case. It looks up and validates addresses through the free OpenStreetMap Nominatim service, lets you create and edit a customer's primary address and primary contact right on the Customer form, and adds a map view of your customers. The same primary address and contact editing is available on the Supplier form.
@@ -39,6 +42,7 @@ bench --site [site-name] install-app erpnext_cis_plus
 ## Show me the code!
 
 Sure!
+
 - The custom fields and properties Doctype overrides are located in [erpnext_cis_plus/erpnext_cis_plus/custom/](erpnext_cis_plus/erpnext_cis_plus/custom/).
 - The Doctype hooks are located in [erpnext_cis_plus/erpnext_cis_plus/hooks/](erpnext_cis_plus/erpnext_cis_plus/hooks/).
 - The Doctype js scripts are located in [erpnext_cis_plus/public/js/](erpnext_cis_plus/public/js/).

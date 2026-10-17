@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+	"include-v-in-tag": true,
+	"include-component-in-tag": false,
+	"separate-pull-requests": true,
+	"packages": {
+		".": {
+			"release-type": "node",
+			"package-name": "erpnext-cis-plus",
+			"changelog-path": "CHANGELOG.md",
+			"extra-files": [
+				{
+					"type": "generic",
+					"path": "erpnext_cis_plus/__init__.py"
+				}
+			]
+		}
+	}
+}
