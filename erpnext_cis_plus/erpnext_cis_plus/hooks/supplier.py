@@ -2,43 +2,44 @@
 # For license information, please see license.txt
 
 import frappe
+
 from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import (
-    validate_party_address_and_contact_fields,
-    update_party_address_and_contact,
-    get_party_records
+	get_party_records,
+	update_party_address_and_contact,
+	validate_party_address_and_contact_fields,
 )
 
 
 # get related records for the supplier
 @frappe.whitelist()
 def get_supplier_records(dt, supplier_name):
-    return get_party_records(dt, "Supplier", supplier_name)
+	return get_party_records(dt, "Supplier", supplier_name)
 
 
 def validate(doc, method=None):
-    # Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
-    if doc.flags.get("is_new_doc"):
-        return
-    validate_party_address_and_contact_fields(
-        doc,
-        primary_address_field="supplier_primary_address",
-        primary_contact_field="supplier_primary_contact",
-        contact_prefix="supplier_primary_contact_"
-    )
+	# Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
+	if doc.flags.get("is_new_doc"):
+		return
+	validate_party_address_and_contact_fields(
+		doc,
+		primary_address_field="supplier_primary_address",
+		primary_contact_field="supplier_primary_contact",
+		contact_prefix="supplier_primary_contact_",
+	)
 
 
 def before_save(doc, method=None):
-    # Keep for backward compatibility - no longer does creation
-    pass
+	# Keep for backward compatibility - no longer does creation
+	pass
 
 
 def on_update(doc, method=None):
-    # Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
-    if doc.flags.get("is_new_doc"):
-        return
-    update_party_address_and_contact(
-        doc,
-        primary_address_field="supplier_primary_address",
-        primary_contact_field="supplier_primary_contact",
-        contact_prefix="supplier_primary_contact_"
-    )
+	# Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
+	if doc.flags.get("is_new_doc"):
+		return
+	update_party_address_and_contact(
+		doc,
+		primary_address_field="supplier_primary_address",
+		primary_contact_field="supplier_primary_contact",
+		contact_prefix="supplier_primary_contact_",
+	)
