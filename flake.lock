@@ -247,17 +247,17 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1792201236,
-        "narHash": "sha256-xSXLJ+0GcbNvFAOfJh6Pmhpc8Ym5O68dQkcppRmfhWQ=",
+        "lastModified": 1792217763,
+        "narHash": "sha256-8qXyHpMgYZQvgryyrv8pnqYzNs1HVyGQ0dVy++4Dxs0=",
         "owner": "Avunu",
         "repo": "frappe-nix",
-        "rev": "e95f67f97de1322c89df9ffbc9218c31d4ca83ba",
+        "rev": "a216ce95ce051fe0bc5b95f112fcb85529910ede",
         "type": "github"
       },
       "original": {
         "owner": "Avunu",
         "repo": "frappe-nix",
-        "rev": "e95f67f97de1322c89df9ffbc9218c31d4ca83ba",
+        "rev": "a216ce95ce051fe0bc5b95f112fcb85529910ede",
         "type": "github"
       }
     },
@@ -647,11 +647,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792193956,
-        "narHash": "sha256-WEck77xcgNXLiFnuyrm3vXsYbANizaUzW/xBxANaXhM=",
+        "lastModified": 1792207620,
+        "narHash": "sha256-Y+r7Ss6W6xCub9YQe3It39IeY6JEZOH4Zrm80IVMiB0=",
         "owner": "Avunu",
         "repo": "python-devops-nix",
-        "rev": "2ea6d8c98ee3ce791c78ab5b2b4f9afd37df146f",
+        "rev": "06bf49835f733c2478bc1d9fed03dbdb4755728e",
         "type": "github"
       },
       "original": {

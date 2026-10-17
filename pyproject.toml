@@ -28,7 +28,7 @@ frappe-major = 16
 siblings = ["erpnext"]
 
 [tool.frappe-nix.dev-shell]
-frappe-nix-url = "github:Avunu/frappe-nix/e95f67f97de1322c89df9ffbc9218c31d4ca83ba"
+frappe-nix-url = "github:Avunu/frappe-nix/a216ce95ce051fe0bc5b95f112fcb85529910ede"
 
 [tool.ruff]
 line-length = 110
@@ -64,7 +64,7 @@ exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@(abc\\.)?abs
 fail_under = 80
 
 [tool.vulture]
-exclude = [".venv/", "node_modules/", ".frappe-nix/", ".dev-dist/"]
+exclude = [".venv/", "node_modules/", ".frappe-nix/", ".dev-dist/", ".devenv/", ".direnv/"]
 
 [tool.test_utils.static-analysis]
 whitelist = ["frappe.*", "erpnext.*"]

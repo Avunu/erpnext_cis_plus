@@ -1,47 +1,47 @@
 {
-    "custom_fields": [
-        {
-            "dt": "Address",
-            "fieldname": "geolocation",
-            "fieldtype": "Section Break",
-            "insert_after": "links",
-            "is_system_generated": 1,
-            "label": "Location",
-            "module": "ERPNext CIS Plus"
-        },
-        {
-            "dt": "Address",
-            "fieldname": "location",
-            "fieldtype": "Geolocation",
-            "insert_after": "geolocation",
-            "is_system_generated": 1,
-            "label": "Map",
-            "module": "ERPNext CIS Plus"
-        },
-        {
-            "dt": "Address",
-            "fieldname": "latitude",
-            "fieldtype": "Float",
-            "hidden": 1,
-            "insert_after": "location",
-            "is_system_generated": 1,
-            "label": "Latitude",
-            "module": "ERPNext CIS Plus",
-            "precision": "6"
-        },
-        {
-            "dt": "Address",
-            "fieldname": "longitude",
-            "fieldtype": "Float",
-            "hidden": 1,
-            "insert_after": "latitude",
-            "is_system_generated": 1,
-            "label": "Longitude",
-            "module": "ERPNext CIS Plus",
-            "precision": "6"
-        }
-    ],
-    "property_setters": [],
-    "sync_on_migrate": 1,
-    "doctype": "Address"
+ "custom_fields": [
+  {
+   "dt": "Address",
+   "fieldname": "geolocation",
+   "fieldtype": "Section Break",
+   "insert_after": "links",
+   "is_system_generated": 0,
+   "label": "Location",
+   "module": "ERPNext CIS Plus"
+  },
+  {
+   "dt": "Address",
+   "fieldname": "location",
+   "fieldtype": "Geolocation",
+   "insert_after": "geolocation",
+   "is_system_generated": 0,
+   "label": "Map",
+   "module": "ERPNext CIS Plus"
+  },
+  {
+   "dt": "Address",
+   "fieldname": "latitude",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "insert_after": "location",
+   "is_system_generated": 0,
+   "label": "Latitude",
+   "module": "ERPNext CIS Plus",
+   "precision": "6"
+  },
+  {
+   "dt": "Address",
+   "fieldname": "longitude",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "insert_after": "latitude",
+   "is_system_generated": 0,
+   "label": "Longitude",
+   "module": "ERPNext CIS Plus",
+   "precision": "6"
+  }
+ ],
+ "property_setters": [],
+ "sync_on_migrate": 1,
+ "doctype": "Address"
 }
