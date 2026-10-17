@@ -17,6 +17,19 @@ from erpnext_cis_plus.tests.utils import (
 	redis,
 )
 
+DRAWN_POINT = json.dumps(
+	{
+		"type": "FeatureCollection",
+		"features": [
+			{
+				"type": "Feature",
+				"properties": {"point_type": "Point"},
+				"geometry": {"type": "Point", "coordinates": [-76.1, 40.0]},
+			}
+		],
+	}
+)
+
 
 def new_address(**fields):
 	values = {
@@ -166,6 +179,17 @@ class TestGeneratePoint(IntegrationTestCase):
 		address_hooks.generate_point(doc)
 		self.assertFalse(doc.get("location"))
 
+	def test_a_drawn_point_without_coordinates_is_kept(self):
+		doc = new_address(location=DRAWN_POINT)
+		address_hooks.generate_point(doc)
+		self.assertEqual(doc.location, DRAWN_POINT)
+
+	def test_cleared_coordinates_clear_the_point(self):
+		doc = new_address(location=DRAWN_POINT)
+		doc.flags.coordinates_cleared = True
+		address_hooks.generate_point(doc)
+		self.assertFalse(doc.get("location"))
+
 
 class TestAddressHooks(GeocodingTestCase):
 	"""The doc_events on a saved Address."""
@@ -234,3 +258,45 @@ class TestAddressHooks(GeocodingTestCase):
 				doc.reload()
 				self.assertFalse(doc.latitude)
 				self.assertFalse(doc.location)
+
+	def test_a_failed_lookup_keeps_coordinates_and_points_the_user_entered(self):
+		"""Only coordinates looked up for an earlier version of the address are cleared."""
+		outcomes = {
+			"no match": lambda: setattr(self.get, "return_value", nominatim_response([])),
+			"failed": lambda: setattr(self.get, "side_effect", requests.Timeout("timed out")),
+			"busy": lambda: setattr(self.slot, "return_value", False),
+		}
+		for case, fail in outcomes.items():
+			with self.subTest(case=case), patch.object(frappe, "log_error"):
+				fail()
+
+				# a new Address with coordinates (an import, the API)
+				doc = new_address(latitude=40.0, longitude=-76.1).insert()
+				doc.reload()
+				self.assertEqual(float(doc.latitude), 40.0)
+				self.assertEqual(float(doc.longitude), -76.1)
+				self.assertEqual(
+					json.loads(doc.location)["features"][0]["geometry"]["coordinates"], [-76.1, 40.0]
+				)
+
+				# a point drawn on the map of an Address without coordinates
+				doc = new_address().insert()
+				doc.location = DRAWN_POINT
+				doc.save()
+				doc.address_title = "CIS Plus test, drawn"
+				doc.save()
+				doc.reload()
+				self.assertEqual(doc.location, DRAWN_POINT)
+
+				# coordinates entered with the address change they belong to
+				doc.address_line1 = "99 Farm Lane"
+				doc.latitude = 40.1
+				doc.longitude = -76.2
+				doc.save()
+				doc.reload()
+				self.assertEqual(float(doc.latitude), 40.1)
+				self.assertEqual(float(doc.longitude), -76.2)
+
+				self.get.return_value = nominatim_response([NOMINATIM_RESULT])
+				self.get.side_effect = None
+				self.slot.return_value = True

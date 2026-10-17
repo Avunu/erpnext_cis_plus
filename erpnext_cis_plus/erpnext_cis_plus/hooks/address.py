@@ -65,27 +65,50 @@ def needs_geocoding(doc: Document) -> bool:
 	return any(doc.has_value_changed(f) for f in GEOCODED_FIELDS)
 
 
-def clear_coordinates(doc: Document) -> None:
-	"""Drop coordinates that no longer belong to the address, so the next save retries."""
+def has_stale_coordinates(doc: Document) -> bool:
+	"""Whether the coordinates were looked up for the address as it was before this save.
+
+	That is a saved Address whose geocoded fields changed while its latitude and longitude
+	did not. Coordinates on a new Address, or entered with this edit (by hand, an import or
+	the API), belong to the address as it is now and are never stale.
+	"""
+	if doc.is_new() or not (doc.get("latitude") or doc.get("longitude")):
+		return False
+	if doc.has_value_changed("latitude") or doc.has_value_changed("longitude"):
+		return False
+	return any(doc.has_value_changed(f) for f in GEOCODED_FIELDS)
+
+
+def clear_stale_coordinates(doc: Document) -> None:
+	"""Drop coordinates that no longer belong to the address, so the next save retries.
+
+	Coordinates that are not stale are kept. generate_point clears the map point only
+	when this cleared the coordinates, so a hand-drawn point is kept too.
+	"""
+	if not has_stale_coordinates(doc):
+		return
 	doc.set("latitude", None)
 	doc.set("longitude", None)
+	doc.flags.coordinates_cleared = True
 
 
 def geolocate_address(doc: Document, method: str | None = None) -> Document:
 	"""Set the coordinates, and fill empty address components, from Nominatim.
 
 	A lookup that fails (timeout, HTTP error, bad response), finds nothing or gets no rate
-	limit slot clears the coordinates, which may belong to the address as it was before
-	this change, and the Address saves without them. A failure is logged and reported as
-	an alert. An Address without coordinates is looked up again on its next save.
+	limit slot leaves the Address as it is, except that coordinates looked up for the
+	address as it was before this save are cleared (see has_stale_coordinates). A failure
+	is logged and reported as an alert. An Address without coordinates is looked up again
+	on its next save.
 	"""
+	doc.flags.coordinates_cleared = False
 	if not needs_geocoding(doc):
 		return doc
 
 	address_str = ", ".join([doc.get(f) for f in GEOCODED_FIELDS if doc.get(f)])
 
 	if not acquire_rate_limit_slot():
-		clear_coordinates(doc)
+		clear_stale_coordinates(doc)
 		frappe.msgprint(
 			frappe._("Geolocation skipped: the geocoding service is busy. Save again to retry."),
 			alert=True,
@@ -104,11 +127,11 @@ def geolocate_address(doc: Document, method: str | None = None) -> Document:
 	except (requests.RequestException, ValueError) as e:
 		frappe.log_error("Geolocation Error", f"{address_str}\n\n{e!s}")
 		frappe.msgprint(frappe._("Geolocation failed: {0}").format(str(e)), alert=True)
-		clear_coordinates(doc)
+		clear_stale_coordinates(doc)
 		return doc
 
 	if not results:
-		clear_coordinates(doc)
+		clear_stale_coordinates(doc)
 		return doc
 
 	result = results[0]
@@ -137,10 +160,12 @@ def geolocate_address(doc: Document, method: str | None = None) -> Document:
 def generate_point(doc: Document, method: str | None = None) -> Document:
 	"""Store the coordinates as the GeoJSON point the Geolocation field shows.
 
-	An Address without coordinates gets no point, so a cleared lookup clears it too.
+	Without coordinates the point is left alone (it may have been drawn by hand), unless
+	clear_stale_coordinates cleared them in this save, in which case the point goes too.
 	"""
 	if not (doc.get("latitude") and doc.get("longitude")):
-		doc.set("location", None)
+		if doc.flags.get("coordinates_cleared"):
+			doc.set("location", None)
 	else:
 		doc.set(
 			"location",
