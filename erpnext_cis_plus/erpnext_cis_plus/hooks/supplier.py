@@ -10,9 +10,9 @@ from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import (
 )
 
 
-# get related records for the supplier
 @frappe.whitelist()
-def get_supplier_records(dt, supplier_name):
+def get_supplier_records(dt: str, supplier_name: str) -> list[dict]:
+	"""The Addresses or Contacts (dt) linked to a Supplier; supplier_name is its name (ID)."""
 	return get_party_records(dt, "Supplier", supplier_name)
 
 

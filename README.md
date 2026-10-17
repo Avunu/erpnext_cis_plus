@@ -9,7 +9,7 @@ ERPNext CIS Plus is a Frappe app that makes customer, contact and address handli
 
 ## What does it do?
 
-- Adds geolocation and address validation to the Address Doctype (utilizes the free OpenStreetMap Nominatim service): on save, the address is looked up, its coordinates are set, and its country, postal code, state, county and city are filled in where they are blank. If the service cannot be reached or returns an error, the save is stopped with an error; if it finds no match, the address is saved without coordinates.
+- Adds geolocation and address validation to the Address Doctype (utilizes the free OpenStreetMap Nominatim service): on save, the address is looked up, its coordinates are set, and its country, postal code, state, county and city are filled in where they are blank. If the service cannot be reached, times out, returns an error or is busy, the address is saved without coordinates and an alert says so; if it finds no match, the address is saved without coordinates. Any coordinates from before the change are cleared in both cases, and an address without coordinates is looked up again the next time it is saved. An address that has coordinates is looked up again only when it changes.
 - Sets the default address and contact automatically on the Customer Doctype
 - Enables default address and contact editing on the Customer Doctype (and the Supplier Doctype): you can fill in the primary address and contact fields directly on the form, and the Address and Contact records are created or updated for you
 - Normalizes phone numbers on the primary contact to E.164 format (using the `phonenumbers` package, with the country taken from the primary address) and warns when a number cannot be parsed
@@ -19,11 +19,11 @@ ERPNext CIS Plus is a Frappe app that makes customer, contact and address handli
 
 Here's a screenshot of the Customer Doctype with the new primary address and contact editing functionality:
 
-![Form Screenshot](erpnext_cis_plus_form.png "ERPNext CIS Plus Customer Form")
+![Form Screenshot](docs/erpnext_cis_plus_form.png "ERPNext CIS Plus Customer Form")
 
 Here's a screenshot of the Customer Doctype with the new map view functionality:
 
-![Map Screenshot](erpnext_cis_plus_map.png "ERPNext CIS Plus Customer Map")
+![Map Screenshot](docs/erpnext_cis_plus_map.png "ERPNext CIS Plus Customer Map")
 
 ## How to install?
 
@@ -36,7 +36,7 @@ bench --site [site-name] install-app erpnext_cis_plus
 
 ## Good to know
 
-- Address validation sends the address text (street, city, state, postal code, country) to the public OpenStreetMap Nominatim service whenever an Address is saved. Nominatim's usage policy applies, so this app is a fit for small sites with modest address volumes.
+- Address validation sends the address text (street, city, state, postal code, country) to the public OpenStreetMap Nominatim service when an Address is saved with a new or changed address, or still has no coordinates. The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/): it identifies itself in its User-Agent, sends at most one request per second from the bench (a lookup that gets no slot within five seconds is skipped, and saving again retries it), and gives up on a request after 10 seconds. That makes it a fit for small sites with modest address volumes.
 - Customers appear on the map view once their primary address has coordinates.
 
 ## Show me the code!

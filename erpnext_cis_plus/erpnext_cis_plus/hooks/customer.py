@@ -1,7 +1,10 @@
 # Copyright (c) 2024, Avunu LLC and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
+from frappe.utils import get_link_to_form
 
 from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import (
 	get_party_records,
@@ -10,22 +13,25 @@ from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import (
 )
 
 
-# Get a list of coordinates for the map view
+def render_map_popup(customer: dict) -> str:
+	"""The HTML of a customer's map popup."""
+	html = f"<strong>{get_link_to_form('Customer', customer['name'], customer['customer_name'])}</strong>"
+	if customer.get("customer_primary_contact"):
+		html += f"<p>{get_link_to_form('Contact', customer['customer_primary_contact'])}</p>"
+	html += f"<p>{customer.get('primary_address') or ''}</p>"
+	return f'<div class="map-popup">{html}</div>'
+
+
 @frappe.whitelist()
-def get_coords(filters):
-	popup_template = """
-        <div class="map-popup">
-            <strong>{{ frappe.utils.get_link_to_form('Customer', name, customer_name) }}</strong>
-            {% if customer_primary_contact %}
-                <p>{{ frappe.utils.get_link_to_form('Contact', customer_primary_contact) }}</p>
-            {% endif %}
-            <p>{{ primary_address }}</p>
-        </div>
-        """
-	filters = frappe.parse_json(filters)
-	customers = frappe.get_all(
+def get_coords(filters: str | dict | list | None = None) -> dict:
+	"""GeoJSON points for the customers the user may read.
+
+	The Customer list names this as its get_coords_method, which on v16 only makes the Map
+	view option appear; the map plots the list's rows itself and does not call this.
+	"""
+	customers = frappe.get_list(
 		"Customer",
-		filters=filters,
+		filters=json.loads(filters) if isinstance(filters, str) else filters,
 		fields=[
 			"name",
 			"customer_name",
@@ -35,28 +41,24 @@ def get_coords(filters):
 			"longitude",
 		],
 	)
-	geojson = {"type": "FeatureCollection", "features": None}
-	features = []
-	for customer in customers:
-		if customer.latitude and customer.longitude:
-			popup_contents = frappe.render_template(popup_template, customer)
-			features.append(
-				{
-					"type": "Feature",
-					"properties": {"name": popup_contents},
-					"geometry": {
-						"type": "Point",
-						"coordinates": [customer.longitude, customer.latitude],
-					},
-				}
-			)
-	geojson["features"] = features
-	return geojson
+	features = [
+		{
+			"type": "Feature",
+			"properties": {"name": render_map_popup(customer)},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [customer.longitude, customer.latitude],
+			},
+		}
+		for customer in customers
+		if customer.latitude and customer.longitude
+	]
+	return {"type": "FeatureCollection", "features": features}
 
 
-# get related records for the customer
 @frappe.whitelist()
-def get_customer_records(dt, customer_name):
+def get_customer_records(dt: str, customer_name: str) -> list[dict]:
+	"""The Addresses or Contacts (dt) linked to a Customer; customer_name is its name (ID)."""
 	return get_party_records(dt, "Customer", customer_name)
 
 

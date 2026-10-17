@@ -567,13 +567,15 @@ name = "erpnext-cis-plus"
 source = { editable = "apps/erpnext_cis_plus" }
 dependencies = [
     { name = "phonenumbers" },
+    { name = "requests" },
     { name = "us" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "phonenumbers" },
-    { name = "us" },
+    { name = "phonenumbers", specifier = ">=9,<10" },
+    { name = "requests", specifier = ">=2.32,<3" },
+    { name = "us", specifier = ">=3.2,<5" },
 ]
 
 [[package]]

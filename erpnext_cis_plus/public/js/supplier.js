@@ -1,67 +1,58 @@
 // Copyright (c) 2024, Avunu LLC and contributors
 // For license information, please see license.txt
 
+/** The Address fields the Supplier form edits, as `supplier_primary_address_<field>`. */
+const ADDRESS_FIELDS = /** @type {const} */ ([
+	"address_line1",
+	"address_line2",
+	"city",
+	"state",
+	"pincode",
+	"email_id",
+	"phone",
+	"fax",
+]);
+
+/** The Contact fields the Supplier form edits, as `supplier_primary_contact_<field>`. */
+const CONTACT_FIELDS = /** @type {const} */ ([
+	"first_name",
+	"last_name",
+	"email_id",
+	"phone",
+	"mobile_no",
+	"department",
+]);
+
 // Customize the supplier form
 frappe.ui.form.on("Supplier", {
-	refresh: function (frm) {
+	refresh(frm) {
 		// Refresh the form layout to ensure newly created address/contact fields are displayed
 		setup_form_layout(frm);
 	},
-	setup: async function (frm) {
+	async setup(frm) {
 		try {
-			if (frm.doc.supplier_name && !frm.doc.supplier_primary_address) {
-				const addresses = await get_supplier_records("Address", frm.doc.supplier_name);
-				if (addresses.length) {
-					const first_address = addresses[0].name;
-					frm.set_value("supplier_primary_address", first_address);
+			if (!frm.is_new() && !frm.doc.supplier_primary_address) {
+				const [first_address] = await get_supplier_records("Address", frm.doc.name);
+				if (first_address) {
+					frm.set_value("supplier_primary_address", first_address.name);
 				}
 			} else if (frm.doc.supplier_primary_address) {
-				const address_fields = [
-					"address_line1",
-					"address_line2",
-					"city",
-					"state",
-					"pincode",
-					"email_id",
-					"phone",
-					"fax",
-				];
-				const result = await frappe.db.get_value("Address", frm.doc.supplier_primary_address, address_fields);
-				if (result && result.message) {
-					let updates = {};
-					address_fields.forEach((field) => {
-						let docfield = "supplier_primary_address_" + field;
-						if (result.message[field] != frm.doc[docfield]) {
-							updates[docfield] = result.message[field];
-						}
-					});
-					if (Object.keys(updates).length > 0) {
-						frm.set_value(updates);
-					}
-				}
+				const result = await frappe.db.get_value("Address", frm.doc.supplier_primary_address, [
+					...ADDRESS_FIELDS,
+				]);
+				set_changed_values(frm, "supplier_primary_address_", ADDRESS_FIELDS, result?.message);
 			}
 
-			if (frm.doc.supplier_name && !frm.doc.supplier_primary_contact) {
-				const contacts = await get_supplier_records("Contact", frm.doc.supplier_name);
-				if (contacts.length) {
-					const first_contact = contacts[0].name;
-					frm.set_value("supplier_primary_contact", first_contact);
+			if (!frm.is_new() && !frm.doc.supplier_primary_contact) {
+				const [first_contact] = await get_supplier_records("Contact", frm.doc.name);
+				if (first_contact) {
+					frm.set_value("supplier_primary_contact", first_contact.name);
 				}
 			} else if (frm.doc.supplier_primary_contact) {
-				const contact_fields = ["first_name", "last_name", "email_id", "phone", "mobile_no", "department"];
-				const result = await frappe.db.get_value("Contact", frm.doc.supplier_primary_contact, contact_fields);
-				if (result && result.message) {
-					let updates = {};
-					contact_fields.forEach((field) => {
-						let docfield = "supplier_primary_contact_" + field;
-						if (result.message[field] != frm.doc[docfield]) {
-							updates[docfield] = result.message[field];
-						}
-					});
-					if (Object.keys(updates).length > 0) {
-						frm.set_value(updates);
-					}
-				}
+				const result = await frappe.db.get_value("Contact", frm.doc.supplier_primary_contact, [
+					...CONTACT_FIELDS,
+				]);
+				set_changed_values(frm, "supplier_primary_contact_", CONTACT_FIELDS, result?.message);
 			}
 		} catch (error) {
 			console.error("Error in setup: ", error);
@@ -72,10 +63,33 @@ frappe.ui.form.on("Supplier", {
 	},
 });
 
-async function setup_form_layout(frm) {
-	frm.layout.sections_dict.primary_address_and_contact_detail_section.columns.forEach((column) => {
-		let column_form = column.wrapper[0].children[0];
-		$(column_form).addClass("input-group");
+/**
+ * Copy the linked record's values into the form's `<prefix><field>` fields where they differ.
+ *
+ * @param {frappe.ui.form.Form<"Supplier">} frm
+ * @param {string} prefix
+ * @param {readonly string[]} fields
+ * @param {Record<string, unknown> | undefined} values
+ */
+function set_changed_values(frm, prefix, fields, values) {
+	if (!values) return;
+	/** @type {Record<string, unknown>} */
+	const updates = {};
+	for (const field of fields) {
+		const docfield = /** @type {frappe.FieldName<"Supplier">} */ (prefix + field);
+		if (values[field] != frm.doc[docfield]) {
+			updates[docfield] = values[field];
+		}
+	}
+	if (Object.keys(updates).length > 0) {
+		frm.set_value(updates);
+	}
+}
+
+/** @param {frappe.ui.form.Form<"Supplier">} frm */
+function setup_form_layout(frm) {
+	frm.layout.sections_dict.primary_address_and_contact_detail_section?.columns.forEach((column) => {
+		column.wrapper.children().first().addClass("input-group");
 	});
 	const layout_fields = {
 		supplier_primary_address: 12,
@@ -104,8 +118,7 @@ async function setup_form_layout(frm) {
 		"supplier_primary_contact_department",
 	];
 	// assign each field the classes col-md-{width} float-left pl-0
-	for (let field in layout_fields) {
-		let width = layout_fields[field];
+	for (const [field, width] of Object.entries(layout_fields)) {
 		let classes = "col-md-" + width + " float-left clearfix mx-0";
 		// colend_fields should have no padding on the left or right
 		if (colend_fields.includes(field)) {
@@ -114,20 +127,28 @@ async function setup_form_layout(frm) {
 			classes += " pl-0";
 		}
 		// Ensure frm.fields_dict[field] exists before attempting to add classes to avoid potential errors
-		if (frm.fields_dict[field] && frm.fields_dict[field].$wrapper) {
-			frm.fields_dict[field].$wrapper.addClass(classes);
+		const control = frm.get_field(field);
+		if (control && "$wrapper" in control && control.$wrapper) {
+			control.$wrapper.addClass(classes);
 		}
 	}
 }
 
-async function get_supplier_records(dt, supplier_name) {
+/**
+ * The Addresses or Contacts linked to the supplier.
+ *
+ * @param {"Address" | "Contact"} dt
+ * @param {string} supplier_name the Supplier's name (ID)
+ * @returns {Promise<{ name: string }[]>}
+ */
+function get_supplier_records(dt, supplier_name) {
 	return new Promise((resolve, reject) => {
 		frappe.call({
 			method: "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.get_supplier_records",
 			args: { dt, supplier_name },
 			callback: function (r) {
 				if (r.message) {
-					resolve(r.message);
+					resolve(/** @type {{ name: string }[]} */ (r.message));
 				} else {
 					reject("No records found");
 				}
