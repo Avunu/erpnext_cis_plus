@@ -65,11 +65,19 @@ def needs_geocoding(doc: Document) -> bool:
 	return any(doc.has_value_changed(f) for f in GEOCODED_FIELDS)
 
 
+def clear_coordinates(doc: Document) -> None:
+	"""Drop coordinates that no longer belong to the address, so the next save retries."""
+	doc.set("latitude", None)
+	doc.set("longitude", None)
+
+
 def geolocate_address(doc: Document, method: str | None = None) -> Document:
 	"""Set the coordinates, and fill empty address components, from Nominatim.
 
-	A lookup that fails (timeout, HTTP error, bad response) is logged and reported as an
-	alert, and the Address saves without new coordinates.
+	A lookup that fails (timeout, HTTP error, bad response), finds nothing or gets no rate
+	limit slot clears the coordinates, which may belong to the address as it was before
+	this change, and the Address saves without them. A failure is logged and reported as
+	an alert. An Address without coordinates is looked up again on its next save.
 	"""
 	if not needs_geocoding(doc):
 		return doc
@@ -77,6 +85,7 @@ def geolocate_address(doc: Document, method: str | None = None) -> Document:
 	address_str = ", ".join([doc.get(f) for f in GEOCODED_FIELDS if doc.get(f)])
 
 	if not acquire_rate_limit_slot():
+		clear_coordinates(doc)
 		frappe.msgprint(
 			frappe._("Geolocation skipped: the geocoding service is busy. Save again to retry."),
 			alert=True,
@@ -95,9 +104,11 @@ def geolocate_address(doc: Document, method: str | None = None) -> Document:
 	except (requests.RequestException, ValueError) as e:
 		frappe.log_error("Geolocation Error", f"{address_str}\n\n{e!s}")
 		frappe.msgprint(frappe._("Geolocation failed: {0}").format(str(e)), alert=True)
+		clear_coordinates(doc)
 		return doc
 
 	if not results:
+		clear_coordinates(doc)
 		return doc
 
 	result = results[0]
@@ -124,8 +135,13 @@ def geolocate_address(doc: Document, method: str | None = None) -> Document:
 
 
 def generate_point(doc: Document, method: str | None = None) -> Document:
-	"""Store the coordinates as the GeoJSON point the Geolocation field shows."""
-	if doc.get("latitude") and doc.get("longitude"):
+	"""Store the coordinates as the GeoJSON point the Geolocation field shows.
+
+	An Address without coordinates gets no point, so a cleared lookup clears it too.
+	"""
+	if not (doc.get("latitude") and doc.get("longitude")):
+		doc.set("location", None)
+	else:
 		doc.set(
 			"location",
 			json.dumps(

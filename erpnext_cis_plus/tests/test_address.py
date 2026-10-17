@@ -193,3 +193,44 @@ class TestAddressHooks(GeocodingTestCase):
 		doc.address_title = "CIS Plus test, retried"
 		doc.save()
 		self.assertEqual(self.get.call_count, 2)
+
+	def test_a_failed_lookup_of_a_changed_address_clears_its_coordinates_and_retries(self):
+		doc = new_address().insert()
+		self.assertEqual(float(doc.latitude), 40.0379)
+
+		self.get.side_effect = requests.Timeout("timed out")
+		doc.address_line1 = "99 Other Road"
+		doc.city = "Pittsburgh"
+		with patch.object(frappe, "log_error"):
+			doc.save()
+		doc.reload()
+		self.assertEqual(self.get.call_count, 2)
+		self.assertFalse(doc.latitude)
+		self.assertFalse(doc.longitude)
+		self.assertFalse(doc.location)
+
+		self.get.side_effect = None
+		self.get.return_value = nominatim_response([dict(NOMINATIM_RESULT, lat="40.4406", lon="-79.9959")])
+		doc.save()
+		doc.reload()
+		self.assertEqual(self.get.call_count, 3, "saving again retries the lookup")
+		self.assertEqual(float(doc.latitude), 40.4406)
+		self.assertEqual(float(doc.longitude), -79.9959)
+
+	def test_a_changed_address_with_no_match_or_no_slot_loses_its_old_coordinates(self):
+		for case in ("no match", "busy"):
+			with self.subTest(case=case):
+				self.get.return_value = nominatim_response([NOMINATIM_RESULT])
+				self.slot.return_value = True
+				doc = new_address().insert()
+				self.assertEqual(float(doc.latitude), 40.0379)
+
+				if case == "no match":
+					self.get.return_value = nominatim_response([])
+				else:
+					self.slot.return_value = False
+				doc.address_line1 = "99 Other Road"
+				doc.save()
+				doc.reload()
+				self.assertFalse(doc.latitude)
+				self.assertFalse(doc.location)
