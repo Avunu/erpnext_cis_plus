@@ -2,98 +2,146 @@
 # For license information, please see license.txt
 
 import json
+import time
 
 import frappe
 import requests
 import us
+from frappe.model.document import Document
+from frappe.utils import flt
 
-# from erpnext.accounts.custom.address import ERPNextAddress
+from erpnext_cis_plus import __version__
 
+# Geocoding uses the public Nominatim service, so it follows its usage policy
+# (https://operations.osmfoundation.org/policies/nominatim/): an identifying User-Agent,
+# at most one request per second from the bench, no repeated queries for an address that
+# has not changed (the coordinates stored on the Address are the cache), and a timeout so
+# a slow service never holds a save open.
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
-USER_AGENT = "FrappeERP/1.0"
+USER_AGENT = f"erpnext_cis_plus/{__version__} (+https://github.com/Avunu/erpnext_cis_plus)"
+REQUEST_TIMEOUT = (5, 10)  # seconds: (connect, read)
+RATE_LIMIT_KEY = "erpnext_cis_plus:nominatim:last-request"
+RATE_LIMIT_INTERVAL_MS = 1000
+RATE_LIMIT_MAX_WAIT = 5.0  # seconds to wait for a free slot before skipping this lookup
+GEOCODED_FIELDS = ("address_line1", "city", "state", "pincode", "country")
 
 
-def get_state_abbrev(state_name, country):
-	"""Convert state name to abbreviation for supported countries"""
+def get_state_abbrev(state_name: str | None, country: str | None) -> str | None:
+	"""Convert a state name to its abbreviation for supported countries."""
 	if not state_name:
 		return state_name
 
 	if country == "United States":
-		try:
-			state = us.states.lookup(state_name)
-			return state.abbr if state else state_name
-		except AttributeError:
-			return state_name
+		state = us.states.lookup(state_name)
+		return state.abbr if state else state_name
 	return state_name
 
 
-@frappe.whitelist()
-def geolocate_address(doc, method=None):
-	"""Get coordinates and normalized address components from Nominatim"""
-	# if doc.latitude and doc.longitude and doc.pincode:
-	#     return doc
+def acquire_rate_limit_slot() -> bool:
+	"""Wait for Nominatim's one-request-per-second slot, shared by every site on the bench.
 
-	fields = ["address_line1", "city", "state", "pincode", "country"]
-	if not any(doc.get(f) for f in fields):
+	Return False when no slot came free within RATE_LIMIT_MAX_WAIT.
+	"""
+	cache = frappe.cache
+	if cache is None:  # no Redis connection to coordinate through
+		return True
+	deadline = time.monotonic() + RATE_LIMIT_MAX_WAIT
+	while True:
+		# SET NX PX: the key exists for one interval after the last request (bench-wide,
+		# deliberately not namespaced by site)
+		if cache.set(RATE_LIMIT_KEY, 1, nx=True, px=RATE_LIMIT_INTERVAL_MS):
+			return True
+		if time.monotonic() >= deadline:
+			return False
+		time.sleep(0.1)
+
+
+def needs_geocoding(doc: Document) -> bool:
+	"""Whether the address has something to look up that was not looked up already."""
+	if not any(doc.get(f) for f in GEOCODED_FIELDS):
+		return False
+	if doc.is_new() or not (doc.get("latitude") and doc.get("longitude")):
+		return True
+	return any(doc.has_value_changed(f) for f in GEOCODED_FIELDS)
+
+
+def geolocate_address(doc: Document, method: str | None = None) -> Document:
+	"""Set the coordinates, and fill empty address components, from Nominatim.
+
+	A lookup that fails (timeout, HTTP error, bad response) is logged and reported as an
+	alert, and the Address saves without new coordinates.
+	"""
+	if not needs_geocoding(doc):
 		return doc
 
-	address_str = ", ".join([doc.get(f) for f in fields if doc.get(f)])
+	address_str = ", ".join([doc.get(f) for f in GEOCODED_FIELDS if doc.get(f)])
+
+	if not acquire_rate_limit_slot():
+		frappe.msgprint(
+			frappe._("Geolocation skipped: the geocoding service is busy. Save again to retry."),
+			alert=True,
+		)
+		return doc
 
 	try:
-		params = {"q": address_str, "format": "json", "limit": 1, "addressdetails": 1}
-		headers = {"User-Agent": USER_AGENT}
-
-		response = requests.get(NOMINATIM_URL, params=params, headers=headers)
+		response = requests.get(
+			NOMINATIM_URL,
+			params={"q": address_str, "format": "json", "limit": 1, "addressdetails": 1},
+			headers={"User-Agent": USER_AGENT},
+			timeout=REQUEST_TIMEOUT,
+		)
 		response.raise_for_status()
 		results = response.json()
+	except (requests.RequestException, ValueError) as e:
+		frappe.log_error("Geolocation Error", f"{address_str}\n\n{e!s}")
+		frappe.msgprint(frappe._("Geolocation failed: {0}").format(str(e)), alert=True)
+		return doc
 
-		if not results:
-			# frappe.log_error(
-			#     "Geolocation Error",
-			#     f"No geolocation found for address: {address_str}"
-			# )
-			return
+	if not results:
+		return doc
 
-		result = results[0]
-		address = result.get("address", {})
+	result = results[0]
+	address = result.get("address", {})
 
-		# Update coordinates
-		doc.latitude = result.get("lat")
-		doc.longitude = result.get("lon")
+	# Update coordinates
+	doc.set("latitude", flt(result.get("lat")))
+	doc.set("longitude", flt(result.get("lon")))
 
-		# Map Nominatim address components to Frappe fields
-		if not doc.pincode and address.get("postcode"):
-			doc.pincode = address.get("postcode")
-		if not doc.country and address.get("country"):
-			doc.country = address.get("country")
-		if not doc.state and address.get("state"):
-			state_name = address.get("state")
-			doc.state = get_state_abbrev(state_name, doc.country)
-		if not doc.county and address.get("county"):
-			doc.county = address.get("county")
-		if (not doc.city and address.get("city")) or address.get("town") or address.get("village"):
-			doc.city = address.get("city") or address.get("town") or address.get("village")
-
-	except Exception as e:
-		frappe.log_error("Geolocation Error", str(e))
-		frappe.throw(f"Geolocation failed: {e!s}")
+	# Fill empty Frappe fields from Nominatim's address components
+	if not doc.get("pincode") and address.get("postcode"):
+		doc.set("pincode", address.get("postcode"))
+	if not doc.get("country") and address.get("country"):
+		doc.set("country", address.get("country"))
+	if not doc.get("state") and address.get("state"):
+		doc.set("state", get_state_abbrev(address.get("state"), doc.get("country")))
+	if not doc.get("county") and address.get("county"):
+		doc.set("county", address.get("county"))
+	city = address.get("city") or address.get("town") or address.get("village")
+	if not doc.get("city") and city:
+		doc.set("city", city)
 
 	return doc
 
 
-@frappe.whitelist()
-def generate_point(doc, method=None):
-	if doc.latitude and doc.longitude:
-		doc.location = json.dumps(
-			{
-				"type": "FeatureCollection",
-				"features": [
-					{
-						"type": "Feature",
-						"properties": {"point_type": "Point"},
-						"geometry": {"type": "Point", "coordinates": [doc.longitude, doc.latitude]},
-					}
-				],
-			}
+def generate_point(doc: Document, method: str | None = None) -> Document:
+	"""Store the coordinates as the GeoJSON point the Geolocation field shows."""
+	if doc.get("latitude") and doc.get("longitude"):
+		doc.set(
+			"location",
+			json.dumps(
+				{
+					"type": "FeatureCollection",
+					"features": [
+						{
+							"type": "Feature",
+							"properties": {"point_type": "Point"},
+							"geometry": {
+								"type": "Point",
+								"coordinates": [doc.get("longitude"), doc.get("latitude")],
+							},
+						}
+					],
+				}
+			),
 		)
 	return doc
