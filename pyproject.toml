@@ -61,7 +61,7 @@ show_missing = true
 skip_covered = true
 precision = 1
 exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@(abc\\.)?abstractmethod"]
-fail_under = 0
+fail_under = 80
 
 [tool.vulture]
 exclude = [".venv/", "node_modules/", ".frappe-nix/", ".dev-dist/"]
