@@ -19,11 +19,11 @@ ERPNext CIS Plus is a Frappe app that makes customer, contact and address handli
 
 Here's a screenshot of the Customer Doctype with the new primary address and contact editing functionality:
 
-![Form Screenshot](erpnext_cis_plus_form.png "ERPNext CIS Plus Customer Form")
+![Form Screenshot](docs/erpnext_cis_plus_form.png "ERPNext CIS Plus Customer Form")
 
 Here's a screenshot of the Customer Doctype with the new map view functionality:
 
-![Map Screenshot](erpnext_cis_plus_map.png "ERPNext CIS Plus Customer Map")
+![Map Screenshot](docs/erpnext_cis_plus_map.png "ERPNext CIS Plus Customer Map")
 
 ## How to install?
 
