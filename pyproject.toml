@@ -27,9 +27,6 @@ profile = "github:Avunu/frappe-standards-profile/main"
 frappe-major = 16
 siblings = ["erpnext"]
 
-[tool.frappe-nix.dev-shell]
-frappe-nix-url = "github:Avunu/frappe-nix/de60612a38409a61004f3d311a9e2748d2a3d341"
-
 [tool.ruff]
 line-length = 110
 target-version = "py314"
