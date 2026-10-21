@@ -1,7 +1,7 @@
 [project]
 name = "erpnext_cis_plus"
 authors = [{ name = "Avunu LLC", email = "mail@avu.nu" }]
-description = "Various enhancements to the customer, contact, and address management for ERPNext."
+description = "Customer address and contact editing on one form, with geocoding and a map"
 requires-python = ">=3.14"
 readme = "README.md"
 license = "MIT"

@@ -1,0 +1,42 @@
+[
+	{
+		"name": "address-form",
+		"theme": "dark",
+		"alt": "An Address after it was geocoded: county and country filled in, and its point on the Location map",
+		"featured": true,
+		"readme": "feature",
+		"width": 2880,
+		"height": 2240,
+		"sha256": "f4af206e4f062ef19b6bb00121bd78d183ce676e473bdbad9482c30274d46fdb"
+	},
+	{
+		"name": "address-form",
+		"theme": "light",
+		"alt": "An Address after it was geocoded: county and country filled in, and its point on the Location map",
+		"featured": true,
+		"readme": "feature",
+		"width": 2880,
+		"height": 2240,
+		"sha256": "ccef0818323b033578e2641d9e713f62109fb20367ae54622a610eb9d852d830"
+	},
+	{
+		"name": "customer-form",
+		"theme": "dark",
+		"alt": "A Customer's Address & Contact tab: its primary address and contact, and the address's geocoded point on the Customer's map",
+		"featured": true,
+		"readme": "hero",
+		"width": 2880,
+		"height": 1800,
+		"sha256": "446544e1419558175299cf6d294bdb33f08f91dca736e54b2d33a0d7bd53c903"
+	},
+	{
+		"name": "customer-form",
+		"theme": "light",
+		"alt": "A Customer's Address & Contact tab: its primary address and contact, and the address's geocoded point on the Customer's map",
+		"featured": true,
+		"readme": "hero",
+		"width": 2880,
+		"height": 1800,
+		"sha256": "d444e117570adc994d62453279093fa8cdd42b86bd8af5b7a63d4b9c72823041"
+	}
+]

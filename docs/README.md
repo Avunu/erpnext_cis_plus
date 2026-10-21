@@ -1,50 +1,44 @@
-## ERPNext CIS Plus
+# CIS Plus for ERPNext
 
-ERPNext CIS Plus is a Frappe app that makes customer, contact and address handling in ERPNext easier for small businesses, where one contact and one address per customer is the normal case. It looks up and validates addresses through the free OpenStreetMap Nominatim service, lets you create and edit a customer's primary address and primary contact right on the Customer form, and adds a map view of your customers. The same primary address and contact editing is available on the Supplier form.
+Customer address and contact editing on one form, with geocoding and a map
 
-"CIS" is the name of the app. The original title of this README was "Customer Information System Enhancements for ERPNext", which is where the abbreviation comes from.
+ERPNext keeps customers, contacts and addresses as separate records linked together. For a small business, where most customers have one contact and one address, that means a lot of moving between forms. CIS Plus (originally "Customer Information System Enhancements for ERPNext") brings the common case back to the Customer, and does the same for the Supplier.
 
-## What does it do?
+![A Customer's Address & Contact tab: its primary address and contact, and the address's geocoded point on the Customer's map](screenshots/customer-form-light.webp)
 
-- Adds geolocation and address validation to the Address Doctype (utilizes the free OpenStreetMap Nominatim service): on save, the address is looked up, its coordinates are set, and its country, postal code, state, county and city are filled in where they are blank. If the service cannot be reached, times out, returns an error or is busy, the address is saved without coordinates and an alert says so; if it finds no match, the address is saved without coordinates. Any coordinates from before the change are cleared in both cases, and an address without coordinates is looked up again the next time it is saved. An address that has coordinates is looked up again only when it changes.
-- Sets the default address and contact automatically on the Customer Doctype
-- Enables default address and contact editing on the Customer Doctype (and the Supplier Doctype): you can fill in the primary address and contact fields directly on the form, and the Address and Contact records are created or updated for you
-- Normalizes phone numbers on the primary contact to E.164 format (using the `phonenumbers` package, with the country taken from the primary address) and warns when a number cannot be parsed
-- Provides a map view with basic customer information for the Customer Doctype (uses Frappe's built-in geolocation and map view)
+## What it does
 
-## What does it look like?
+- **Address geocoding.** When an Address is saved with a new or changed address, or still has no coordinates, it is looked up on the free OpenStreetMap Nominatim service. Its latitude and longitude are stored, a point is drawn on a new **Location** map on the Address, and its country, postal code, state, county and city are filled in where they are blank.
+- **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map.
+- **Primary address and contact by default.** Opening a Customer or Supplier without a primary address or contact selects the first linked one.
+- **Primary address and contact fields on the party.** Saving an existing Customer or Supplier with its primary address and contact fields filled in creates the Address and Contact, links them and marks them primary, or updates the ones already linked.
+- **Phone numbers in E.164**, using the country of the primary address or of System Settings.
+- **Customer map view**, through Frappe's Map view.
 
-Here's a screenshot of the Customer Doctype with the new primary address and contact editing functionality:
-
-![Form Screenshot](erpnext_cis_plus_form.png "ERPNext CIS Plus Customer Form")
-
-Here's a screenshot of the Customer Doctype with the new map view functionality:
-
-![Map Screenshot](erpnext_cis_plus_map.png "ERPNext CIS Plus Customer Map")
-
-## How to install?
-
-The app requires ERPNext. Install the app using the following commands
-
-```bash
-bench get-app https://github.com/Avunu/erpnext_cis_plus
-bench --site [site-name] install-app erpnext_cis_plus
-```
+![An Address after it was geocoded: county and country filled in, and its point on the Location map](screenshots/address-form-light.webp)
 
 ## Good to know
 
-- Address validation sends the address text (street, city, state, postal code, country) to the public OpenStreetMap Nominatim service when an Address is saved with a new or changed address, or still has no coordinates. The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/): it identifies itself in its User-Agent, sends at most one request per second from the bench (a lookup that gets no slot within five seconds is skipped, and saving again retries it), and gives up on a request after 10 seconds. That makes it a fit for small sites with modest address volumes.
-- Customers appear on the map view once their primary address has coordinates.
+- Geocoding sends the address text (street, city, state, postal code, country) to the public Nominatim service. The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/): it identifies itself in its User-Agent, sends at most one request per second from the bench (a lookup that gets no slot within five seconds is skipped, and saving again retries it), and gives up on a request after 10 seconds. That makes it a fit for small sites with modest address volumes.
+- If the service cannot be reached, times out, returns an error or is busy, the Address is saved without coordinates and an alert says so; if it finds no match, the Address is saved without coordinates. Any coordinates from before the change are cleared in both cases, and an Address without coordinates is looked up again the next time it is saved.
+- On ERPNext v16 the Customer's and Supplier's **Primary Address and Contact** section is hidden by ERPNext, so the primary address and contact fields do not show on the form; they still work from the API, a data import or a script.
+- A new Address created from those fields gets its country from the geocoding result. If the lookup fails, the Address, and with it the Customer or Supplier save, fails on the missing country.
+- A party's map point is fetched from its primary address only while it is empty: a new primary address shows after the party is saved once more, and a moved address keeps its old point on the party.
+- Frappe's own Map view currently fails to open on Frappe v16 (`this.load_lib is not a function`), so the Customer map view shows no map until Frappe fixes it.
 
-## Show me the code!
+## Installation
 
-Sure!
+The app requires ERPNext.
 
-- The custom fields and properties Doctype overrides are located in [erpnext_cis_plus/erpnext_cis_plus/custom/](erpnext_cis_plus/erpnext_cis_plus/custom/).
-- The Doctype hooks are located in [erpnext_cis_plus/erpnext_cis_plus/hooks/](erpnext_cis_plus/erpnext_cis_plus/hooks/).
-- The Doctype js scripts are located in [erpnext_cis_plus/public/js/](erpnext_cis_plus/public/js/).
-- Most of the above is forced into effect by the [erpnext_cis_plus/hooks.py](erpnext_cis_plus/hooks.py) file.
+```bash
+bench get-app https://github.com/Avunu/erpnext_cis_plus --branch develop
+bench --site <site> install-app erpnext_cis_plus
+```
 
-#### License
+## Development
 
-MIT. See [license.txt](license.txt).
+The source layout and the commands for tests and screenshots are described in [Development](development.md).
+
+## License
+
+[MIT](https://github.com/Avunu/erpnext_cis_plus/blob/develop/license.txt), Copyright (c) 2024–present Avunu LLC.

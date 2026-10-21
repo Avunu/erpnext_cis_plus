@@ -1,0 +1,10 @@
+# The app's registry listing (docs/app-standards/marketplace.md); frappe-listing check validates it.
+schema = 1
+title = "CIS Plus for ERPNext"
+tagline = "Customer address and contact editing on one form, with geocoding and a map"
+type = "extension"
+category = "Extensions"
+categories = ["CRM"]
+website = "https://avunu.net/open-source/erpnext_cis_plus/"
+documentation = "https://docs.avunu.net/erpnext-cis-plus/"
+apps_screen = false
