@@ -20,7 +20,7 @@ jobs:
       pull-requests: write
       actions: write
       checks: read
-    uses: Avunu/frappe-nix/.github/workflows/app-release.yml@512da46b94979ea91fa0457704a204c8f3704b3e # v1.1.1
+    uses: Avunu/frappe-nix/.github/workflows/app-release.yml@e2d9cee568b2c93ddf28bd84829b9c6172636592 # v1.2.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
