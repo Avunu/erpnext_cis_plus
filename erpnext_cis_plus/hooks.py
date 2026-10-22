@@ -24,6 +24,7 @@ doc_events = {
 	"Address": {
 		"before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.generate_point",
 		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.geolocate_address",
+		"on_update": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.update_party_locations",
 	},
 	"Customer": {
 		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.validate",

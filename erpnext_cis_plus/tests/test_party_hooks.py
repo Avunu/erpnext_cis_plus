@@ -12,7 +12,7 @@ from frappe.utils import get_link_to_form
 from erpnext_cis_plus.erpnext_cis_plus.hooks import customer as customer_hooks
 from erpnext_cis_plus.erpnext_cis_plus.hooks import party_utils
 from erpnext_cis_plus.erpnext_cis_plus.hooks import supplier as supplier_hooks
-from erpnext_cis_plus.tests.utils import GeocodingTestCase
+from erpnext_cis_plus.tests.utils import NOMINATIM_RESULT, GeocodingTestCase, nominatim_response
 
 PARTIES: dict[str, dict[str, Any]] = {
 	"Customer": {
@@ -171,6 +171,44 @@ class TestCustomerHooks(GeocodingTestCase):
 		self.assertEqual(contact.email_id, "ada@example.com")
 		self.assertEqual(contact.mobile_no, "+12015550177")
 		self.assertEqual(sum(row.is_primary_mobile_no for row in contact.phone_nos), 1)
+
+	def test_the_party_map_follows_its_primary_address(self):
+		party, address, _ = self.create_address_and_contact()
+
+		def point(name: str) -> list[float]:
+			location = frappe.db.get_value(self.party_type, name, "location")
+			return json.loads(location)["features"][0]["geometry"]["coordinates"]
+
+		# the new primary address is on the party's map without another save
+		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 40.0379)
+		self.assertEqual(point(party.name), [-76.3055, 40.0379])
+
+		# the address moves: the party's point moves with it
+		self.get.return_value = nominatim_response([{**NOMINATIM_RESULT, "lat": "40.1", "lon": "-76.2"}])
+		address.reload()
+		address.address_line1 = "2 Penn Square"
+		address.save()
+		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 40.1)
+		self.assertEqual(point(party.name), [-76.2, 40.1])
+
+		# another primary address: saving the party fetches its point
+		self.get.return_value = nominatim_response([{**NOMINATIM_RESULT, "lat": "39.9", "lon": "-76.7"}])
+		other = frappe.get_doc(
+			{
+				"doctype": "Address",
+				"address_title": party.name,
+				"address_type": "Shipping",
+				"address_line1": "120 North George Street",
+				"city": "York",
+				"country": "United States",
+				"links": [{"link_doctype": self.party_type, "link_name": party.name}],
+			}
+		).insert()
+		party.reload()
+		party.set(self.field("primary_address"), other.name)
+		party.save()
+		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 39.9)
+		self.assertEqual(point(party.name), [-76.7, 39.9])
 
 	def test_a_new_address_needs_its_first_line(self):
 		party = make_party(self.party_type)

@@ -5,6 +5,8 @@ import frappe
 import phonenumbers
 from frappe.model.document import Document
 
+from erpnext_cis_plus.erpnext_cis_plus.hooks.address import LOCATION_FIELDS
+
 # The DocTypes get_party_records may list for a party
 PARTY_RECORD_DOCTYPES = ("Address", "Contact")
 
@@ -321,9 +323,14 @@ def update_party_address_and_contact(
 		# Create new address - document now exists in DB so this will work
 		address = create_address(doc, address_fields, address_prefix, party_type, party_name)
 		if address:
-			# Link the new address with db_set: the document is already saved, and db_set
-			# does not run its hooks again
-			doc.db_set(primary_address_field, address.name)
+			# Link the new address, and copy its point for the party's map, with db_set: the
+			# document is already saved, and db_set does not run its hooks again
+			doc.db_set(
+				{
+					primary_address_field: address.name,
+					**{f: address.get(f) for f in LOCATION_FIELDS},
+				}
+			)
 
 	# Handle Contact
 	primary_contact = getattr(doc, primary_contact_field, None)

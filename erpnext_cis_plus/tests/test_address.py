@@ -300,3 +300,10 @@ class TestAddressHooks(GeocodingTestCase):
 				self.get.return_value = nominatim_response([NOMINATIM_RESULT])
 				self.get.side_effect = None
 				self.slot.return_value = True
+
+	def test_an_address_saved_without_a_new_point_leaves_parties_alone(self):
+		doc = new_address().insert()
+		with patch.object(frappe.db, "set_value", wraps=frappe.db.set_value) as set_value:
+			doc.address_line2 = "Suite 2"
+			doc.save()
+		self.assertNotIn("Customer", [call.args[0] for call in set_value.call_args_list])
