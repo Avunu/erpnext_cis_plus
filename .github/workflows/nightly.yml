@@ -17,10 +17,11 @@ jobs:
       pull-requests: write
       actions: write
       issues: write
-    uses: Avunu/frappe-nix/.github/workflows/app-nightly.yml@bb8969c873a8b13d342f45cbeb1272cc55ce6799 # v1.0.0
+    uses: Avunu/frappe-nix/.github/workflows/app-nightly.yml@512da46b94979ea91fa0457704a204c8f3704b3e # v1.1.1
     with:
       app: erpnext_cis_plus
       integration-branch: develop
+      runs-on: '["self-hosted","nixos"]'
       nix-cache: ${{ vars.FRAPPE_NIX_CACHE || '' }}
       run-integration: true
       run-shots: true
