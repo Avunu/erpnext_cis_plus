@@ -172,7 +172,7 @@
     {
       "dt": "Supplier",
       "fetch_from": "supplier_primary_address.latitude",
-      "fetch_if_empty": 1,
+      "fetch_if_empty": 0,
       "fieldname": "latitude",
       "fieldtype": "Float",
       "hidden": 1,
@@ -186,7 +186,7 @@
     {
       "dt": "Supplier",
       "fetch_from": "supplier_primary_address.longitude",
-      "fetch_if_empty": 1,
+      "fetch_if_empty": 0,
       "fieldname": "longitude",
       "fieldtype": "Float",
       "hidden": 1,
@@ -200,7 +200,7 @@
     {
       "dt": "Supplier",
       "fetch_from": "supplier_primary_address.location",
-      "fetch_if_empty": 1,
+      "fetch_if_empty": 0,
       "fieldname": "location",
       "fieldtype": "Geolocation",
       "insert_after": "longitude",

@@ -3,6 +3,7 @@
 
 import json
 import time
+from typing import Any
 
 import frappe
 import requests
@@ -24,6 +25,10 @@ RATE_LIMIT_KEY = "erpnext_cis_plus:nominatim:last-request"
 RATE_LIMIT_INTERVAL_MS = 1000
 RATE_LIMIT_MAX_WAIT = 5.0  # seconds to wait for a free slot before skipping this lookup
 GEOCODED_FIELDS = ("address_line1", "city", "state", "pincode", "country")
+# The Address fields a Customer and a Supplier copy from their primary address for their map
+LOCATION_FIELDS = ("latitude", "longitude", "location")
+# The doctypes whose map shows their primary address, and the field naming it
+PRIMARY_ADDRESS_FIELDS = {"Customer": "customer_primary_address", "Supplier": "supplier_primary_address"}
 
 
 def get_state_abbrev(state_name: str | None, country: str | None) -> str | None:
@@ -197,3 +202,29 @@ def generate_point(doc: Document, method: str | None = None) -> Document:
 			),
 		)
 	return doc
+
+
+def party_location(address: Document) -> dict[str, Any]:
+	"""The point a party's map takes from its primary address.
+
+	An Address whose lookup failed has no coordinates, but the party's Float columns are
+	NOT NULL, so they take 0, as fetching from such an address would.
+	"""
+	return {
+		"latitude": address.get("latitude") or 0,
+		"longitude": address.get("longitude") or 0,
+		"location": address.get("location"),
+	}
+
+
+def update_party_locations(doc: Document, method: str | None = None) -> None:
+	"""Copy a changed point to the Customers and Suppliers whose primary address this is.
+
+	Their latitude, longitude and location fetch from the primary address when the party is
+	saved; this keeps them in step when the Address itself is saved.
+	"""
+	if not any(doc.has_value_changed(f) for f in LOCATION_FIELDS):
+		return
+	values = party_location(doc)
+	for doctype, link_field in PRIMARY_ADDRESS_FIELDS.items():
+		frappe.db.set_value(doctype, {link_field: doc.name}, values, update_modified=False)

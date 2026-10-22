@@ -9,7 +9,7 @@ ERPNext keeps customers, contacts and addresses as separate records linked toget
 ## What it does
 
 - **Address geocoding.** When an Address is saved with a new or changed address, or still has no coordinates, it is looked up on Nominatim. Its latitude and longitude are stored, a point is drawn on a new **Location** map on the Address, and its country, postal code, state, county and city are filled in where they are blank.
-- **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map.
+- **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map, and follows the address when it changes or moves.
 - **Primary address and contact fields on the party.** In the **Primary Address and Contact** section of the **Address & Contact** tab (ERPNext v16 hides that section; the app shows it again). Saving an existing Customer or Supplier with its primary address and contact fields set creates the Address and Contact, links them and marks them primary, or updates the ones already linked.
 - **Phone numbers in E.164** for the primary contact, using the country of the primary address or of System Settings.
 - **Primary address and contact by default.** When a Customer or Supplier is opened and has no primary address or contact, the first linked one is selected.
@@ -21,7 +21,6 @@ ERPNext keeps customers, contacts and addresses as separate records linked toget
 - Geocoding sends the address text (street, city, state, postal code, country) to the public Nominatim service. The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/): it identifies itself in its User-Agent, sends at most one request per second from the bench (a lookup that gets no slot within five seconds is skipped, and saving again retries it), and gives up on a request after 10 seconds. That makes it a fit for small sites with modest address volumes.
 - If the service cannot be reached, times out, returns an error or is busy, the Address is saved without coordinates and an alert says so; if it finds no match, the Address is saved without coordinates. Any coordinates from before the change are cleared in both cases, and an Address without coordinates is looked up again the next time it is saved.
 - A new Address created from those fields gets its country from the geocoding result; when the lookup fails or finds nothing, it takes the Supplier's own country, or the System Settings country.
-- A party's map point is fetched from its primary address only while it is empty: a new primary address shows after the party is saved once more, and a moved address keeps its old point on the party.
 - The app sets the Customer list up for Frappe's Map view, but that view currently fails to open on Frappe v16 (`this.load_lib is not a function`), so the Customer map view shows no map until Frappe fixes it.
 
 ## Installation
