@@ -22,7 +22,10 @@ doctype_list_js = {"Customer": "public/js/customer_list.js"}
 
 doc_events = {
 	"Address": {
-		"before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.generate_point",
+		"before_save": [
+			"erpnext_cis_plus.erpnext_cis_plus.hooks.address.set_default_country",
+			"erpnext_cis_plus.erpnext_cis_plus.hooks.address.generate_point",
+		],
 		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.geolocate_address",
 	},
 	"Customer": {

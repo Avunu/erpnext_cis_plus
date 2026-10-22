@@ -159,6 +159,10 @@ def create_address(doc, address_fields, address_prefix, party_type, party_name):
 		if value:
 			setattr(address, field, value)
 
+	# The party has no country field: geocoding fills the country in, and set_default_country
+	# falls back to the System Settings country when the lookup cannot (it is mandatory)
+	address.flags.default_country = frappe.db.get_single_value("System Settings", "country")
+
 	# Add the link to the party
 	address.append("links", {"link_doctype": party_type, "link_name": party_name})
 

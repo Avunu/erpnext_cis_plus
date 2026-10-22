@@ -191,6 +191,25 @@ class TestGeneratePoint(IntegrationTestCase):
 		self.assertFalse(doc.get("location"))
 
 
+class TestSetDefaultCountry(IntegrationTestCase):
+	def test_a_blank_country_takes_the_default(self):
+		doc = new_address(country=None)
+		doc.flags.default_country = "Canada"
+		address_hooks.set_default_country(doc)
+		self.assertEqual(doc.country, "Canada")
+
+	def test_a_country_already_set_is_kept(self):
+		doc = new_address()
+		doc.flags.default_country = "Canada"
+		address_hooks.set_default_country(doc)
+		self.assertEqual(doc.country, "United States")
+
+	def test_no_default_leaves_it_blank(self):
+		doc = new_address(country=None)
+		address_hooks.set_default_country(doc)
+		self.assertFalse(doc.get("country"))
+
+
 class TestAddressHooks(GeocodingTestCase):
 	"""The doc_events on a saved Address."""
 
