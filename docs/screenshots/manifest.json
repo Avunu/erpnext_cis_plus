@@ -27,7 +27,7 @@
 		"readme": "hero",
 		"width": 2880,
 		"height": 1800,
-		"sha256": "446544e1419558175299cf6d294bdb33f08f91dca736e54b2d33a0d7bd53c903"
+		"sha256": "a55a4defc17cabca74e937b028bf80dff7520be450f51561aff4bb05e965b0e4"
 	},
 	{
 		"name": "customer-form",
@@ -37,6 +37,6 @@
 		"readme": "hero",
 		"width": 2880,
 		"height": 1800,
-		"sha256": "d444e117570adc994d62453279093fa8cdd42b86bd8af5b7a63d4b9c72823041"
+		"sha256": "34a7643d9d58ec3cfcce7a7e6479a41967fc9c67c17e2d2f2b6cdba1c74ab271"
 	}
 ]

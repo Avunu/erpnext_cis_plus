@@ -7,6 +7,7 @@ from typing import Any, cast
 import frappe
 from frappe.contacts.doctype.address.address import Address
 from frappe.contacts.doctype.contact.contact import Contact
+from frappe.tests import IntegrationTestCase
 from frappe.utils import get_link_to_form
 
 from erpnext_cis_plus.erpnext_cis_plus.hooks import customer as customer_hooks
@@ -278,3 +279,28 @@ class TestCustomerMap(GeocodingTestCase):
 		frappe.set_user("Guest")
 		with self.assertRaises(frappe.PermissionError):
 			customer_hooks.get_coords()
+
+
+class TestPartyForm(IntegrationTestCase):
+	def test_the_primary_address_and_contact_section_is_shown(self):
+		# ERPNext v16 hides this section; the app's fields sit in it, so it must show
+		for party_type, section in (
+			("Customer", "primary_address_and_contact_detail"),
+			("Supplier", "primary_address_and_contact_detail_section"),
+		):
+			meta = frappe.get_meta(party_type)
+			df = meta.get_field(section)
+			self.assertIsNotNone(df)
+			self.assertFalse(df.hidden, party_type)
+
+			# the app's fields are laid out inside it, up to the next section or tab
+			fieldnames = [df.fieldname for df in meta.fields]
+			after = fieldnames[fieldnames.index(section) + 1 :]
+			end = next(
+				i
+				for i, f in enumerate(after)
+				if meta.get_field(f).fieldtype in ("Section Break", "Tab Break")
+			)
+			prefix = party_type.lower()
+			self.assertIn(f"{prefix}_primary_address_address_line1", after[:end])
+			self.assertIn(f"{prefix}_primary_contact_first_name", after[:end])

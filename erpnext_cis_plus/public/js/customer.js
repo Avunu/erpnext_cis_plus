@@ -29,7 +29,8 @@ frappe.ui.form.on("Customer", {
 		// Refresh the form layout to ensure newly created address/contact fields are displayed
 		setup_form_layout(frm);
 	},
-	async setup(frm) {
+	// onload runs once for each record opened, setup only once for the form
+	async onload(frm) {
 		try {
 			if (!frm.is_new() && !frm.doc.customer_primary_address) {
 				const [first_address] = await get_customer_records("Address", frm.doc.name);
@@ -55,7 +56,7 @@ frappe.ui.form.on("Customer", {
 				set_changed_values(frm, "customer_primary_contact_", CONTACT_FIELDS, result?.message);
 			}
 		} catch (error) {
-			console.error("Error in setup: ", error);
+			console.error("Error in onload: ", error);
 			frappe.msgprint(__("There was an error setting up the customer form. Please contact support."));
 		}
 		// setup the form layout
