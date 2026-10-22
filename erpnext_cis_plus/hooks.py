@@ -2,9 +2,9 @@
 # For license information, please see license.txt
 
 app_name = "erpnext_cis_plus"
-app_title = "ERPNext CIS Plus"
+app_title = "CIS Plus for ERPNext"
 app_publisher = "Avunu LLC"
-app_description = "Various enhancements to the customer, contact, and address management for ERPNext."
+app_description = "Customer address and contact editing on one form, with geocoding and a map"
 app_email = "mail@avu.nu"
 app_license = "MIT"
 required_apps = ["erpnext"]

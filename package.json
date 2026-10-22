@@ -2,7 +2,7 @@
 	"name": "erpnext-cis-plus",
 	"version": "0.0.1",
 	"private": true,
-	"description": "Various enhancements to the customer, contact, and address management for ERPNext.",
+	"description": "Customer address and contact editing on one form, with geocoding and a map",
 	"license": "MIT",
 	"author": "Avunu LLC",
 	"type": "module",
