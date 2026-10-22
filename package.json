@@ -2,7 +2,7 @@
 	"name": "erpnext-cis-plus",
 	"version": "0.0.1",
 	"private": true,
-	"description": "Customer address and contact editing on one form, with geocoding and a map",
+	"description": "Address geocoding and location maps for customers and suppliers",
 	"license": "MIT",
 	"author": "Avunu LLC",
 	"type": "module",

@@ -1,7 +1,7 @@
 # The app's registry listing (docs/app-standards/marketplace.md); frappe-listing check validates it.
 schema = 1
 title = "CIS Plus for ERPNext"
-tagline = "Customer address and contact editing on one form, with geocoding and a map"
+tagline = "Address geocoding and location maps for customers and suppliers"
 type = "extension"
 category = "Extensions"
 categories = ["CRM"]

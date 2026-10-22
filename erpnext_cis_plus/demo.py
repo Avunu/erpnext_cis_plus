@@ -4,11 +4,11 @@
 """Demo data for frappe-demo and the screenshots in docs/screenshots/.
 
 A handful of Customers around York, Pennsylvania, each made the way a user would make
-one with this app: the Customer is created, then its primary address and contact are
-typed into the Customer form and saved, which creates the Address and the Contact. The
+one with this app: the Customer is created, then its primary address and contact fields
+are filled in and it is saved, which creates the Address and the Contact. The
 Address is geocoded on save; the demo must not reach the network, so Nominatim answers
 from the table below instead. A last save fetches the address's map point onto the
-Customer, which puts it on the Customer map view.
+Customer, which puts it on the Customer's Location map.
 """
 
 from typing import Any
@@ -172,7 +172,7 @@ def setup(ctx):
 					"territory": territory,
 				}
 			).insert(ignore_permissions=True)
-			# What a user types into the Customer form's primary address and contact fields
+			# The Customer's primary address and contact fields, as the API or an import sets them
 			customer.update(
 				{
 					"customer_primary_address_address_line1": line1,
