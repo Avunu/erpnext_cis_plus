@@ -157,6 +157,17 @@ def geolocate_address(doc: Document, method: str | None = None) -> Document:
 	return doc
 
 
+def set_default_country(doc: Document, method: str | None = None) -> Document:
+	"""Fall back to the default country the creator set in doc.flags, if geocoding left it blank.
+
+	Runs after geolocate_address (before_save follows validate) and before Frappe checks the
+	mandatory fields. An Address created from a party's primary address fields sets the flag.
+	"""
+	if not doc.get("country") and doc.flags.get("default_country"):
+		doc.set("country", doc.flags.default_country)
+	return doc
+
+
 def generate_point(doc: Document, method: str | None = None) -> Document:
 	"""Store the coordinates as the GeoJSON point the Geolocation field shows.
 

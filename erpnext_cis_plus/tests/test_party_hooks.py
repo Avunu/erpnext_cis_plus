@@ -5,6 +5,7 @@ import json
 from typing import Any, cast
 
 import frappe
+import requests
 from frappe.contacts.doctype.address.address import Address
 from frappe.contacts.doctype.contact.contact import Contact
 from frappe.tests import IntegrationTestCase
@@ -13,7 +14,7 @@ from frappe.utils import get_link_to_form
 from erpnext_cis_plus.erpnext_cis_plus.hooks import customer as customer_hooks
 from erpnext_cis_plus.erpnext_cis_plus.hooks import party_utils
 from erpnext_cis_plus.erpnext_cis_plus.hooks import supplier as supplier_hooks
-from erpnext_cis_plus.tests.utils import GeocodingTestCase
+from erpnext_cis_plus.tests.utils import GeocodingTestCase, nominatim_response
 
 PARTIES: dict[str, dict[str, Any]] = {
 	"Customer": {
@@ -173,6 +174,40 @@ class TestCustomerHooks(GeocodingTestCase):
 		self.assertEqual(contact.mobile_no, "+12015550177")
 		self.assertEqual(sum(row.is_primary_mobile_no for row in contact.phone_nos), 1)
 
+	def test_a_new_address_gets_a_country_when_geocoding_fails(self):
+		# the party has no country field, and a failed lookup cannot fill it in
+		for failure in (requests.ConnectionError("refused"), None):
+			with self.subTest(failure=failure):
+				if failure:
+					self.get.side_effect = failure
+				else:
+					self.get.side_effect = None
+					self.get.return_value = nominatim_response([])
+				party = make_party(self.party_type)
+				party.update(
+					{
+						self.field("primary_address_address_line1"): "1 Penn Square",
+						self.field("primary_address_city"): "Lancaster",
+					}
+				)
+				party.save()
+
+				address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
+				self.assertTrue(address_name)
+				self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "United States")
+				self.assertFalse(frappe.db.get_value("Address", address_name, "latitude"))
+
+	def test_geocoding_sets_the_country_of_a_new_address(self):
+		# the lookup is not narrowed to the System Settings country, and its country wins
+		frappe.db.set_single_value("System Settings", "country", "Canada")
+		party = make_party(self.party_type)
+		party.set(self.field("primary_address_address_line1"), "1 Penn Square")
+		party.save()
+
+		address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
+		self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "United States")
+		self.assertNotIn("Canada", self.get.call_args.kwargs["params"]["q"])
+
 	def test_a_new_address_needs_its_first_line(self):
 		party = make_party(self.party_type)
 		party.set(self.field("primary_address_city"), "Lancaster")
@@ -188,6 +223,21 @@ class TestCustomerHooks(GeocodingTestCase):
 
 class TestSupplierHooks(TestCustomerHooks):
 	party_type = "Supplier"
+
+	def test_a_new_address_falls_back_to_the_suppliers_country(self):
+		# a Supplier has a country of its own, which beats the System Settings one
+		self.get.return_value = nominatim_response([])
+		party = make_party(self.party_type, country="Canada")
+		party.update(
+			{
+				self.field("primary_address_address_line1"): "1 Penn Square",
+				self.field("primary_address_city"): "Lancaster",
+			}
+		)
+		party.save()
+
+		address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
+		self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "Canada")
 
 
 class TestPartyRecords(GeocodingTestCase):
