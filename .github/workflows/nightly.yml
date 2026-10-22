@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
       actions: write
       issues: write
-    uses: Avunu/frappe-nix/.github/workflows/app-nightly.yml@512da46b94979ea91fa0457704a204c8f3704b3e # v1.1.1
+    uses: Avunu/frappe-nix/.github/workflows/app-nightly.yml@685475f446ccf48d320f8e3a564320303f6f9429 # v1.2.1
     with:
       app: erpnext_cis_plus
       integration-branch: develop
