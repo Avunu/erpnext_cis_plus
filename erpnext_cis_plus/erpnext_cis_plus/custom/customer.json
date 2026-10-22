@@ -226,6 +226,17 @@
     {
       "doc_type": "Customer",
       "doctype_or_field": "DocField",
+      "field_name": "primary_address_and_contact_detail",
+      "is_system_generated": 0,
+      "module": "ERPNext CIS Plus",
+      "name": "Customer-primary_address_and_contact_detail-hidden",
+      "property": "hidden",
+      "property_type": "Check",
+      "value": "0"
+    },
+    {
+      "doc_type": "Customer",
+      "doctype_or_field": "DocField",
       "field_name": "primary_address",
       "is_system_generated": 0,
       "module": "ERPNext CIS Plus",

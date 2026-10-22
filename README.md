@@ -29,13 +29,13 @@ Address geocoding and location maps for customers and suppliers
 
 ERPNext keeps customers, contacts and addresses as separate records linked together. That is flexible, but for a small business, where most customers have one contact and one address, it means a lot of moving between forms. CIS Plus (originally "Customer Information System Enhancements for ERPNext") geocodes addresses through the free OpenStreetMap Nominatim service and shows each Address's, Customer's and Supplier's location on a map on its form.
 
-It also adds primary address and contact fields to the Customer and the Supplier, which create or update the linked Address and Contact when the party is saved. On ERPNext v16 those fields sit in a section that ERPNext hides, so for now they only work through the API, a data import or a script, not on the form; see [Limitations](#limitations).
+It also adds primary address and contact fields to the Customer and the Supplier form, which create or update the linked Address and Contact when the party is saved, so the common case is edited on one form.
 
 ## Features
 
 - **Address geocoding.** When an Address is saved with a new or changed address, or still has no coordinates, it is looked up on Nominatim. Its latitude and longitude are stored, a point is drawn on a new **Location** map on the Address, and its country, postal code, state, county and city are filled in where they are blank (a United States state name becomes its two-letter code).
 - **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map.
-- **Primary address and contact fields on the party.** Customer and Supplier carry fields for the primary address (address lines, city, state, postal code, e-mail, phone, fax) and the primary contact (first and last name, e-mail, phone, mobile, department). Saving an existing Customer or Supplier with these set creates the Address and Contact, links them and marks them primary, or updates the ones already linked. On ERPNext v16 they are not shown on the form (see [Limitations](#limitations)).
+- **Primary address and contact fields on the party.** Customer and Supplier carry fields for the primary address (address lines, city, state, postal code, e-mail, phone, fax) and the primary contact (first and last name, e-mail, phone, mobile, department). They are in the **Primary Address and Contact** section of the **Address & Contact** tab, which ERPNext v16 hides and the app shows again. Saving an existing Customer or Supplier with these set creates the Address and Contact, links them and marks them primary, or updates the ones already linked.
 - **Phone numbers in E.164.** The primary contact's phone and mobile in those fields are converted to E.164 (`+17175550142`) with the [`phonenumbers`](https://pypi.org/project/phonenumbers/) package, using the country of the primary address, or the System Settings country. A number that cannot be parsed is kept as typed and an alert says so.
 - **Primary address and contact by default.** When a Customer or Supplier form is first opened and the party has no primary address or contact, the first linked one is selected; saving the party keeps it.
 - ERPNext's read-only **Primary Address**, **Mobile No** and **Email Id** fields on Customer and Supplier are hidden, since the fields above replace them.
@@ -88,7 +88,6 @@ There is nothing to configure. Two things are worth knowing:
 
 ## Limitations
 
-- **The primary address and contact fields are hidden on ERPNext v16.** ERPNext v16 marks the Customer's and the Supplier's **Primary Address and Contact** section as hidden, and the app does not unhide it, so the fields it adds there do not show on the form. They still work from the API, a data import or a script, and the Address and Contact are still created and updated from them.
 - A new Address created from these fields has no country field of its own on the party, so the country comes from the geocoding result. If the lookup fails or finds nothing, the Address cannot be saved (its country is mandatory) and the Customer or Supplier save fails with it.
 - The fields only act on a party that already exists: filling them in on a new Customer or Supplier and saving creates nothing.
 - The Customer's and Supplier's map point is fetched from the primary address only while it is empty, on a save of the party. A new primary address shows on the map after the party is saved once more, and an address that moves later keeps its old point on the party.
