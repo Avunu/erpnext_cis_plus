@@ -12,7 +12,7 @@ ERPNext keeps customers, contacts and addresses as separate records linked toget
 - **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map.
 - **Primary address and contact fields on the party.** Saving an existing Customer or Supplier with its primary address and contact fields set creates the Address and Contact, links them and marks them primary, or updates the ones already linked.
 - **Phone numbers in E.164** for the primary contact, using the country of the primary address or of System Settings.
-- **Primary address and contact by default.** When a Customer or Supplier form is first opened and the party has no primary address or contact, the first linked one is selected.
+- **Primary address and contact by default.** When a Customer or Supplier is opened and has no primary address or contact, the first linked one is selected.
 
 ![An Address after it was geocoded: county and country filled in, and its point on the Location map](screenshots/address-form-light.webp)
 
@@ -24,7 +24,6 @@ ERPNext keeps customers, contacts and addresses as separate records linked toget
 - A new Address created from those fields gets its country from the geocoding result. If the lookup fails, the Address, and with it the Customer or Supplier save, fails on the missing country.
 - A party's map point is fetched from its primary address only while it is empty: a new primary address shows after the party is saved once more, and a moved address keeps its old point on the party.
 - The app sets the Customer list up for Frappe's Map view, but that view currently fails to open on Frappe v16 (`this.load_lib is not a function`), so the Customer map view shows no map until Frappe fixes it.
-- The first linked address and contact are only selected on the first Customer, and the first Supplier, opened after the desk page loads, because Frappe runs the form's `setup` event once per form, not once per record.
 
 ## Installation
 
