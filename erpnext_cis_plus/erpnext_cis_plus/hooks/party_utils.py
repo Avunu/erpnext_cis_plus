@@ -5,7 +5,7 @@ import frappe
 import phonenumbers
 from frappe.model.document import Document
 
-from erpnext_cis_plus.erpnext_cis_plus.hooks.address import LOCATION_FIELDS
+from erpnext_cis_plus.erpnext_cis_plus.hooks.address import party_location
 
 # The DocTypes get_party_records may list for a party
 PARTY_RECORD_DOCTYPES = ("Address", "Contact")
@@ -335,7 +335,7 @@ def update_party_address_and_contact(
 			doc.db_set(
 				{
 					primary_address_field: address.name,
-					**{f: address.get(f) for f in LOCATION_FIELDS},
+					**party_location(address),
 				}
 			)
 

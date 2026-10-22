@@ -193,6 +193,14 @@ class TestCustomerHooks(GeocodingTestCase):
 		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 40.1)
 		self.assertEqual(point(party.name), [-76.2, 40.1])
 
+		# the address moves where the lookup finds nothing: the party loses its point
+		self.get.return_value = nominatim_response([])
+		address.reload()
+		address.address_line1 = "3 Penn Square"
+		address.save()
+		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 0)
+		self.assertFalse(frappe.db.get_value(self.party_type, party.name, "location"))
+
 		# another primary address: saving the party fetches its point
 		self.get.return_value = nominatim_response([{**NOMINATIM_RESULT, "lat": "39.9", "lon": "-76.7"}])
 		other = frappe.get_doc(

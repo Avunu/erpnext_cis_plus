@@ -3,6 +3,7 @@
 
 import json
 import time
+from typing import Any
 
 import frappe
 import requests
@@ -203,6 +204,19 @@ def generate_point(doc: Document, method: str | None = None) -> Document:
 	return doc
 
 
+def party_location(address: Document) -> dict[str, Any]:
+	"""The point a party's map takes from its primary address.
+
+	An Address whose lookup failed has no coordinates, but the party's Float columns are
+	NOT NULL, so they take 0, as fetching from such an address would.
+	"""
+	return {
+		"latitude": address.get("latitude") or 0,
+		"longitude": address.get("longitude") or 0,
+		"location": address.get("location"),
+	}
+
+
 def update_party_locations(doc: Document, method: str | None = None) -> None:
 	"""Copy a changed point to the Customers and Suppliers whose primary address this is.
 
@@ -211,6 +225,6 @@ def update_party_locations(doc: Document, method: str | None = None) -> None:
 	"""
 	if not any(doc.has_value_changed(f) for f in LOCATION_FIELDS):
 		return
-	values = {f: doc.get(f) for f in LOCATION_FIELDS}
+	values = party_location(doc)
 	for doctype, link_field in PRIMARY_ADDRESS_FIELDS.items():
 		frappe.db.set_value(doctype, {link_field: doc.name}, values, update_modified=False)
