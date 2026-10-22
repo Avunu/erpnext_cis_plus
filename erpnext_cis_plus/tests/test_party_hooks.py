@@ -223,6 +223,21 @@ class TestCustomerHooks(GeocodingTestCase):
 class TestSupplierHooks(TestCustomerHooks):
 	party_type = "Supplier"
 
+	def test_a_new_address_falls_back_to_the_suppliers_country(self):
+		# a Supplier has a country of its own, which beats the System Settings one
+		self.get.return_value = nominatim_response([])
+		party = make_party(self.party_type, country="Canada")
+		party.update(
+			{
+				self.field("primary_address_address_line1"): "1 Penn Square",
+				self.field("primary_address_city"): "Lancaster",
+			}
+		)
+		party.save()
+
+		address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
+		self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "Canada")
+
 
 class TestPartyRecords(GeocodingTestCase):
 	def tearDown(self):
