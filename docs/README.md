@@ -20,7 +20,7 @@ ERPNext keeps customers, contacts and addresses as separate records linked toget
 
 - Geocoding sends the address text (street, city, state, postal code, country) to the public Nominatim service. The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/): it identifies itself in its User-Agent, sends at most one request per second from the bench (a lookup that gets no slot within five seconds is skipped, and saving again retries it), and gives up on a request after 10 seconds. That makes it a fit for small sites with modest address volumes.
 - If the service cannot be reached, times out, returns an error or is busy, the Address is saved without coordinates and an alert says so; if it finds no match, the Address is saved without coordinates. Any coordinates from before the change are cleared in both cases, and an Address without coordinates is looked up again the next time it is saved.
-- A new Address created from those fields gets its country from the geocoding result. If the lookup fails, the Address, and with it the Customer or Supplier save, fails on the missing country.
+- A new Address created from those fields gets its country from the geocoding result; when the lookup fails or finds nothing, it takes the Supplier's own country, or the System Settings country.
 - The app sets the Customer list up for Frappe's Map view, but that view currently fails to open on Frappe v16 (`this.load_lib is not a function`), so the Customer map view shows no map until Frappe fixes it.
 
 ## Installation
