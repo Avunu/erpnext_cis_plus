@@ -9,7 +9,7 @@ For license information, please see license.txt-->
 
 # CIS Plus for ERPNext
 
-Customer address and contact editing on one form, with geocoding and a map
+Address geocoding and location maps for customers and suppliers
 
 [![CI](https://github.com/Avunu/erpnext_cis_plus/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/Avunu/erpnext_cis_plus/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/Avunu/erpnext_cis_plus)](https://github.com/Avunu/erpnext_cis_plus/releases)
@@ -27,16 +27,17 @@ Customer address and contact editing on one form, with geocoding and a map
 
 ## Overview
 
-ERPNext keeps customers, contacts and addresses as separate records linked together. That is flexible, but for a small business, where most customers have one contact and one address, it means a lot of moving between forms. CIS Plus (originally "Customer Information System Enhancements for ERPNext") brings the common case back to the Customer: it geocodes addresses through the free OpenStreetMap Nominatim service, shows each customer's location on its form, sets up a map view of all customers, and keeps a customer's primary address and contact in step with fields on the Customer itself. Suppliers get the same address, contact and location handling.
+ERPNext keeps customers, contacts and addresses as separate records linked together. That is flexible, but for a small business, where most customers have one contact and one address, it means a lot of moving between forms. CIS Plus (originally "Customer Information System Enhancements for ERPNext") geocodes addresses through the free OpenStreetMap Nominatim service and shows each Address's, Customer's and Supplier's location on a map on its form.
+
+It also adds primary address and contact fields to the Customer and the Supplier, which create or update the linked Address and Contact when the party is saved. On ERPNext v16 those fields sit in a section that ERPNext hides, so for now they only work through the API, a data import or a script, not on the form; see [Limitations](#limitations).
 
 ## Features
 
 - **Address geocoding.** When an Address is saved with a new or changed address, or still has no coordinates, it is looked up on Nominatim. Its latitude and longitude are stored, a point is drawn on a new **Location** map on the Address, and its country, postal code, state, county and city are filled in where they are blank (a United States state name becomes its two-letter code).
 - **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map.
-- **Customer map view.** The Customer list is set up for Frappe's **Map** view, which puts a pin on every customer whose location is set. On the Frappe v16 release this was last checked with, that view does not open; see [Limitations](#limitations).
-- **Primary address and contact by default.** Opening a Customer or Supplier without a primary address or contact selects the first linked one.
-- **Primary address and contact fields on the party.** Customer and Supplier carry fields for the primary address (address lines, city, state, postal code, e-mail, phone, fax) and the primary contact (first and last name, e-mail, phone, mobile, department). Saving an existing Customer or Supplier with these filled in creates the Address and Contact, links them and marks them primary, or updates the ones already linked. See [Limitations](#limitations) for how they show on the form in v16.
-- **Phone numbers in E.164.** The primary contact's phone and mobile are converted to E.164 (`+17175550142`) with the [`phonenumbers`](https://pypi.org/project/phonenumbers/) package, using the country of the primary address, or the System Settings country. A number that cannot be parsed is kept as typed and an alert says so.
+- **Primary address and contact fields on the party.** Customer and Supplier carry fields for the primary address (address lines, city, state, postal code, e-mail, phone, fax) and the primary contact (first and last name, e-mail, phone, mobile, department). Saving an existing Customer or Supplier with these set creates the Address and Contact, links them and marks them primary, or updates the ones already linked. On ERPNext v16 they are not shown on the form (see [Limitations](#limitations)).
+- **Phone numbers in E.164.** The primary contact's phone and mobile in those fields are converted to E.164 (`+17175550142`) with the [`phonenumbers`](https://pypi.org/project/phonenumbers/) package, using the country of the primary address, or the System Settings country. A number that cannot be parsed is kept as typed and an alert says so.
+- **Primary address and contact by default.** When a Customer or Supplier form is first opened and the party has no primary address or contact, the first linked one is selected; saving the party keeps it.
 - ERPNext's read-only **Primary Address**, **Mobile No** and **Email Id** fields on Customer and Supplier are hidden, since the fields above replace them.
 
 <!-- frappe-nix:begin compatibility -->
@@ -92,7 +93,8 @@ There is nothing to configure. Two things are worth knowing:
 - The fields only act on a party that already exists: filling them in on a new Customer or Supplier and saving creates nothing.
 - The Customer's and Supplier's map point is fetched from the primary address only while it is empty, on a save of the party. A new primary address shows on the map after the party is saved once more, and an address that moves later keeps its old point on the party.
 - Geocoding sends the address text (street, city, state, postal code, country) to the public Nominatim service, and is meant for modest volumes: one lookup per second for the whole bench. A bulk import of addresses will skip most lookups; saving each Address again retries it.
-- **Frappe's Map view does not open on Frappe v16 at the moment.** Opening it fails in Frappe itself with `TypeError: this.load_lib is not a function` (`MapView.setup_view` calls `this.load_lib()`, which the base list view has replaced with a promise), so the Customer map view shows no map until Frappe fixes it. The **Location** maps on the Address, Customer and Supplier forms are not affected.
+- **The Customer map view does not work on Frappe v16 at the moment.** The app sets the Customer list up for Frappe's **Map** view, which would put a pin on every customer whose location is set, but opening it fails in Frappe itself with `TypeError: this.load_lib is not a function` (`MapView.setup_view` calls `this.load_lib()`, which the base list view has replaced with a promise), so it shows no map until Frappe fixes it. The **Location** maps on the Address, Customer and Supplier forms are not affected.
+- The first linked address and contact are only selected on the first Customer, and the first Supplier, opened after the desk page loads: the form script does it in the form's `setup` event, which Frappe runs once per form, not once per record.
 - Only the Customer list has the map view settings; the Supplier list does not.
 
 <!-- frappe-nix:begin support -->
