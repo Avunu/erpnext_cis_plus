@@ -11,7 +11,7 @@
 
 ## Where things live
 
-- `erpnext_cis_plus/hooks.py`: wires everything below into ERPNext: the form and list scripts, and the `doc_events` of Address, Customer and Supplier.
+- `erpnext_cis_plus/hooks.py`: wires everything below into ERPNext: the form and list scripts, and the `doc_events` of Address.
 - `erpnext_cis_plus/erpnext_cis_plus/custom/`: the custom fields for Address, Customer and Supplier (the map and its coordinates), synced on `bench migrate`.
 - `erpnext_cis_plus/erpnext_cis_plus/hooks/address.py`: the Nominatim lookup (`geolocate_address`) and the map point (`generate_point`).
 - `erpnext_cis_plus/erpnext_cis_plus/hooks/party_utils.py`: `save_party_record`, which the side panel's Save calls to insert or update a party's Address or Contact, and the phone number normalisation. `customer.py` and `supplier.py` list a party's records with it.
