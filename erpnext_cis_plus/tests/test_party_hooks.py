@@ -411,40 +411,68 @@ class TestPartyForm(IntegrationTestCase):
 
 class TestRemoveInlinePartyFieldsPatch(IntegrationTestCase):
 	def test_the_fields_and_property_setters_are_removed(self):
+		kept = []
 		for party_type, section in remove_inline_party_fields.PARTIES.items():
-			fieldname = remove_inline_party_fields.removed_fields(party_type)[0]
 			# db_insert: the records as an older version left them, without adding a column
-			frappe.get_doc(
-				{
-					"doctype": "Custom Field",
-					"name": f"{party_type}-{fieldname}",
-					"dt": party_type,
-					"fieldname": fieldname,
-					"fieldtype": "Data",
-					"label": "Address Line 1",
-					"insert_after": section,
-				}
-			).db_insert()
-			frappe.get_doc(
+			for fieldname in remove_inline_party_fields.removed_fields(party_type):
+				frappe.get_doc(
+					{
+						"doctype": "Custom Field",
+						"name": f"{party_type}-{fieldname}",
+						"dt": party_type,
+						"fieldname": fieldname,
+						"fieldtype": "Data",
+						"label": fieldname,
+						"insert_after": section,
+					}
+				).db_insert()
+			for name in remove_inline_party_fields.removed_property_setters(party_type, section):
+				field_name = name.removeprefix(f"{party_type}-").rsplit("-", 1)[0]
+				frappe.get_doc(
+					{
+						"doctype": "Property Setter",
+						"name": name,
+						"doc_type": party_type,
+						"doctype_or_field": "DocField",
+						"field_name": field_name,
+						"property": name.rsplit("-", 1)[1],
+						"property_type": "Data",
+						"value": "0",
+					}
+				).db_insert()
+			# A customization of the same party that is not the app's is left alone
+			other = frappe.get_doc(
 				{
 					"doctype": "Property Setter",
-					"name": f"{party_type}-{section}-hidden",
+					"name": f"{party_type}-{section}-collapsible",
 					"doc_type": party_type,
 					"doctype_or_field": "DocField",
 					"field_name": section,
-					"property": "hidden",
+					"property": "collapsible",
 					"property_type": "Check",
-					"value": "0",
+					"value": "1",
 				}
-			).db_insert()
+			)
+			other.db_insert()
+			kept.append(other.name)
 
+		remove_inline_party_fields.execute()
+		# Running it again, as a re-run migrate would, finds nothing left to do
 		remove_inline_party_fields.execute()
 
 		for party_type, section in remove_inline_party_fields.PARTIES.items():
 			self.assertFalse(
-				frappe.db.exists(
+				frappe.get_all(
 					"Custom Field",
-					{"dt": party_type, "fieldname": ["like", f"{party_type.lower()}_primary_%"]},
+					filters={
+						"dt": party_type,
+						"fieldname": ["in", remove_inline_party_fields.removed_fields(party_type)],
+					},
 				)
 			)
-			self.assertFalse(frappe.db.exists("Property Setter", f"{party_type}-{section}-hidden"))
+			for name in remove_inline_party_fields.removed_property_setters(party_type, section):
+				self.assertFalse(frappe.db.exists("Property Setter", name), name)
+			# the map fields stay
+			self.assertTrue(frappe.db.exists("Custom Field", {"dt": party_type, "fieldname": "location"}))
+		for name in kept:
+			self.assertTrue(frappe.db.exists("Property Setter", name), name)
