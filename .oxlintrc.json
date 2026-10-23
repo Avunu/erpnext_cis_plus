@@ -57,6 +57,7 @@
 			"files": [
 				"erpnext_cis_plus/public/js/customer.js",
 				"erpnext_cis_plus/public/js/customer_list.js",
+				"erpnext_cis_plus/public/js/party_records.js",
 				"erpnext_cis_plus/public/js/supplier.js"
 			],
 			"globals": {
