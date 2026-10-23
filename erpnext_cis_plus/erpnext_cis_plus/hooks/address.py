@@ -166,7 +166,8 @@ def set_default_country(doc: Document, method: str | None = None) -> Document:
 	"""Fall back to the default country the creator set in doc.flags, if geocoding left it blank.
 
 	Runs after geolocate_address (before_save follows validate) and before Frappe checks the
-	mandatory fields. An Address created from a party's primary address fields sets the flag.
+	mandatory fields. A new Address saved from a party's side panel sets the flag
+	(party_utils.save_party_record).
 	"""
 	if not doc.get("country") and doc.flags.get("default_country"):
 		doc.set("country", doc.flags.default_country)
