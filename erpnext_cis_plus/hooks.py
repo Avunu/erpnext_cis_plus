@@ -13,7 +13,10 @@ required_apps = ["erpnext"]
 # ------------------
 
 # include js in doctype views
-doctype_js = {"Customer": "public/js/customer.js", "Supplier": "public/js/supplier.js"}
+doctype_js = {
+	"Customer": ["public/js/party_records.js", "public/js/customer.js"],
+	"Supplier": ["public/js/party_records.js", "public/js/supplier.js"],
+}
 doctype_list_js = {"Customer": "public/js/customer_list.js"}
 
 # Document Events
@@ -28,15 +31,5 @@ doc_events = {
 		],
 		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.geolocate_address",
 		"on_update": "erpnext_cis_plus.erpnext_cis_plus.hooks.address.update_party_locations",
-	},
-	"Customer": {
-		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.validate",
-		"before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.before_save",
-		"on_update": "erpnext_cis_plus.erpnext_cis_plus.hooks.customer.on_update",
-	},
-	"Supplier": {
-		"validate": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.validate",
-		"before_save": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.before_save",
-		"on_update": "erpnext_cis_plus.erpnext_cis_plus.hooks.supplier.on_update",
 	},
 }

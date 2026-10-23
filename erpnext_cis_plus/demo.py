@@ -4,11 +4,12 @@
 """Demo data for frappe-demo and the screenshots in docs/screenshots/.
 
 A handful of Customers around York, Pennsylvania, each made the way a user would make
-one with this app: the Customer is created, then its primary address and contact fields
-are filled in and it is saved, which creates the Address and the Contact. The
-Address is geocoded on save; the demo must not reach the network, so Nominatim answers
-from the table below instead. A last save fetches the address's map point onto the
-Customer, which puts it on the Customer's Location map.
+one with this app: the Customer is created, then an Address and a Contact are added to it
+in the side panel (party_utils.save_party_record, which the panel's Save calls), and the
+form makes them its primary ones and saves. The Address is geocoded on save; the demo must
+not reach the network, so Nominatim answers from the table below instead. Saving the
+Customer with its primary address fetches the address's map point onto it, which puts it
+on the Customer's Location map.
 """
 
 from typing import Any
@@ -17,6 +18,7 @@ from unittest.mock import patch
 import frappe
 
 from erpnext_cis_plus.erpnext_cis_plus.hooks import address as address_hooks
+from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import save_party_record
 
 # customer name: (address line 1, city, state, postal code, latitude, longitude, county,
 # contact first name, last name, department, phone, mobile)
@@ -172,23 +174,39 @@ def setup(ctx):
 					"territory": territory,
 				}
 			).insert(ignore_permissions=True)
-			# The Customer's primary address and contact fields, as the API or an import sets them
-			customer.update(
+			address = save_party_record(
 				{
-					"customer_primary_address_address_line1": line1,
-					"customer_primary_address_city": city,
-					"customer_primary_address_state": state,
-					"customer_primary_address_pincode": pincode,
-					"customer_primary_contact_first_name": first,
-					"customer_primary_contact_last_name": last,
-					"customer_primary_contact_department": department,
-					"customer_primary_contact_email_id": f"{first.lower()}@{customer_name.lower().replace(' ', '-')}.example.com",
-					"customer_primary_contact_phone": phone,
-					"customer_primary_contact_mobile_no": mobile,
-				}
-			)
-			customer.save(ignore_permissions=True)
-			# The save created the Address and Contact; saving again fetches the Address's
-			# map point onto the Customer, as the next edit of the form would.
+					"doctype": "Address",
+					"address_title": customer_name,
+					"address_type": "Billing",
+					"address_line1": line1,
+					"city": city,
+					"state": state,
+					"pincode": pincode,
+				},
+				"Customer",
+				customer.name,
+			)["doc"]
+			email = f"{first.lower()}@{customer_name.lower().replace(' ', '-')}.example.com"
+			numbers = [{"phone": phone, "is_primary_phone": 1}]
+			if mobile:
+				numbers.append({"phone": mobile, "is_primary_mobile_no": 1})
+			contact = save_party_record(
+				{
+					"doctype": "Contact",
+					"first_name": first,
+					"last_name": last,
+					"department": department,
+					"email_ids": [{"email_id": email, "is_primary": 1}],
+					"phone_nos": numbers,
+				},
+				"Customer",
+				customer.name,
+			)["doc"]
+			# The form makes a party's first Address and Contact its primary ones and saves,
+			# which fetches the Address's map point onto the Customer.
 			customer.reload()
+			customer.update(
+				{"customer_primary_address": address["name"], "customer_primary_contact": contact["name"]}
+			)
 			customer.save(ignore_permissions=True)

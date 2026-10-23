@@ -4267,34 +4267,6 @@ declare global {
 			supplier_numbers: FrappeChildRow<"Supplier Number At Customer">[];
 			/** Tax Withholding Group · Link → Tax Withholding Group */
 			tax_withholding_group?: string | null;
-			/** Address Line 1 · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_address_line1?: string | null;
-			/** Address Line 2 · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_address_line2?: string | null;
-			/** City/Town · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_city?: string | null;
-			/** State/Province · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_state?: string | null;
-			/** Postal Code · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_pincode?: string | null;
-			/** Email Address · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_email_id?: string | null;
-			/** Customer Phone · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_phone?: string | null;
-			/** Customer Fax · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_address_fax?: string | null;
-			/** First Name · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_contact_first_name?: string | null;
-			/** Last Name · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_contact_last_name?: string | null;
-			/** Email Address · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_contact_email_id?: string | null;
-			/** Phone · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_contact_phone?: string | null;
-			/** Mobile No · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_contact_mobile_no?: string | null;
-			/** Department · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
-			customer_primary_contact_department?: string | null;
 			/** Latitude · Float · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
 			latitude?: number | null;
 			/** Longitude · Float · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/customer.json */
@@ -17600,34 +17572,6 @@ declare global {
 			tax_withholding_group?: string | null;
 			/** Gender · Link → Gender */
 			gender?: string | null;
-			/** Address Line 1 · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_address_line1?: string | null;
-			/** Address Line 2 · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_address_line2?: string | null;
-			/** City/Town · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_city?: string | null;
-			/** State/Province · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_state?: string | null;
-			/** Postal Code · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_pincode?: string | null;
-			/** Email Address · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_email_id?: string | null;
-			/** Supplier Phone · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_phone?: string | null;
-			/** Supplier Fax · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_address_fax?: string | null;
-			/** First Name · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_contact_first_name?: string | null;
-			/** Last Name · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_contact_last_name?: string | null;
-			/** Email Address · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_contact_email_id?: string | null;
-			/** Phone · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_contact_phone?: string | null;
-			/** Mobile No · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_contact_mobile_no?: string | null;
-			/** Department · Data · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
-			supplier_primary_contact_department?: string | null;
 			/** Latitude · Float · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
 			latitude?: number | null;
 			/** Longitude · Float · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/supplier.json */
