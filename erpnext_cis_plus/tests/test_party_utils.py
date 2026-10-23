@@ -1,11 +1,7 @@
 # Copyright (c) 2026, Avunu LLC and contributors
 # For license information, please see license.txt
 
-from typing import cast
-from unittest.mock import patch
-
 import frappe
-from frappe.contacts.doctype.contact.contact import Contact
 from frappe.tests import IntegrationTestCase
 
 from erpnext_cis_plus.erpnext_cis_plus.hooks import party_utils
@@ -31,22 +27,6 @@ class TestPhoneNormalisation(IntegrationTestCase):
 		self.assertIsNone(party_utils.convert_to_e164("2015550123", "NONE"), "no usable region")
 		self.assertIsNone(party_utils.convert_to_e164("", "US"))
 
-	def test_validate_party_phone_numbers(self):
-		doc = frappe._dict(
-			phone="(201) 555-0123",
-			mobile="+12015550124",
-			fax="12",
-			empty=None,
-		)
-		with patch.object(frappe, "msgprint") as msgprint:
-			party_utils.validate_party_phone_numbers(doc, ["phone", "mobile", "fax", "empty"], "US")
-
-		self.assertEqual(doc.phone, "+12015550123")
-		self.assertEqual(doc.mobile, "+12015550124")
-		self.assertEqual(doc.fax, "12", "an invalid number is kept as entered")
-		msgprint.assert_called_once()
-		self.assertIn("fax", msgprint.call_args.args[0])
-
 
 class TestCountryCode(GeocodingTestCase):
 	def test_country_code_from_the_primary_address_or_system_settings(self):
@@ -68,18 +48,3 @@ class TestCountryCode(GeocodingTestCase):
 		frappe.db.set_single_value("System Settings", "country", "United States")
 		doc = frappe._dict(customer_primary_address=None)
 		self.assertEqual(party_utils.get_country_code_for_party(doc, "customer_primary_address"), "US")
-
-
-class TestUpdateChildFields(IntegrationTestCase):
-	def test_empty_party_fields_leave_the_contact_alone(self):
-		contact = cast(Contact, frappe.new_doc("Contact"))
-		contact.add_email("ada@example.com", is_primary=1)
-		child_fields = {
-			"email_id": ("add_email", {"is_primary": 1}),
-			"phone": ("add_phone", {"is_primary_phone": 1}),
-		}
-		party_utils.update_child_fields(
-			contact, child_fields, frappe._dict(x_email_id="", x_phone=None), "x_"
-		)
-		self.assertEqual([row.email_id for row in contact.email_ids], ["ada@example.com"])
-		self.assertEqual(contact.phone_nos, [])

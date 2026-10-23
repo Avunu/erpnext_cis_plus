@@ -3,17 +3,19 @@
 
 import json
 from typing import Any, cast
+from unittest.mock import patch
 
 import frappe
 import requests
 from frappe.contacts.doctype.address.address import Address
 from frappe.contacts.doctype.contact.contact import Contact
 from frappe.tests import IntegrationTestCase
-from frappe.utils import get_link_to_form
+from frappe.utils import add_days, get_link_to_form, now_datetime
 
 from erpnext_cis_plus.erpnext_cis_plus.hooks import customer as customer_hooks
 from erpnext_cis_plus.erpnext_cis_plus.hooks import party_utils
 from erpnext_cis_plus.erpnext_cis_plus.hooks import supplier as supplier_hooks
+from erpnext_cis_plus.patches import remove_inline_party_fields
 from erpnext_cis_plus.tests.utils import NOMINATIM_RESULT, GeocodingTestCase, nominatim_response
 
 PARTIES: dict[str, dict[str, Any]] = {
@@ -45,183 +47,102 @@ def make_party(party_type: str, **fields):
 	return frappe.get_doc(values).insert()
 
 
-class TestCustomerHooks(GeocodingTestCase):
-	"""The Customer hooks; TestSupplierHooks runs the same tests on Supplier's."""
+def new_address(**fields) -> dict[str, Any]:
+	"""A new Address as the side panel sends it."""
+	return {
+		"doctype": "Address",
+		"name": "new-address-1",
+		"__islocal": 1,
+		"address_type": "Billing",
+		"address_line1": "1 Penn Square",
+		"city": "Lancaster",
+		"links": [],
+		**fields,
+	}
+
+
+def new_contact(**fields) -> dict[str, Any]:
+	"""A new Contact as the side panel sends it, with a desk-named new row."""
+	return {
+		"doctype": "Contact",
+		"name": "new-contact-1",
+		"__islocal": 1,
+		"first_name": "Ada",
+		"last_name": "Lovelace",
+		"email_ids": [
+			{"name": "new-contact-email-1", "__islocal": 1, "email_id": "ada@example.com", "is_primary": 1}
+		],
+		"phone_nos": [
+			{"name": "new-contact-phone-1", "__islocal": 1, "phone": "(201) 555-0123", "is_primary_phone": 1},
+			{"phone": "201-555-0124", "is_primary_mobile_no": 1},
+		],
+		**fields,
+	}
+
+
+class TestSavePartyRecord(GeocodingTestCase):
+	"""Saving a Customer's records from the side panel; TestSupplierRecords runs the same on a Supplier."""
 
 	party_type = "Customer"
 
 	def setUp(self):
 		super().setUp()
 		frappe.db.set_single_value("System Settings", "country", "United States")
-		self.p = PARTIES[self.party_type]["prefix"]
+		prefix = PARTIES[self.party_type]["prefix"]
+		self.address_field = f"{prefix}_primary_address"
+		self.contact_field = f"{prefix}_primary_contact"
 
-	def field(self, name: str) -> str:
-		return f"{self.p}_{name}"
+	def tearDown(self):
+		frappe.set_user("Administrator")
 
-	def test_a_new_party_is_left_to_erpnext(self):
-		party = make_party(self.party_type, **{self.field("primary_address_address_line1"): "1 Penn Square"})
-		self.assertFalse(party.get(self.field("primary_address")))
-		self.assertFalse(party.get(self.field("primary_contact")))
+	def save(self, doc: dict[str, Any], party) -> dict[str, Any]:
+		return party_utils.save_party_record(json.dumps(doc), self.party_type, party.name)
 
-	def test_address_and_contact_are_created_from_the_party(self):
-		self.create_address_and_contact()
-
-	def create_address_and_contact(self):
+	def test_a_new_address_is_linked_geocoded_and_primary(self):
 		party = make_party(self.party_type)
-		party.update(
-			{
-				self.field("primary_address_address_line1"): "1 Penn Square",
-				self.field("primary_address_city"): "Lancaster",
-				self.field("primary_address_state"): "PA",
-				self.field("primary_address_pincode"): "17602",
-				self.field("primary_contact_first_name"): "Ada",
-				self.field("primary_contact_last_name"): "Lovelace",
-				self.field("primary_contact_email_id"): "ada@example.com",
-				self.field("primary_contact_phone"): "(201) 555-0123",
-				self.field("primary_contact_mobile_no"): "201-555-0124",
-			}
+		saved = self.save(new_address(), party)
+
+		address = cast(Address, frappe.get_doc("Address", saved["doc"]["name"]))
+		self.assertNotEqual(address.name, "new-address-1", "the desk's placeholder name is not kept")
+		self.assertEqual(
+			[(link.link_doctype, link.link_name) for link in address.links], [(self.party_type, party.name)]
 		)
-		party.save()
-
-		# phone numbers were normalised before the save
-		self.assertEqual(party.get(self.field("primary_contact_phone")), "+12015550123")
-		self.assertEqual(party.get(self.field("primary_contact_mobile_no")), "+12015550124")
-
-		# the new records are linked in the database, not only on the saved document
-		address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
-		contact_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_contact"))
-		self.assertTrue(address_name)
-		self.assertTrue(contact_name)
-
-		address = cast(Address, frappe.get_doc("Address", address_name))
-		self.assertEqual(address.address_line1, "1 Penn Square")
-		self.assertEqual(address.city, "Lancaster")
-		self.assertTrue(address.is_primary_address)
-		self.assertEqual(address.links[0].link_doctype, self.party_type)
-		self.assertEqual(address.links[0].link_name, party.name)
+		self.assertTrue(address.is_primary_address, "a party's first address is its primary one")
 		self.assertEqual(address.get("latitude"), 40.0379, "the new address was geocoded")
+		self.assertEqual(address.country, "United States")
+		self.assertEqual([row["name"] for row in saved["addr_list"]], [address.name])
+		self.assertIn(0, saved["permlevels"])
 
-		contact = cast(Contact, frappe.get_doc("Contact", contact_name))
-		self.assertEqual((contact.first_name, contact.last_name), ("Ada", "Lovelace"))
-		self.assertTrue(contact.is_primary_contact)
-		self.assertEqual(contact.email_id, "ada@example.com")
-		self.assertEqual(contact.phone, "+12015550123")
-		self.assertEqual(contact.mobile_no, "+12015550124")
-		self.assertEqual(contact.links[0].link_name, party.name)
-
-		# the whitelisted lookups the form uses find them
-		records = (
-			customer_hooks.get_customer_records
-			if self.party_type == "Customer"
-			else supplier_hooks.get_supplier_records
-		)
-		self.assertEqual(records("Address", party.name), [{"name": address_name}])
-		self.assertEqual(records("Contact", party.name), [{"name": contact_name}])
-
+		# The form then makes it the party's primary address; saving the party fetches its point.
 		party.reload()
-		return party, address, contact
-
-	def test_editing_the_party_updates_its_address_and_contact(self):
-		party, address, contact = self.create_address_and_contact()
-
-		party.update(
-			{
-				self.field("primary_address_city"): "Lititz",
-				self.field("primary_contact_last_name"): "King",
-				self.field("primary_contact_email_id"): "ada.king@example.com",
-				self.field("primary_contact_phone"): "+12015550199",
-			}
-		)
+		party.set(self.address_field, address.name)
 		party.save()
-
-		address.reload()
-		self.assertEqual(address.city, "Lititz")
-		contact.reload()
-		self.assertEqual(contact.last_name, "King")
-		self.assertEqual(contact.email_id, "ada.king@example.com")
-		self.assertEqual(contact.phone, "+12015550199")
-		self.assertEqual(sum(row.is_primary_phone for row in contact.phone_nos), 1)
-		self.assertEqual(sum(row.is_primary for row in contact.email_ids), 1)
-
-		# back to an email and a phone the contact already has: the rows are reused
-		party.reload()
-		party.update(
-			{
-				self.field("primary_contact_email_id"): "ada@example.com",
-				self.field("primary_contact_phone"): "+12015550123",
-				self.field("primary_contact_mobile_no"): "+12015550199",
-			}
-		)
-		party.save()
-		contact.reload()
-		self.assertEqual(len(contact.email_ids), 2)
-		self.assertEqual(contact.email_id, "ada@example.com")
-		self.assertEqual(contact.phone, "+12015550123")
-		self.assertEqual(contact.mobile_no, "+12015550199")
-		self.assertEqual(len(contact.phone_nos), 3)
-
-		# a new mobile number becomes the only primary mobile; an emptied field is left alone
-		party.reload()
-		party.update(
-			{
-				self.field("primary_contact_email_id"): None,
-				self.field("primary_contact_mobile_no"): "+12015550177",
-			}
-		)
-		party.save()
-		contact.reload()
-		self.assertEqual(contact.email_id, "ada@example.com")
-		self.assertEqual(contact.mobile_no, "+12015550177")
-		self.assertEqual(sum(row.is_primary_mobile_no for row in contact.phone_nos), 1)
-
-	def test_the_party_map_follows_its_primary_address(self):
-		party, address, _ = self.create_address_and_contact()
-
-		def point(name: str) -> list[float]:
-			location = frappe.db.get_value(self.party_type, name, "location")
-			return json.loads(location)["features"][0]["geometry"]["coordinates"]
-
-		# the new primary address is on the party's map without another save
 		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 40.0379)
-		self.assertEqual(point(party.name), [-76.3055, 40.0379])
 
-		# the address moves: the party's point moves with it
-		self.get.return_value = nominatim_response([{**NOMINATIM_RESULT, "lat": "40.1", "lon": "-76.2"}])
-		address.reload()
-		address.address_line1 = "2 Penn Square"
-		address.save()
-		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 40.1)
-		self.assertEqual(point(party.name), [-76.2, 40.1])
-
-		# the address moves where the lookup finds nothing: the party loses its point
-		self.get.return_value = nominatim_response([])
-		address.reload()
-		address.address_line1 = "3 Penn Square"
-		address.save()
-		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 0)
-		self.assertFalse(frappe.db.get_value(self.party_type, party.name, "location"))
-
-		# another primary address: saving the party fetches its point
-		self.get.return_value = nominatim_response([{**NOMINATIM_RESULT, "lat": "39.9", "lon": "-76.7"}])
-		other = frappe.get_doc(
-			{
-				"doctype": "Address",
-				"address_title": party.name,
-				"address_type": "Shipping",
-				"address_line1": "120 North George Street",
-				"city": "York",
-				"country": "United States",
-				"links": [{"link_doctype": self.party_type, "link_name": party.name}],
-			}
-		).insert()
+		# A second address is not primary: the party has one.
 		party.reload()
-		party.set(self.field("primary_address"), other.name)
+		second = self.save(new_address(address_type="Shipping", address_line1="2 Penn Square"), party)
+		self.assertFalse(frappe.db.get_value("Address", second["doc"]["name"], "is_primary_address"))
+
+	def test_editing_the_primary_address_moves_the_party_map(self):
+		party = make_party(self.party_type)
+		address_name = self.save(new_address(), party)["doc"]["name"]
+		party.reload()
+		party.set(self.address_field, address_name)
 		party.save()
-		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "latitude"), 39.9)
-		self.assertEqual(point(party.name), [-76.7, 39.9])
+
+		self.get.return_value = nominatim_response([{**NOMINATIM_RESULT, "lat": "40.1", "lon": "-76.2"}])
+		doc = frappe.get_doc("Address", address_name).as_dict(convert_dates_to_str=True)
+		doc["address_line1"] = "2 Penn Square"
+		saved = self.save(doc, party)
+
+		self.assertEqual(frappe.db.get_value("Address", address_name, "address_line1"), "2 Penn Square")
+		self.assertEqual(saved["location"]["latitude"], 40.1)
+		point = json.loads(saved["location"]["location"])["features"][0]["geometry"]["coordinates"]
+		self.assertEqual(point, [-76.2, 40.1])
+		self.assertEqual(frappe.db.get_value(self.party_type, party.name, "longitude"), -76.2)
 
 	def test_a_new_address_gets_a_country_when_geocoding_fails(self):
-		# the party has no country field, and a failed lookup cannot fill it in
 		for failure in (requests.ConnectionError("refused"), None):
 			with self.subTest(failure=failure):
 				if failure:
@@ -230,60 +151,195 @@ class TestCustomerHooks(GeocodingTestCase):
 					self.get.side_effect = None
 					self.get.return_value = nominatim_response([])
 				party = make_party(self.party_type)
-				party.update(
-					{
-						self.field("primary_address_address_line1"): "1 Penn Square",
-						self.field("primary_address_city"): "Lancaster",
-					}
-				)
-				party.save()
-
-				address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
-				self.assertTrue(address_name)
-				self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "United States")
-				self.assertFalse(frappe.db.get_value("Address", address_name, "latitude"))
+				saved = self.save(new_address(), party)
+				self.assertEqual(saved["doc"]["country"], "United States")
+				self.assertFalse(saved["doc"]["latitude"])
 
 	def test_geocoding_sets_the_country_of_a_new_address(self):
 		# the lookup is not narrowed to the System Settings country, and its country wins
 		frappe.db.set_single_value("System Settings", "country", "Canada")
 		party = make_party(self.party_type)
-		party.set(self.field("primary_address_address_line1"), "1 Penn Square")
-		party.save()
-
-		address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
-		self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "United States")
+		saved = self.save(new_address(), party)
+		self.assertEqual(saved["doc"]["country"], "United States")
 		self.assertNotIn("Canada", self.get.call_args.kwargs["params"]["q"])
 
-	def test_a_new_address_needs_its_first_line(self):
+	def test_a_country_entered_is_kept(self):
+		self.get.return_value = nominatim_response([])
 		party = make_party(self.party_type)
-		party.set(self.field("primary_address_city"), "Lancaster")
-		with self.assertRaisesRegex(frappe.ValidationError, "Address Line1"):
-			party.save()
+		saved = self.save(new_address(country="Canada"), party)
+		self.assertEqual(saved["doc"]["country"], "Canada")
 
-	def test_a_new_contact_needs_a_first_name(self):
+	def test_a_new_contact_is_linked_primary_and_its_numbers_in_e164(self):
 		party = make_party(self.party_type)
-		party.set(self.field("primary_contact_last_name"), "Lovelace")
-		with self.assertRaisesRegex(frappe.ValidationError, "First Name"):
-			party.save()
+		saved = self.save(new_contact(), party)
+
+		contact = cast(Contact, frappe.get_doc("Contact", saved["doc"]["name"]))
+		self.assertEqual((contact.first_name, contact.last_name), ("Ada", "Lovelace"))
+		self.assertTrue(contact.is_primary_contact)
+		self.assertEqual(contact.links[0].link_name, party.name)
+		self.assertEqual(contact.email_id, "ada@example.com")
+		self.assertEqual(contact.phone, "+12015550123")
+		self.assertEqual(contact.mobile_no, "+12015550124")
+		self.assertTrue(
+			all(not str(row.name).startswith("new-") for row in contact.phone_nos + contact.email_ids)
+		)
+		self.assertEqual([row["name"] for row in saved["contact_list"]], [contact.name])
+
+		# the whitelisted lookups the form uses to pick a default primary find them
+		records = (
+			customer_hooks.get_customer_records
+			if self.party_type == "Customer"
+			else supplier_hooks.get_supplier_records
+		)
+		self.assertEqual(records("Contact", party.name), [{"name": contact.name}])
+
+	def test_numbers_are_read_in_the_country_of_the_primary_address(self):
+		self.get.return_value = nominatim_response([])
+		party = make_party(self.party_type)
+		address_name = self.save(new_address(country="United Kingdom"), party)["doc"]["name"]
+		party.reload()
+		party.set(self.address_field, address_name)
+		party.save()
+
+		saved = self.save(new_contact(phone_nos=[{"phone": "020 7946 0958", "is_primary_phone": 1}]), party)
+		self.assertEqual(saved["doc"]["phone"], "+442079460958")
+
+	def test_only_new_numbers_are_rewritten(self):
+		party = make_party(self.party_type)
+		contact = frappe.get_doc(
+			{
+				"doctype": "Contact",
+				"first_name": "Grace",
+				"phone_nos": [{"phone": "717 555 0142", "is_primary_phone": 1}],
+				"links": [{"link_doctype": self.party_type, "link_name": party.name}],
+			}
+		).insert()
+
+		doc = contact.as_dict(convert_dates_to_str=True)
+		doc["phone_nos"].append({"phone": "717-555-0143", "is_primary_mobile_no": 1})
+		# a row added in the side panel's table: its unticked boxes arrive as "0"
+		doc["phone_nos"].append(
+			{"phone": "12", "__islocal": 1, "is_primary_phone": "0", "is_primary_mobile_no": "0"}
+		)
+		with patch.object(frappe, "msgprint") as msgprint:
+			self.save(doc, party)
+
+		contact.reload()
+		numbers = [row.phone for row in cast(Contact, contact).phone_nos]
+		self.assertEqual(numbers, ["717 555 0142", "+17175550143", "12"])
+		msgprint.assert_called_once()
+		self.assertIn("12", msgprint.call_args.args[0])
+
+	def test_a_contact_is_primary_only_without_one(self):
+		party = make_party(self.party_type)
+		first = self.save(new_contact(), party)["doc"]["name"]
+		party.reload()
+		party.set(self.contact_field, first)
+		party.save()
+
+		party.reload()
+		second = self.save(new_contact(first_name="Grace", email_ids=[], phone_nos=[]), party)
+		self.assertFalse(second["doc"]["is_primary_contact"])
+		self.assertTrue(frappe.db.get_value("Contact", first, "is_primary_contact"))
+
+	def test_a_record_of_another_party_is_refused(self):
+		party, other = make_party(self.party_type), make_party(self.party_type)
+		address_name = self.save(new_address(), other)["doc"]["name"]
+		doc = frappe.get_doc("Address", address_name).as_dict(convert_dates_to_str=True)
+		doc["city"] = "Lititz"
+		with self.assertRaises(frappe.PermissionError):
+			self.save(doc, party)
+		self.assertEqual(frappe.db.get_value("Address", address_name, "city"), "Lancaster")
+
+	def test_a_stale_record_is_not_overwritten(self):
+		party = make_party(self.party_type)
+		address_name = self.save(new_address(), party)["doc"]["name"]
+		doc = frappe.get_doc("Address", address_name).as_dict(convert_dates_to_str=True)
+		doc["modified"] = str(add_days(now_datetime(), -1))
+		doc["city"] = "Lititz"
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.save(doc, party)
+
+	def test_only_addresses_and_contacts_of_customers_and_suppliers(self):
+		party = make_party(self.party_type)
+		with self.assertRaises(frappe.PermissionError):
+			self.save({"doctype": "ToDo", "description": "not a party record"}, party)
+		with self.assertRaises(frappe.PermissionError):
+			party_utils.save_party_record(json.dumps(new_address()), "Lead", party.name)
+		with self.assertRaises(frappe.PermissionError):
+			self.save(cast(Any, "not a document"), party)
+
+	def test_the_user_must_be_able_to_read_the_party(self):
+		party = make_party(self.party_type)
+		frappe.set_user("Guest")
+		with self.assertRaises(frappe.PermissionError):
+			self.save(new_address(), party)
+
+	def test_the_record_is_saved_with_the_users_permissions(self):
+		# Stock User reads Customers and Suppliers, but writes only the Contacts it owns
+		party = make_party(self.party_type)
+		contact = frappe.get_doc(
+			{
+				"doctype": "Contact",
+				"first_name": "Grace",
+				"links": [{"link_doctype": self.party_type, "link_name": party.name}],
+			}
+		).insert()
+		user = frappe.get_doc(
+			{
+				"doctype": "User",
+				"email": f"cis-plus-{frappe.generate_hash(length=8)}@example.com",
+				"first_name": "Reader",
+				"send_welcome_email": 0,
+				"roles": [{"role": "Stock User"}],
+			}
+		).insert()
+		doc = contact.as_dict(convert_dates_to_str=True)
+		doc["last_name"] = "Hopper"
+
+		frappe.set_user(str(user.name))
+		self.assertTrue(frappe.has_permission(self.party_type, "read", party.name))
+		with self.assertRaises(frappe.PermissionError):
+			self.save(doc, party)
+		frappe.set_user("Administrator")
+		self.assertFalse(frappe.db.get_value("Contact", contact.name, "last_name"))
 
 
-class TestSupplierHooks(TestCustomerHooks):
+class TestSupplierRecords(TestSavePartyRecord):
 	party_type = "Supplier"
 
 	def test_a_new_address_falls_back_to_the_suppliers_country(self):
 		# a Supplier has a country of its own, which beats the System Settings one
 		self.get.return_value = nominatim_response([])
 		party = make_party(self.party_type, country="Canada")
-		party.update(
+		saved = self.save(new_address(), party)
+		self.assertEqual(saved["doc"]["country"], "Canada")
+
+
+class TestCleanClientValues(IntegrationTestCase):
+	def test_bookkeeping_and_placeholder_names_are_dropped(self):
+		cleaned = party_utils.clean_client_values(
 			{
-				self.field("primary_address_address_line1"): "1 Penn Square",
-				self.field("primary_address_city"): "Lancaster",
+				"doctype": "Contact",
+				"name": "CONTACT-1",
+				"__unsaved": 1,
+				"docstatus": 0,
+				"phone_nos": [
+					{"name": "row-1", "phone": "+12015550123"},
+					{"name": "new-contact-phone-1", "__islocal": 1, "phone": "+12015550124"},
+				],
+				"tags": ["kept", 1],
 			}
 		)
-		party.save()
-
-		address_name = frappe.db.get_value(self.party_type, party.name, self.field("primary_address"))
-		self.assertEqual(frappe.db.get_value("Address", address_name, "country"), "Canada")
+		self.assertEqual(
+			cleaned,
+			{
+				"doctype": "Contact",
+				"name": "CONTACT-1",
+				"phone_nos": [{"name": "row-1", "phone": "+12015550123"}, {"phone": "+12015550124"}],
+				"tags": ["kept", 1],
+			},
+		)
 
 
 class TestPartyRecords(GeocodingTestCase):
@@ -340,25 +396,55 @@ class TestCustomerMap(GeocodingTestCase):
 
 
 class TestPartyForm(IntegrationTestCase):
-	def test_the_primary_address_and_contact_section_is_shown(self):
-		# ERPNext v16 hides this section; the app's fields sit in it, so it must show
-		for party_type, section in (
-			("Customer", "primary_address_and_contact_detail"),
-			("Supplier", "primary_address_and_contact_detail_section"),
-		):
+	def test_the_inline_fields_are_gone_and_the_section_is_erpnexts_again(self):
+		for party_type, section in remove_inline_party_fields.PARTIES.items():
 			meta = frappe.get_meta(party_type)
-			df = meta.get_field(section)
-			self.assertIsNotNone(df)
-			self.assertFalse(df.hidden, party_type)
-
-			# the app's fields are laid out inside it, up to the next section or tab
-			fieldnames = [df.fieldname for df in meta.fields]
-			after = fieldnames[fieldnames.index(section) + 1 :]
-			end = next(
-				i
-				for i, f in enumerate(after)
-				if meta.get_field(f).fieldtype in ("Section Break", "Tab Break")
+			for fieldname in remove_inline_party_fields.removed_fields(party_type):
+				self.assertIsNone(meta.get_field(fieldname), fieldname)
+			# ERPNext v16 hides the section; the app no longer shows it
+			self.assertTrue(meta.get_field(section).hidden, party_type)
+			# the map stays, fetched from the primary address
+			self.assertEqual(
+				meta.get_field("location").fetch_from, f"{party_type.lower()}_primary_address.location"
 			)
-			prefix = party_type.lower()
-			self.assertIn(f"{prefix}_primary_address_address_line1", after[:end])
-			self.assertIn(f"{prefix}_primary_contact_first_name", after[:end])
+
+
+class TestRemoveInlinePartyFieldsPatch(IntegrationTestCase):
+	def test_the_fields_and_property_setters_are_removed(self):
+		for party_type, section in remove_inline_party_fields.PARTIES.items():
+			fieldname = remove_inline_party_fields.removed_fields(party_type)[0]
+			# db_insert: the records as an older version left them, without adding a column
+			frappe.get_doc(
+				{
+					"doctype": "Custom Field",
+					"name": f"{party_type}-{fieldname}",
+					"dt": party_type,
+					"fieldname": fieldname,
+					"fieldtype": "Data",
+					"label": "Address Line 1",
+					"insert_after": section,
+				}
+			).db_insert()
+			frappe.get_doc(
+				{
+					"doctype": "Property Setter",
+					"name": f"{party_type}-{section}-hidden",
+					"doc_type": party_type,
+					"doctype_or_field": "DocField",
+					"field_name": section,
+					"property": "hidden",
+					"property_type": "Check",
+					"value": "0",
+				}
+			).db_insert()
+
+		remove_inline_party_fields.execute()
+
+		for party_type, section in remove_inline_party_fields.PARTIES.items():
+			self.assertFalse(
+				frappe.db.exists(
+					"Custom Field",
+					{"dt": party_type, "fieldname": ["like", f"{party_type.lower()}_primary_%"]},
+				)
+			)
+			self.assertFalse(frappe.db.exists("Property Setter", f"{party_type}-{section}-hidden"))

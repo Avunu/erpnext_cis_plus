@@ -20,23 +20,63 @@
 		"sha256": "ccef0818323b033578e2641d9e713f62109fb20367ae54622a610eb9d852d830"
 	},
 	{
+		"name": "address-side-panel",
+		"theme": "dark",
+		"alt": "A Customer's address open in the side panel, edited without leaving the Customer",
+		"featured": true,
+		"readme": "feature",
+		"width": 2880,
+		"height": 1800,
+		"sha256": "705900f201e0cffd1d955f1d7882af747a53fc453bc2a96f4978037aeb4055f2"
+	},
+	{
+		"name": "address-side-panel",
+		"theme": "light",
+		"alt": "A Customer's address open in the side panel, edited without leaving the Customer",
+		"featured": true,
+		"readme": "feature",
+		"width": 2880,
+		"height": 1800,
+		"sha256": "160a379bdc5b22fede14c946357c7b720c4b5bf4650f67c1a339fcd920c7bffc"
+	},
+	{
+		"name": "contact-side-panel",
+		"theme": "dark",
+		"alt": "A Customer's contact open in the side panel, with its e-mail addresses and phone numbers",
+		"featured": false,
+		"readme": "feature",
+		"width": 2880,
+		"height": 1800,
+		"sha256": "4ad85feb30f696d64fe5c141a160bedf76d2210db03a31e08608407f665e24bc"
+	},
+	{
+		"name": "contact-side-panel",
+		"theme": "light",
+		"alt": "A Customer's contact open in the side panel, with its e-mail addresses and phone numbers",
+		"featured": false,
+		"readme": "feature",
+		"width": 2880,
+		"height": 1800,
+		"sha256": "7fc632020f676b5a830accb2da66e34fbcf882b2373615c434c86383c02e5c6f"
+	},
+	{
 		"name": "customer-form",
 		"theme": "dark",
-		"alt": "A Customer's Address & Contact tab: its primary address and contact, and the address's geocoded point on the Customer's map",
+		"alt": "A Customer's Address & Contact tab: its address and contact cards, and the address's geocoded point on the Customer's map",
 		"featured": true,
 		"readme": "hero",
 		"width": 2880,
 		"height": 1800,
-		"sha256": "a55a4defc17cabca74e937b028bf80dff7520be450f51561aff4bb05e965b0e4"
+		"sha256": "1358674ada26d7862ed75c90539113c58ddb04e6dc0ca75640c67fbf8131633d"
 	},
 	{
 		"name": "customer-form",
 		"theme": "light",
-		"alt": "A Customer's Address & Contact tab: its primary address and contact, and the address's geocoded point on the Customer's map",
+		"alt": "A Customer's Address & Contact tab: its address and contact cards, and the address's geocoded point on the Customer's map",
 		"featured": true,
 		"readme": "hero",
 		"width": 2880,
 		"height": 1800,
-		"sha256": "34a7643d9d58ec3cfcce7a7e6479a41967fc9c67c17e2d2f2b6cdba1c74ab271"
+		"sha256": "a012775e8ec33bccdf49dd29eb1baa9a691a8e89e840483bdfe09e41677b71e1"
 	}
 ]

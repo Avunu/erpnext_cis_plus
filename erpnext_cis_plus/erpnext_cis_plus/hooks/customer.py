@@ -6,11 +6,7 @@ import json
 import frappe
 from frappe.utils import get_link_to_form
 
-from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import (
-	get_party_records,
-	update_party_address_and_contact,
-	validate_party_address_and_contact_fields,
-)
+from erpnext_cis_plus.erpnext_cis_plus.hooks.party_utils import get_party_records
 
 
 def render_map_popup(customer: dict) -> str:
@@ -60,32 +56,3 @@ def get_coords(filters: str | dict | list | None = None) -> dict:
 def get_customer_records(dt: str, customer_name: str) -> list[dict]:
 	"""The Addresses or Contacts (dt) linked to a Customer; customer_name is its name (ID)."""
 	return get_party_records(dt, "Customer", customer_name)
-
-
-def validate(doc, method=None):
-	# Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
-	if doc.flags.get("is_new_doc"):
-		return
-	validate_party_address_and_contact_fields(
-		doc,
-		primary_address_field="customer_primary_address",
-		primary_contact_field="customer_primary_contact",
-		contact_prefix="customer_primary_contact_",
-	)
-
-
-def before_save(doc, method=None):
-	# Keep for backward compatibility - no longer does creation
-	pass
-
-
-def on_update(doc, method=None):
-	# Skip CIS Plus logic for new docs created via quick entry - let ERPNext handle it
-	if doc.flags.get("is_new_doc"):
-		return
-	update_party_address_and_contact(
-		doc,
-		primary_address_field="customer_primary_address",
-		primary_contact_field="customer_primary_contact",
-		contact_prefix="customer_primary_contact_",
-	)
