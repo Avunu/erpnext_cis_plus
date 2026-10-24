@@ -1,6 +1,6 @@
 {
 	"name": "erpnext-cis-plus",
-	"version": "0.0.1",
+	"version": "16.0.0",
 	"private": true,
 	"description": "Address geocoding and location maps for customers and suppliers",
 	"license": "MIT",
