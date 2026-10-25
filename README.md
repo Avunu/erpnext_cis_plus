@@ -61,10 +61,6 @@ It also lets you edit a Customer's or Supplier's addresses and contacts in Frapp
 
 ## Installation
 
-On Frappe Cloud, install CIS Plus for ERPNext from the [Frappe marketplace](https://cloud.frappe.io/marketplace/apps/erpnext_cis_plus).
-
-On a bench of your own:
-
 ```bash
 bench get-app https://github.com/Avunu/erpnext_cis_plus --branch version-16
 bench --site <site> install-app erpnext_cis_plus
