@@ -1,48 +1,47 @@
-# CIS Plus for ERPNext
+---
+title: CIS Plus for ERPNext
+description: Address geocoding and location maps for customers and suppliers, and their addresses and contacts edited in the side panel.
+nav_title: Overview
+order: 0
+updated: 2026-10-26
+---
 
-Address geocoding and location maps for customers and suppliers
+ERPNext keeps customers, contacts and addresses as separate records linked together. That is flexible, but for a small business, where most customers have one contact and one address, it means a lot of moving between forms, and none of those forms shows where the customer is. CIS Plus for ERPNext looks up every Address on the free OpenStreetMap Nominatim service, shows its location on a map on the Address, Customer and Supplier forms, and lets you edit a Customer's or Supplier's addresses and contacts in the side panel next to the party's form.
 
-ERPNext keeps customers, contacts and addresses as separate records linked together. CIS Plus geocodes addresses through the free OpenStreetMap Nominatim service and shows the location of each Address, Customer and Supplier on a map on its form. It also lets you edit a Customer's or Supplier's addresses and contacts in Frappe's side panel, without leaving the party's form.
+It is for sales, purchasing and office staff who keep customer and supplier records in ERPNext, and for the administrators who run the site. It runs on Frappe v16 with ERPNext and is free software under the [MIT licence](../license.txt).
+
+## What you get
+
+### Address geocoding and maps
+
+When an Address is saved with a new or changed address, the app looks it up on Nominatim, stores its latitude and longitude, draws its point on a **Map** in a new **Location** section, and fills in a blank country, postal code, state, county or city. The Customer and Supplier forms get a **Location** section that shows the point of their primary address and follows it when it moves. See [Address geocoding and maps](geocoding.md).
 
 ![A Customer's Address & Contact tab: its address and contact cards, and the address's geocoded point on the Customer's map](screenshots/customer-form-light.webp)
 
-## What it does
+### Addresses and contacts edited in the side panel
 
-- **Address geocoding.** When an Address is saved with a new or changed address, or still has no coordinates, it is looked up on Nominatim. Its latitude and longitude are stored, a point is drawn on a new **Location** map on the Address, and its country, postal code, state, county and city are filled in where they are blank.
-- **Location on the Customer and Supplier.** A **Location** section on both forms shows the primary address's point on a map, and follows the address when it changes or moves.
-- **Addresses and contacts in the side panel.** On the **Address & Contact** tab, click an address or contact card to edit it in the side panel, next to the Customer or Supplier, and **Save** (or Ctrl+S). **+ Address** and **+ Contact** open a new one there, linked to the party when saved; a party's first address or contact becomes its primary one. The party's cards and map follow each save, and unsaved changes on the party's form are kept.
-- **Phone numbers in E.164** for numbers added to a Contact in the side panel, using the country of the party's primary address or of System Settings.
-- **Primary address and contact by default.** When a Customer or Supplier is opened and has no primary address or contact, the first linked one is selected.
+On the **Address & Contact** tab of a Customer or Supplier, clicking an address or contact card opens it as a form in Frappe's side panel, and the add buttons open a new one there. The party's form stays open underneath, and its cards and map follow each save. Phone numbers added there are stored in E.164, and a party's first address and contact become its primary ones. See [Edit addresses and contacts in the side panel](side-panel.md).
 
 ![A Customer's address open in the side panel, edited without leaving the Customer](screenshots/address-side-panel-light.webp)
 
-![A Customer's contact open in the side panel, with its e-mail addresses and phone numbers](screenshots/contact-side-panel-light.webp)
+## Where to start
 
-![An Address after it was geocoded: county and country filled in, and its point on the Location map](screenshots/address-form-light.webp)
+| You are                                      | Read                                                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Staff who keep customer and supplier records | [Edit addresses and contacts in the side panel](side-panel.md), then [Address geocoding and maps](geocoding.md)                |
+| The administrator setting it up              | [Install and upgrade](install.md), [Configuration](configuration.md) and [Limitations and troubleshooting](troubleshooting.md) |
+| A developer changing the app                 | [Development](development/README.md) and [How it works](development/architecture.md)                                           |
 
-## Good to know
+## Requirements
 
-- Geocoding sends the address text (street, city, state, postal code, country) to the public Nominatim service. The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/): it identifies itself in its User-Agent, sends at most one request per second from the bench (a lookup that gets no slot within five seconds is skipped, and saving again retries it), and gives up on a request after 10 seconds. That makes it a fit for small sites with modest address volumes.
-- If the service cannot be reached, times out, returns an error or is busy, the Address is saved without coordinates and an alert says so; if it finds no match, the Address is saved without coordinates. Any coordinates from before the change are cleared in both cases, and an Address without coordinates is looked up again the next time it is saved.
-- A new Address saved from the side panel without a country gets its country from the geocoding result; when the lookup fails or finds nothing, it takes the Supplier's own country, or the System Settings country.
-- Records are saved with your own permissions: without write access to Addresses or Contacts, the cards keep ERPNext's behaviour. The side panel follows Frappe's split view setting, so it is not used on a phone or when you turn split view off; the card menu's **Edit** then opens the full form.
-- Closing the side panel drops unsaved edits in it.
-- Updating from a version that had primary address and contact fields on the Customer and Supplier form: `bench migrate` removes them. Their values were copies of the primary Address and Contact, which keep them.
-- The app sets the Customer list up for Frappe's Map view, but that view currently fails to open on Frappe v16 (`this.load_lib is not a function`), so the Customer map view shows no map until Frappe fixes it.
+- A bench with Frappe v16. The app declares `frappe >=16.0.0,<17.0.0`.
+- ERPNext v16 (`erpnext >=16.0.0,<17.0.0`) on the same site, installed before this app. The app adds fields to ERPNext's Customer and Supplier and reads their primary address and contact fields.
+- The Python packages `phonenumbers`, `requests` and `us`. `bench get-app` installs them from the app's `pyproject.toml`.
+- Outbound HTTPS from the bench to `nominatim.openstreetmap.org` for geocoding, and from users' browsers to OpenStreetMap's tile servers for the maps.
 
-## Installation
+> [!NOTE]
+> These pages describe the code on the `develop` branch. Where a statement depends on Frappe's or ERPNext's own behaviour, it was checked against Frappe 16.52.0 and ERPNext 16.51.1.
 
-The app requires ERPNext.
+## Source and changes
 
-```bash
-bench get-app https://github.com/Avunu/erpnext_cis_plus --branch develop
-bench --site <site> install-app erpnext_cis_plus
-```
-
-## Development
-
-The source layout and the commands for tests and screenshots are described in [Development](development.md).
-
-## License
-
-[MIT](https://github.com/Avunu/erpnext_cis_plus/blob/develop/license.txt), Copyright (c) 2024–present Avunu LLC.
+The source is at [github.com/Avunu/erpnext_cis_plus](https://github.com/Avunu/erpnext_cis_plus). Releases and their notes are on the [GitHub releases page](https://github.com/Avunu/erpnext_cis_plus/releases); release-please writes them, and a `CHANGELOG.md`, from the commit history when a release is cut.
