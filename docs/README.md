@@ -34,7 +34,7 @@ On the **Address & Contact** tab of a Customer or Supplier, clicking an address 
 
 ## Requirements
 
-- A bench with Frappe v16. The app declares `frappe >=16.0.0,<17.0.0`.
+- A bench with Frappe v16 on Python 3.14 or later. The app declares `frappe >=16.0.0,<17.0.0` and `requires-python = ">=3.14"`.
 - ERPNext v16 (`erpnext >=16.0.0,<17.0.0`) on the same site, installed before this app. The app adds fields to ERPNext's Customer and Supplier and reads their primary address and contact fields.
 - The Python packages `phonenumbers`, `requests` and `us`. `bench get-app` installs them from the app's `pyproject.toml`.
 - Outbound HTTPS from the bench to `nominatim.openstreetmap.org` for geocoding, and from users' browsers to OpenStreetMap's tile servers for the maps.

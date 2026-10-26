@@ -63,7 +63,7 @@ On `onload`, `select_default_primary` checks each of the party's primary address
 
 ## The Customer map method
 
-`customer.get_coords` returns a GeoJSON `FeatureCollection` of the customers the user may read that have coordinates, with a popup linking the Customer and its primary contact. `customer_list.js` names it as the list's `get_coords_method`, which on Frappe v16 only makes the Map view available: the view plots the list's own `location` values and does not call the method. The view itself does not open on v16; see [Limitations](../troubleshooting.md#limitations).
+`customer.get_coords` returns a GeoJSON `FeatureCollection` of the customers the user may read that have coordinates, with a popup linking the Customer and its primary contact. `customer_list.js` names it as the list's `get_coords_method`, which on Frappe v16 is one of the conditions that make the Map view available (`list_view_select.js`); the `latitude`, `longitude` and Geolocation `location` custom fields meet the others, so the Address and Supplier lists offer it too. The view plots the list's own `location` values and does not call the method. The view itself does not open on v16; see [Limitations](../troubleshooting.md#limitations).
 
 ## The patch
 

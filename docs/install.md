@@ -12,7 +12,6 @@ CIS Plus for ERPNext installs like any Frappe app. It has no build step of its o
 
 - A bench with Frappe v16 and a site that already has ERPNext v16 installed. The app lists ERPNext in `required_apps`, so install ERPNext first.
 - Outbound HTTPS from the bench to `nominatim.openstreetmap.org`. Without it the app still installs and every Address still saves, but none is geocoded: see [Troubleshooting](troubleshooting.md#troubleshooting).
-- A System Manager login on the site.
 
 ## Install
 

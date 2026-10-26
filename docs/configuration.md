@@ -53,13 +53,13 @@ The app adds no doctypes, property setters, roles, workspaces or scheduled jobs.
 
 ### Document events and scripts
 
-| Where                   | What                                                                                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Address `validate`      | Looks the address up on Nominatim when it needs it, and fills in blank fields from the result.                                                                                  |
-| Address `before_save`   | Gives a new Address from the side panel a default country when it still has none, and turns the coordinates into the point the **Map** shows.                                   |
-| Address `on_update`     | Copies a changed point to every Customer and Supplier whose primary address it is.                                                                                              |
-| Customer, Supplier form | A form script (`doctype_js`) that selects a default primary address and contact, and opens address and contact cards in the side panel.                                         |
-| Customer list           | List settings (`doctype_list_js`) that add **Map** to the list's views. That view does not open on Frappe v16 at the moment: see [Limitations](troubleshooting.md#limitations). |
+| Where                   | What                                                                                                                                                                                                                                                                                      |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Address `validate`      | Looks the address up on Nominatim when it needs it, and fills in blank fields from the result.                                                                                                                                                                                            |
+| Address `before_save`   | Gives a new Address from the side panel a default country when it still has none, and turns the coordinates into the point the **Map** shows.                                                                                                                                             |
+| Address `on_update`     | Copies a changed point to every Customer and Supplier whose primary address it is.                                                                                                                                                                                                        |
+| Customer, Supplier form | A form script (`doctype_js`) that selects a default primary address and contact, and opens address and contact cards in the side panel.                                                                                                                                                   |
+| Customer list           | List settings (`doctype_list_js`) that name `get_coords` as the list's map method. The custom fields alone make Frappe offer **Map** on the Address, Customer and Supplier lists; that view does not open on Frappe v16 at the moment: see [Limitations](troubleshooting.md#limitations). |
 
 The app does not override or extend any doctype class.
 

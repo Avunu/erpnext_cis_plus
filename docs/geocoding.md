@@ -32,11 +32,11 @@ When a lookup fails or finds nothing:
 
 - The Address is saved anyway.
 - If it was a failure (the service could not be reached, timed out, returned an error or was busy), an alert says so. A lookup that finds no match shows no message. See [Troubleshooting](troubleshooting.md#troubleshooting).
-- If you changed the address, its old coordinates and point are cleared, because they belong to the address as it was. Coordinates and a point you entered or drew in the same edit are kept.
+- If you changed the address, its old coordinates and point are cleared, because they belong to the address as it was. A point you drew in the same edit is cleared with them. Coordinates set in the same edit, through an import or the API, are kept.
 
 ## Draw a point by hand
 
-The **Map** on the Address is an ordinary Frappe map field, so you can draw a point on it. A point you draw is kept while the Address has no coordinates. Once a lookup succeeds, the point is redrawn from the coordinates.
+The **Map** on the Address is an ordinary Frappe map field, so you can draw a point on it. A point you draw is kept only while the Address has no coordinates, which is the case when its lookups failed or found nothing. On an Address that has coordinates, saving redraws the point from them, and a drawn point is lost; once a lookup succeeds, the same happens.
 
 ## The map on a Customer or Supplier
 
@@ -48,7 +48,7 @@ The point follows the address:
 - A party's first address, added in the side panel, becomes its primary address, and the party's map shows it straight away.
 - Saving the primary Address with a new point, from anywhere, copies the point to every Customer and Supplier whose primary address it is. Their **Last Updated On** does not change.
 
-A party whose primary address has no coordinates shows an empty map.
+A party whose primary address has no point shows an empty map.
 
 ## How a lookup works
 
@@ -57,13 +57,13 @@ The app follows [Nominatim's usage policy](https://operations.osmfoundation.org/
 - Each request identifies the app in its User-Agent, with its version and repository address.
 - The whole bench sends at most one request per second. Every site on the bench shares that slot through Redis. A save waits up to five seconds for the slot, and when none comes free it skips the lookup and says so.
 - A request gives up after 5 seconds to connect and 10 seconds to read, so a slow service never holds a save open for long.
-- An address that has not changed is never looked up twice.
+- An Address that has coordinates is not looked up again until its address changes.
 
-That makes it a fit for modest volumes: people saving addresses one at a time. A data import of many addresses skips most lookups; saving each Address again later fills them in.
+That makes it a fit for modest volumes: people saving addresses one at a time. An import of many addresses goes at most one lookup per second, and when several saves compete for the slot, some skip their lookup; saving each of those Addresses again later fills them in.
 
 > [!IMPORTANT]
 > Geocoding sends the address text (street, city, state, postal code and country) to the public Nominatim service, which the OpenStreetMap Foundation runs. Make sure that is acceptable for your data before you install the app.
 
-## The Customer map view
+## The list map views
 
-The app adds **Map** to the views of the Customer list, which would put a pin on every customer with a location. On Frappe v16 that view fails to open: see [Limitations](troubleshooting.md#limitations). The maps on the Address, Customer and Supplier forms are not affected.
+Because the app gives Address, Customer and Supplier a `latitude`, a `longitude` and a `location` map field, Frappe offers **Map** among the views of their lists, which would put a pin on every record with a location. On Frappe v16 that view fails to open: see [Limitations](troubleshooting.md#limitations). The maps on the Address, Customer and Supplier forms are not affected.

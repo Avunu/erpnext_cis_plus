@@ -21,7 +21,7 @@ When any of these is missing, the cards work as they do without the app: the car
 ## Edit an address or contact
 
 1. Open the Customer or Supplier and go to the **Address & Contact** tab.
-2. Click an address or contact card (or focus it with Tab and press Enter). It opens in the side panel as a form.
+2. Click an address or contact card (its tooltip reads **Edit in the side panel**), or focus it with Tab and press Enter. It opens in the side panel as a form.
 3. Change what you need.
 4. Click **Save** at the top of the panel, or press Ctrl+S (Cmd+S on a Mac). While the panel has focus, Ctrl+S saves the record, not the party.
 

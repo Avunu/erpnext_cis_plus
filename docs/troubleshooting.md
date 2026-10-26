@@ -8,9 +8,8 @@ updated: 2026-10-26
 
 ## Limitations
 
-- **The Customer map view does not open on Frappe v16.** The app names a map method in the Customer list's settings, which makes Frappe offer **Map** among the list's views. Opening it fails in Frappe itself with `TypeError: this.load_lib is not a function`: Frappe's `MapView.setup_view` calls `this.load_lib()`, but `ListView`, which `MapView` extends, replaces `load_lib` with a promise when it is created (`patch_refresh_and_load_lib` in `frappe/public/js/frappe/list/list_view.js`). The view shows no map until Frappe fixes it. The **Location** maps on the Address, Customer and Supplier forms are not affected.
-- **Only the Customer list has the map view settings.** The Supplier list has none.
-- **Geocoding is for modest volumes.** The whole bench sends at most one request per second to Nominatim, and a save that gets no slot within five seconds skips its lookup. A bulk import of addresses skips most lookups; saving each Address again retries it.
+- **The list map views do not open on Frappe v16.** Frappe offers **Map** among the views of any list whose doctype has `latitude` and `longitude` fields or a Geolocation field named `location`, so the app's custom fields put it on the Address, Customer and Supplier lists (the Customer list also names a map method). Opening it fails in Frappe itself with `TypeError: this.load_lib is not a function`: Frappe's `MapView.setup_view` calls `this.load_lib()`, but `ListView`, which `MapView` extends, replaces `load_lib` with a promise when it is created (`patch_refresh_and_load_lib` in `frappe/public/js/frappe/list/list_view.js`). The view shows no map until Frappe fixes it. The **Location** maps on the Address, Customer and Supplier forms are not affected.
+- **Geocoding is for modest volumes.** The whole bench sends at most one request per second to Nominatim, and a save that gets no slot within five seconds skips its lookup. An import of many addresses is slowed to that pace, and when several saves compete for the slot (parallel imports, or an import while people work), some of them skip their lookup; saving each of those Addresses again retries it.
 - **Geocoding sends address text to a public service.** Street, city, state, postal code and country go to the OpenStreetMap Foundation's Nominatim service. There is no setting to use another geocoder or to turn geocoding off.
 - **Filled-in names come as Nominatim writes them.** The app asks for no particular language, and fills a blank **Country**, **State/Province**, **County** or **City/Town** with the name Nominatim returns. Only a United States state is shortened, to its two-letter code.
 - **Addresses and contacts are added in the side panel only once the party is saved.** The **Address & Contact** tab shows its cards only then. A new party's first address and contact can still come from ERPNext's quick entry.
@@ -55,6 +54,10 @@ Shown when the side panel saves an existing Address or Contact that is no longer
 ### `Error: <NAME> (<DOCTYPE>) has been modified after you have opened it`
 
 Frappe's message when the record changed on the server after the side panel opened it. The side panel saves the way the full form does, so it never overwrites the newer version. Close the panel, reload the party's form, open the record again and redo your change.
+
+### `Error: Value missing for Address: Country`
+
+Frappe's message when a new Address saved from the side panel ends up with no **Country**: you left it empty, the address lookup found none (it failed, found no match or was skipped), the party is a Customer or a Supplier without a **Country**, and the **Country** in System Settings is empty. Fill in **Country** and save again, and set the System Settings **Country** so a new address always has a fallback.
 
 ### "Only Address and Contact records can be saved here" or "Only a Customer's or a Supplier's records can be saved here"
 

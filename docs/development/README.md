@@ -86,7 +86,7 @@ In the dev shell, `frappe-test --reuse-site` runs the same tests with coverage o
 - `ci / test`: the Python tests with coverage.
 - `ci / marketplace`: the registry checks on `marketplace/listing.toml`, `hooks.py` and the logo.
 
-`pr-policy.yml` adds `ci / pr-policy`, which checks a pull request's base, title and commits: conventional commit subjects, against `develop`. `nightly.yml` runs the integration suites, the screenshots and the link checks each night and is never a required check. `deps.yml` relocks and syncs after a Dependabot flake bump.
+`pr-policy.yml` adds `ci / pr-policy`, which checks a pull request's base, title and commits: conventional commit subjects, against `develop`. `nightly.yml` runs the integration suites, the screenshots and the link checks each night and is never a required check. `deps.yml` handles dependency pull requests (relocking them and merging them once green), with a daily sweep and a weekly relock.
 
 ## Docs
 
