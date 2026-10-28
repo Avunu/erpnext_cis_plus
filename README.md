@@ -15,6 +15,7 @@ Address geocoding and location maps for customers and suppliers
 [![Latest release](https://img.shields.io/github/v/release/Avunu/erpnext_cis_plus)](https://github.com/Avunu/erpnext_cis_plus/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](license.txt)
 [![Frappe v16](https://img.shields.io/badge/Frappe-v16-blue)](https://github.com/frappe/frappe/tree/version-16)
+[![Documentation](https://img.shields.io/badge/docs-docs.avunu.net-blue)](https://docs.avunu.net/erpnext-cis-plus/)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/customer-form-dark.webp">
@@ -104,6 +105,7 @@ All limitations, and the messages the app shows with their fixes, are in [docs/t
 
 ## Support
 
+- Documentation: [docs.avunu.net/erpnext-cis-plus/](https://docs.avunu.net/erpnext-cis-plus/)
 - Bug reports and questions: [GitHub issues](https://github.com/Avunu/erpnext_cis_plus/issues)
 - E-mail: <mail@avu.nu>
 
