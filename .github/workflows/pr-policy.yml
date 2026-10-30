@@ -15,7 +15,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-pr-policy.yml@877739391aedcf8d4b982fac95b2549e6a2ffc0b # v1.3.0
+    uses: Avunu/frappe-nix/.github/workflows/app-pr-policy.yml@fe7724052a3be7995971325add0fa130dcad2efc # v1.5.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop

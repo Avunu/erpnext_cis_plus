@@ -21,6 +21,6 @@ jobs:
   docs:
     permissions:
       contents: read # checkout
-    uses: Avunu/site-docs/.github/workflows/check-docs.yml@ad26d170683230ccb8056eef69f989e00e60e2ba # 2026-10-16
+    uses: Avunu/site-docs/.github/workflows/check-docs.yml@9df9c80b0102bb8d55674b36a2c76231b2770805 # 2026-10-25
     with:
       path: erpnext-cis-plus
