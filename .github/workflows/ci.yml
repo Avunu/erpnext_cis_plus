@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-lint.yml@fe7724052a3be7995971325add0fa130dcad2efc # v1.5.0
+    uses: Avunu/frappe-nix/.github/workflows/app-lint.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -33,7 +33,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-typecheck.yml@fe7724052a3be7995971325add0fa130dcad2efc # v1.5.0
+    uses: Avunu/frappe-nix/.github/workflows/app-typecheck.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -45,13 +45,13 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: Avunu/frappe-nix/.github/workflows/app-test.yml@fe7724052a3be7995971325add0fa130dcad2efc # v1.5.0
+    uses: Avunu/frappe-nix/.github/workflows/app-test.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
       runs-on: '["self-hosted","nixos"]'
       nix-cache: ${{ vars.FRAPPE_NIX_CACHE || '' }}
-      test-timeout-minutes: 75
+      test-timeout-minutes: 120
     secrets:
       NIX_CACHE_TOKEN: ${{ secrets.FRAPPE_NIX_CACHE_TOKEN }}
       NIX_CACHE_READ_TOKEN: ${{ secrets.FRAPPE_NIX_CACHE_READ_TOKEN }}
@@ -61,7 +61,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-marketplace.yml@fe7724052a3be7995971325add0fa130dcad2efc # v1.5.0
+    uses: Avunu/frappe-nix/.github/workflows/app-marketplace.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
