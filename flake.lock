@@ -203,17 +203,18 @@
         "nix2container": "nix2container",
         "nixpkgs": "nixpkgs_2",
         "pilot": "pilot",
+        "pnpm2nix": "pnpm2nix",
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",
         "python-devops-nix": "python-devops-nix",
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1793284078,
-        "narHash": "sha256-YXLlrVqaPygEcw51mO47ZgAYPg7QmLabtCq9SNHPrfk=",
+        "lastModified": 1793441404,
+        "narHash": "sha256-cESokHg2CzdPxriGPP8raN7c5ZrOef7K72Ggjx1LhaM=",
         "owner": "Avunu",
         "repo": "frappe-nix",
-        "rev": "d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3",
+        "rev": "c7d9d4b0826f4ab278f5bc72e021fbb351157ef6",
         "type": "github"
       },
       "original": {
@@ -547,6 +548,22 @@
         "type": "github"
       }
     },
+    "pnpm2nix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784968304,
+        "narHash": "sha256-NPXKyp40QNCk9r6kavSwqi/zv7OcLgrSRtPmHW+e74w=",
+        "owner": "FliegendeWurst",
+        "repo": "pnpm2nix-nzbr",
+        "rev": "9b15300b711a50bb96e553b66aad5cad94df9c7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "FliegendeWurst",
+        "repo": "pnpm2nix-nzbr",
+        "type": "github"
+      }
+    },
     "pyproject-build-systems": {
       "inputs": {
         "nixpkgs": [
@@ -609,11 +626,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793239914,
-        "narHash": "sha256-BE1fWHyBaWMyDoGTJrdfRkVBeyr1BCVif3LUQBGgjto=",
+        "lastModified": 1793409647,
+        "narHash": "sha256-8FDu9ZOTNhWU6oEUqFi5r9T2r27ApgO31jDWpOlKujU=",
         "owner": "Avunu",
         "repo": "python-devops-nix",
-        "rev": "1acf4729278f156d7e55b55caf837165635f798a",
+        "rev": "c07df3edb5c3ab98d91ca06e7c406fea134b03cf",
         "type": "github"
       },
       "original": {
@@ -659,11 +676,11 @@
     "standards-profile": {
       "flake": false,
       "locked": {
-        "lastModified": 1793372662,
-        "narHash": "sha256-4HXHAl/AvmtNpcRyxBhmN1BAbQQZ2X9Q8eCUXib5Wqw=",
+        "lastModified": 1793450106,
+        "narHash": "sha256-LDYTMyxtAyxZo0ewkEe7GsmRcdtq0hdCVHe5zFrr8TM=",
         "owner": "Avunu",
         "repo": "frappe-standards-profile",
-        "rev": "9cfbfd7f9a5b80d16d2b4221b732e6db9de157c2",
+        "rev": "81502a709190b23007a5431692e3d40f3f68922a",
         "type": "github"
       },
       "original": {
