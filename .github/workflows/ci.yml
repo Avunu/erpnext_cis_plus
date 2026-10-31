@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-lint.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
+    uses: Avunu/frappe-nix/.github/workflows/app-lint.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -33,7 +33,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-typecheck.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
+    uses: Avunu/frappe-nix/.github/workflows/app-typecheck.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -45,7 +45,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: Avunu/frappe-nix/.github/workflows/app-test.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
+    uses: Avunu/frappe-nix/.github/workflows/app-test.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -61,7 +61,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: Avunu/frappe-nix/.github/workflows/app-marketplace.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
+    uses: Avunu/frappe-nix/.github/workflows/app-marketplace.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop

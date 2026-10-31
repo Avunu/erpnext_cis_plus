@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
       actions: write
       checks: read
-    uses: Avunu/frappe-nix/.github/workflows/app-deps.yml@d9e2f8ff34b57c0eda699b1c69f707100f7cc4f3 # v2.0.0
+    uses: Avunu/frappe-nix/.github/workflows/app-deps.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -31,3 +31,5 @@ jobs:
       NIX_CACHE_TOKEN: ${{ secrets.FRAPPE_NIX_CACHE_TOKEN }}
       NIX_CACHE_READ_TOKEN: ${{ secrets.FRAPPE_NIX_CACHE_READ_TOKEN }}
       FETCH_TOKEN: ${{ secrets.FRAPPE_NIX_FETCH_TOKEN }}
+      APP_ID: ${{ vars.AVUNU_CI_APP_ID || secrets.AVUNU_CI_APP_ID }}
+      APP_PRIVATE_KEY: ${{ secrets.AVUNU_CI_PRIVATE_KEY }}
