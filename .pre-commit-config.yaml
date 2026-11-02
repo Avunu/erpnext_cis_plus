@@ -33,7 +33,7 @@ repos:
   # imported inside the class-body `if TYPE_CHECKING:` block frappe generates, so only
   # <doctype>/<doctype>.py controllers are excluded. Tests and helpers in doctype folders are sorted.
   - repo: https://github.com/bwhmather/ssort
-    rev: 0.17.0
+    rev: 0.19.0
     hooks:
       - id: ssort
         exclude: '/doctype/([^/]+)/\1\.py$'
