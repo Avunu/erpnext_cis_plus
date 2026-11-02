@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
       actions: write
       issues: write
-    uses: Avunu/frappe-nix/.github/workflows/app-nightly.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
+    uses: Avunu/frappe-nix/.github/workflows/app-nightly.yml@f25d11aea55df79ac23c1bf2caf0d4c451e8ac42 # v2.2.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
@@ -27,6 +27,8 @@ jobs:
       run-shots: true
       run-links: true
       run-duplication: true
+      auto-merge: true
+      merge-method: squash
       publish: ${{ vars.MARKETPLACE_PUBLISH == 'true' }}
     secrets:
       NIX_CACHE_TOKEN: ${{ secrets.FRAPPE_NIX_CACHE_TOKEN }}

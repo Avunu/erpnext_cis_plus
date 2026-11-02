@@ -4,8 +4,11 @@
 name: deps
 on:
   pull_request:
+  # Bring the bot PRs that are behind up to date.
+  push:
+    branches: [develop]
   schedule:
-    # Re-dispatch CI for bot PRs.
+    # Re-dispatch CI for bot PRs and bring them up to date.
     - cron: "0 9 * * *"
     # The weekly Python relock; passed as relock-cron below.
     - cron: "0 8 * * 1"
@@ -18,13 +21,15 @@ jobs:
       pull-requests: write
       actions: write
       checks: read
-    uses: Avunu/frappe-nix/.github/workflows/app-deps.yml@c7d9d4b0826f4ab278f5bc72e021fbb351157ef6 # v2.1.0
+    uses: Avunu/frappe-nix/.github/workflows/app-deps.yml@f25d11aea55df79ac23c1bf2caf0d4c451e8ac42 # v2.2.0
     with:
       app: erpnext_cis_plus
       integration-branch: develop
       runs-on: '["self-hosted","nixos"]'
       nix-cache: ${{ vars.FRAPPE_NIX_CACHE || '' }}
       auto-merge: true
+      auto-merge-policy: all
+      update-branches: true
       merge-method: squash
       relock-cron: "0 8 * * 1"
     secrets:
