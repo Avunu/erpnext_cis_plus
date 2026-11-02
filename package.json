@@ -16,7 +16,7 @@
 		"check": "yarn -s format:check && yarn -s lint && yarn -s typecheck"
 	},
 	"devDependencies": {
-		"@types/node": "^26.6.4",
+		"@types/node": "^26.6.6",
 		"frappe-types": "^16.5.0",
 		"oxfmt": "^0.75.0",
 		"oxlint": "^1.90.0",
