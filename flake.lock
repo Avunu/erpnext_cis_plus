@@ -75,11 +75,11 @@
     "erpnext": {
       "flake": false,
       "locked": {
-        "lastModified": 1792084156,
-        "narHash": "sha256-2dARW04y0On+cjpDYQJqWmeLBGrDdllU+2bL7eSjj/I=",
+        "lastModified": 1793220242,
+        "narHash": "sha256-A0lyT7a316ugON5iQB0wlSLLEPPez7haAanoM+ZXQ1k=",
         "owner": "frappe",
         "repo": "erpnext",
-        "rev": "5af6561f5aa48104559692fb4fd82f2580e8d338",
+        "rev": "9cd11b19575bfc34f092a24f6c8b368c4dd69481",
         "type": "github"
       },
       "original": {
@@ -179,11 +179,11 @@
     "frappe": {
       "flake": false,
       "locked": {
-        "lastModified": 1791941270,
-        "narHash": "sha256-EzBCyevP9eGmOXAlr0W9qkeMhdTz1zghNuJAsus9V94=",
+        "lastModified": 1793118696,
+        "narHash": "sha256-b5dGURht09oVe7zKcAjbx0QVd2meuSAmPdfwXCJOaDE=",
         "owner": "frappe",
         "repo": "frappe",
-        "rev": "4515014c87ece6cb20ee91d2cfb121c5cbd1ff4a",
+        "rev": "2fcb9397a1f1da353b21e53d2f97ec56653acd02",
         "type": "github"
       },
       "original": {
@@ -517,11 +517,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1792773339,
-        "narHash": "sha256-rZLrzrC6i+jnTAlvPZHogKDulY7WWDEv9hJeHieO7Zw=",
+        "lastModified": 1793341285,
+        "narHash": "sha256-Y1CiZ4SoBUjLQyQM/pY+rS2dXD3CHLPstF0lmOc73D4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3ec636362e1816bc2f0888fa0fa2c69f1bc9e504",
+        "rev": "1c89083e451e891152365b799595cf7790a43325",
         "type": "github"
       },
       "original": {
