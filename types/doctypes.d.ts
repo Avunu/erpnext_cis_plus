@@ -67,6 +67,8 @@ declare global {
 		"BOM": FrappeDocTypeFields.BOM;
 		"BOM Creator": FrappeDocTypeFields.BOMCreator;
 		"BOM Creator Item": FrappeDocTypeFields.BOMCreatorItem;
+		"BOM Creator Material": FrappeDocTypeFields.BOMCreatorMaterial;
+		"BOM Creator Operation": FrappeDocTypeFields.BOMCreatorOperation;
 		"BOM Explosion Item": FrappeDocTypeFields.BOMExplosionItem;
 		"BOM Item": FrappeDocTypeFields.BOMItem;
 		"BOM Operation": FrappeDocTypeFields.BOMOperation;
@@ -2011,7 +2013,7 @@ declare global {
 			bom_creator?: string | null;
 			/** BOM Creator Item · Data */
 			bom_creator_item?: string | null;
-			/** Track Semi Finished Goods · Check */
+			/** Produce Item per Operation · Check */
 			track_semi_finished_goods?: 0 | 1;
 			/** Default Source Warehouse · Link → Warehouse */
 			default_source_warehouse?: string | null;
@@ -2038,8 +2040,24 @@ declare global {
 		 * `erpnext/erpnext/manufacturing/doctype/bom_creator/bom_creator.json`
 		 */
 		interface BOMCreator {
+			/** Design Name · Data */
+			design_name?: string | null;
+			/** Finished Good · Link → Item */
+			item_code?: string | null;
 			/** Company · Link → Company */
 			company?: string | null;
+			/** Design File · Attach */
+			design_file?: string | null;
+			/** Produce Item per Operation · Check */
+			track_semi_finished_goods?: 0 | 1;
+			/** Finished Good Quantity · Float */
+			qty?: number | null;
+			/** Items · Table → BOM Creator Item */
+			items: FrappeChildRow<"BOM Creator Item">[];
+			/** Operations · Table → BOM Creator Operation */
+			operations: FrappeChildRow<"BOM Creator Operation">[];
+			/** Materials · Table → BOM Creator Material */
+			materials: FrappeChildRow<"BOM Creator Material">[];
 			/** Rate Of Materials Based On · Select */
 			rm_cost_as_per?: "Valuation Rate" | "Last Purchase Rate" | "Price List" | "" | null;
 			/** Price List · Link → Price List */
@@ -2048,42 +2066,44 @@ declare global {
 			price_list_currency?: string | null;
 			/** Price List Exchange Rate · Float */
 			plc_conversion_rate?: number | null;
+			/** Set Valuation Rate Based on Source Warehouse · Check */
+			set_rate_based_on_warehouse?: 0 | 1;
+			/** Default Source Warehouse · Link → Warehouse */
+			default_warehouse?: string | null;
 			/** Currency · Link → Currency */
 			currency?: string | null;
 			/** Conversion Rate · Float */
 			conversion_rate?: number | null;
-			/** Items · Table → BOM Creator Item */
-			items: FrappeChildRow<"BOM Creator Item">[];
 			/** Total Cost · Currency */
 			raw_material_cost?: number | null;
-			/** Remarks · Text Editor */
-			remarks?: string | null;
+			/** Series · Select */
+			naming_series?: string | null;
+			/** Item Group for New Items · Link → Item Group */
+			item_group?: string | null;
+			/** Part Number · Data */
+			part_number?: string | null;
 			/** Project · Link → Project */
 			project?: string | null;
-			/** Finished Good · Link → Item */
-			item_code?: string | null;
-			/** Quantity · Float */
-			qty?: number | null;
+			/** Is Phantom BOM · Check */
+			is_phantom?: 0 | 1;
+			/** Routing · Link → Routing */
+			routing?: string | null;
+			/** Revision · Int */
+			revision?: number | null;
+			/** Previous Revision · Link → BOM Creator */
+			previous_revision?: string | null;
 			/** Item Name · Data */
 			item_name?: string | null;
 			/** UOM · Link → UOM */
 			uom?: string | null;
-			/** Item Group · Link → Item Group */
-			item_group?: string | null;
-			/** Amended From · Link → BOM Creator */
-			amended_from?: string | null;
-			/** Default Source Warehouse · Link → Warehouse */
-			default_warehouse?: string | null;
-			/** Set Valuation Rate Based on Source Warehouse · Check */
-			set_rate_based_on_warehouse?: 0 | 1;
 			/** Status · Select */
-			status?: "Draft" | "Submitted" | "In Progress" | "Completed" | "Failed" | "Cancelled" | "" | null;
+			status?: "Draft" | "Submitted" | "In Progress" | "Completed" | "Failed" | "Superseded" | "Cancelled" | "" | null;
+			/** Remarks · Text Editor */
+			remarks?: string | null;
 			/** Error Log · Text */
 			error_log?: string | null;
-			/** Routing · Link → Routing */
-			routing?: string | null;
-			/** Is Phantom Item · Check */
-			is_phantom?: 0 | 1;
+			/** Amended From · Link → BOM Creator */
+			amended_from?: string | null;
 		}
 
 		/**
@@ -2093,22 +2113,40 @@ declare global {
 		interface BOMCreatorItem {
 			/** The DocTypes on this bench with a Table of BOM Creator Item: the forms its events run on. */
 			parenttype: "BOM Creator";
+			/** Part Number · Data */
+			part_number?: string | null;
+			/** Part Name · Data */
+			part_name?: string | null;
+			/** Quantity · Float */
+			qty?: number | null;
+			/** Design Quantity · Float */
+			design_quantity?: number | null;
+			/** Node · Int */
+			node_id?: number | null;
+			/** Parent Node · Int */
+			parent_node_id?: number | null;
+			/** Is Assembly · Check */
+			is_expandable?: 0 | 1;
+			/** Source · Select */
+			source?: "CAD File" | "Manual" | "" | null;
+			/** Change · Select */
+			change_type?: "Added" | "Quantity Changed" | "" | null;
+			/** Exclude from BOM · Check */
+			exclude_from_bom?: 0 | 1;
+			/** Small Text */
+			description?: string | null;
 			/** Item Code · Link → Item */
 			item_code?: string | null;
 			/** Item Name · Data */
 			item_name?: string | null;
 			/** Item Group · Link → Item Group */
 			item_group?: string | null;
-			/** Finished Goods Item · Link → Item */
-			fg_item?: string | null;
-			/** Is Expandable · Check */
-			is_expandable?: 0 | 1;
-			/** Small Text */
-			description?: string | null;
-			/** Qty · Float */
-			qty?: number | null;
-			/** Rate · Currency */
-			rate?: number | null;
+			/** Is Phantom Item · Check */
+			is_phantom_item?: 0 | 1;
+			/** Sourced by Supplier · Check */
+			sourced_by_supplier?: 0 | 1;
+			/** BOM Created · Check */
+			bom_created?: 0 | 1;
 			/** UOM · Link → UOM */
 			uom?: string | null;
 			/** Stock Qty · Float */
@@ -2117,30 +2155,74 @@ declare global {
 			conversion_factor?: number | null;
 			/** Stock UOM · Link → UOM */
 			stock_uom?: string | null;
+			/** Rate · Currency */
+			rate?: number | null;
 			/** Amount · Currency */
 			amount?: number | null;
-			/** Do Not Explode · Check */
-			do_not_explode?: 0 | 1;
-			/** Instruction · Small Text */
-			instruction?: string | null;
-			/** Base Amount · Currency */
-			base_amount?: number | null;
 			/** Base Rate · Currency */
 			base_rate?: number | null;
-			/** Sourced by Supplier · Check */
-			sourced_by_supplier?: 0 | 1;
-			/** Finished Goods Reference · Data */
-			fg_reference_id?: string | null;
-			/** Parent Row No · Data */
-			parent_row_no?: string | null;
-			/** BOM Created · Check */
-			bom_created?: 0 | 1;
+			/** Base Amount · Currency */
+			base_amount?: number | null;
+			/** Do Not Explode · Check */
+			do_not_explode?: 0 | 1;
+			/** BOM No · Link → BOM */
+			bom_no?: string | null;
 			/** Operation · Link → Operation */
 			operation?: string | null;
-			/** Is Subcontracted · Check */
-			is_subcontracted?: 0 | 1;
-			/** Is Phantom Item · Check */
-			is_phantom_item?: 0 | 1;
+			/** Instruction · Small Text */
+			instruction?: string | null;
+			/** 3D Model · Attach */
+			model_file?: string | null;
+			/** Placements in Model · JSON */
+			placements?: unknown;
+		}
+
+		/**
+		 * DocType "BOM Creator Material" — erpnext, module Manufacturing.
+		 * `erpnext/erpnext/manufacturing/doctype/bom_creator_material/bom_creator_material.json`
+		 */
+		interface BOMCreatorMaterial {
+			/** The DocTypes on this bench with a Table of BOM Creator Material: the forms its events run on. */
+			parenttype: "BOM Creator";
+			/** BOM Node · Int */
+			bom_node_id?: number | null;
+			/** Operation ID · Int */
+			operation_id?: number | null;
+			/** Output of Operation ID · Int */
+			from_operation_id?: number | null;
+			/** Part Node · Int */
+			part_node_id?: number | null;
+			/** Item Code · Link → Item */
+			item_code?: string | null;
+			/** Quantity · Float */
+			qty?: number | null;
+			/** UOM · Link → UOM */
+			uom?: string | null;
+		}
+
+		/**
+		 * DocType "BOM Creator Operation" — erpnext, module Manufacturing.
+		 * `erpnext/erpnext/manufacturing/doctype/bom_creator_operation/bom_creator_operation.json`
+		 */
+		interface BOMCreatorOperation {
+			/** The DocTypes on this bench with a Table of BOM Creator Operation: the forms its events run on. */
+			parenttype: "BOM Creator";
+			/** Operation ID · Int */
+			operation_id?: number | null;
+			/** BOM Node · Int */
+			bom_node_id?: number | null;
+			/** Operation · Link → Operation */
+			operation?: string | null;
+			/** Workstation Type · Link → Workstation Type */
+			workstation_type?: string | null;
+			/** Operation Time (Minutes) · Float */
+			time_in_mins?: number | null;
+			/** Output Node · Int */
+			output_node_id?: number | null;
+			/** Output Item · Link → Item */
+			output_item?: string | null;
+			/** Output Quantity · Float */
+			output_quantity?: number | null;
 		}
 
 		/**
@@ -2282,13 +2364,13 @@ declare global {
 			set_cost_based_on_bom_qty?: 0 | 1;
 			/** Workstation Type · Link → Workstation Type */
 			workstation_type?: string | null;
-			/** FG / Semi FG Item · Link → Item */
+			/** Output Item · Link → Item */
 			finished_good?: string | null;
-			/** BOM No · Link → BOM */
+			/** Output Item BOM · Link → BOM */
 			bom_no?: string | null;
-			/** Qty to Produce · Float */
+			/** Output Qty · Float */
 			finished_good_qty?: number | null;
-			/** Is Final Finished Good · Check */
+			/** Last Step · Check */
 			is_final_finished_good?: 0 | 1;
 			/** WIP Warehouse · Link → Warehouse */
 			wip_warehouse?: string | null;
@@ -4737,6 +4819,8 @@ declare global {
 			use_serial_batch_fields?: 0 | 1;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Qty (Company) · Float */
 			company_total_stock?: number | null;
 			/** Against Pick List · Link → Pick List */
@@ -6270,8 +6354,6 @@ declare global {
 			is_grouped_asset?: 0 | 1;
 			/** Allow Negative Stock · Check */
 			allow_negative_stock?: 0 | 1;
-			/** Production Capacity · Int */
-			production_capacity?: number | null;
 			/** Purchase Tax Withholding Category · Link → Tax Withholding Category */
 			purchase_tax_withholding_category?: string | null;
 			/** Sales Tax Withholding Category · Link → Tax Withholding Category */
@@ -6834,10 +6916,8 @@ declare global {
 			backflush_from_wip_warehouse?: 0 | 1;
 			/** Is Paused · Check */
 			is_paused?: 0 | 1;
-			/** Track Semi Finished Goods · Check */
+			/** Produce Item per Operation · Check */
 			track_semi_finished_goods?: 0 | 1;
-			/** Operation Row Number · Select */
-			operation_row_number?: string | null;
 			/** Secondary Items · Table → Job Card Secondary Item */
 			secondary_items: FrappeChildRow<"Job Card Secondary Item">[];
 			/** Pending qty · Float */
@@ -8278,6 +8358,8 @@ declare global {
 			due_date?: string | null;
 			/** Item Name · Data */
 			item_name?: string | null;
+			/** Currency · Link → Currency */
+			currency?: string | null;
 			/** Outstanding Amount · Currency */
 			outstanding_amount?: number | null;
 			/** Quantity · Data */
@@ -9002,6 +9084,8 @@ declare global {
 			quality_inspection?: string | null;
 			/** Batch No · Link → Batch */
 			batch_no?: string | null;
+			/** Incoming Rate (Costing) · Currency */
+			incoming_rate?: number | null;
 			/** Allow Zero Valuation Rate · Check */
 			allow_zero_valuation_rate?: 0 | 1;
 			/** Serial No · Text */
@@ -9040,6 +9124,8 @@ declare global {
 			use_serial_batch_fields?: 0 | 1;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 		}
 
 		/**
@@ -9369,6 +9455,8 @@ declare global {
 			picked_qty?: number | null;
 			/** Packed Qty · Float */
 			packed_qty?: number | null;
+			/** Received Qty · Float */
+			received_qty?: number | null;
 			/** Serial and Batch Bundle · Link → Serial and Batch Bundle */
 			serial_and_batch_bundle?: string | null;
 			/** Use Serial No / Batch Fields · Check */
@@ -11274,7 +11362,7 @@ declare global {
 			total_billable_amount?: number | null;
 			/** Total Billed Amount (via Sales Invoice) · Currency */
 			total_billed_amount?: number | null;
-			/** Total Consumed Material Cost (via Stock Entry) · Currency */
+			/** Total Consumed Material Cost · Currency */
 			total_consumed_material_cost?: number | null;
 			/** Default Cost Center · Link → Cost Center */
 			cost_center?: string | null;
@@ -12114,6 +12202,8 @@ declare global {
 			sales_incoming_rate?: number | null;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Tax Withholding Category · Link → Tax Withholding Category */
 			tax_withholding_category?: string | null;
 			/** Delivered by Supplier · Check */
@@ -12494,6 +12584,8 @@ declare global {
 			job_card?: string | null;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Subcontracted Quantity · Float */
 			subcontracted_qty?: number | null;
 		}
@@ -12881,6 +12973,8 @@ declare global {
 			stock_uom_rate?: number | null;
 			/** Delivery Note Item · Data */
 			delivery_note_item?: string | null;
+			/** Delivery Note Packed Item · Data */
+			delivery_note_packed_item?: string | null;
 			/** Margin Type · Select */
 			margin_type?: "Percentage" | "Amount" | "" | null;
 			/** Margin Rate or Amount · Float */
@@ -12925,6 +13019,8 @@ declare global {
 			sales_incoming_rate?: number | null;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Amount Difference with Purchase Invoice · Currency */
 			amount_difference_with_purchase_invoice?: number | null;
 		}
@@ -13768,6 +13864,8 @@ declare global {
 			has_alternative_item?: 0 | 1;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Qty (Company) · Float */
 			company_total_stock?: number | null;
 			/** Ordered Qty · Float */
@@ -14660,6 +14758,10 @@ declare global {
 			page_break?: 0 | 1;
 			/** Finance Book · Link → Finance Book */
 			finance_book?: string | null;
+			/** Asset Gross Value · Currency */
+			asset_gross_value?: number | null;
+			/** Asset Value After Depreciation · Currency */
+			asset_value_after_depreciation?: number | null;
 			/** Project · Link → Project */
 			project?: string | null;
 			/** Sales Invoice Item · Data */
@@ -14684,6 +14786,8 @@ declare global {
 			use_serial_batch_fields?: 0 | 1;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Qty (Company) · Float */
 			company_total_stock?: number | null;
 			/** POS Invoice Item · Data */
@@ -15159,6 +15263,8 @@ declare global {
 			is_stock_item?: 0 | 1;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Qty (Company) · Float */
 			company_total_stock?: number | null;
 			/** Cost Center · Link → Cost Center */
@@ -16026,7 +16132,7 @@ declare global {
 			/** Company · Link → Company */
 			company?: string | null;
 			/** Status · Select */
-			status?: "Draft" | "Queued" | "In Progress" | "Completed" | "Failed" | "Cancelled" | "" | null;
+			status?: "Draft" | "Queued" | "In Progress" | "Completed" | "Outdated" | "Failed" | "Cancelled" | "" | null;
 			/** From Date · Date */
 			from_date?: string | null;
 			/** To Date · Date */
@@ -16370,6 +16476,8 @@ declare global {
 			company?: string | null;
 			/** Purpose · Select */
 			purpose?: "Opening Stock" | "Stock Reconciliation" | "Adjustment Entry" | "" | null;
+			/** Made from Stock Valuation Comparison · Check */
+			is_made_from_valuation_comparison?: 0 | 1;
 			/** Posting Date · Date */
 			posting_date?: string | null;
 			/** Posting Time · Time */
@@ -17890,6 +17998,8 @@ declare global {
 			cost_center?: string | null;
 			/** Distributed Discount Amount · Currency */
 			distributed_discount_amount?: number | null;
+			/** Additional Discount per Stock Unit · Currency */
+			mapped_additional_discount_amount?: number | null;
 			/** Margin Type · Select */
 			margin_type?: "Percentage" | "Amount" | "" | null;
 			/** Margin Rate or Amount · Float */
@@ -18960,7 +19070,9 @@ declare global {
 			/** API Key · Data */
 			api_key?: string | null;
 			/** Frequency · Select */
-			frequency?: "30 mins" | "1 hr" | "6 hrs" | "Daily" | "" | null;
+			frequency?: "1 hr" | "6 hrs" | "Daily" | "" | null;
+			/** Last YouTube Update · Datetime */
+			last_youtube_update?: string | null;
 		}
 
 		/**
@@ -19239,7 +19351,7 @@ declare global {
 			production_plan_sub_assembly_item?: string | null;
 			/** Process Loss Qty · Float */
 			process_loss_qty?: number | null;
-			/** Track Semi Finished Goods · Check */
+			/** Produce Item per Operation · Check */
 			track_semi_finished_goods?: 0 | 1;
 			/** Reserve Stock · Check */
 			reserve_stock?: 0 | 1;
@@ -19319,6 +19431,8 @@ declare global {
 			amount?: number | null;
 			/** Returned Qty · Float */
 			returned_qty?: number | null;
+			/** Subcontracted Qty · Float */
+			subcontracted_qty?: number | null;
 			/** Operation Row Id · Int */
 			operation_row_id?: number | null;
 			/** Stock UOM · Link → UOM */
@@ -19344,6 +19458,8 @@ declare global {
 			operation?: string | null;
 			/** BOM · Link → BOM */
 			bom?: string | null;
+			/** BOM Operation · Data */
+			bom_operation?: string | null;
 			/** Operation Description · Text Editor */
 			description?: string | null;
 			/** Completed Qty · Float */
@@ -19378,10 +19494,12 @@ declare global {
 			workstation_type?: string | null;
 			/** Process Loss Qty · Float */
 			process_loss_qty?: number | null;
-			/** BOM No (For Semi-Finished Goods) · Link → BOM */
+			/** Output Item BOM · Link → BOM */
 			bom_no?: string | null;
-			/** Semi Finished Goods / Finished Goods · Link → Item */
+			/** Output Item · Link → Item */
 			finished_good?: string | null;
+			/** Output Qty · Float */
+			output_qty?: number | null;
 			/** WIP WH · Link → Warehouse */
 			wip_warehouse?: string | null;
 			/** Finished Goods Warehouse · Link → Warehouse */
@@ -19556,6 +19674,8 @@ export type AvailabilityOfSlots = FrappeDocTypeFields.AvailabilityOfSlots;
 export type BOM = FrappeDocTypeFields.BOM;
 export type BOMCreator = FrappeDocTypeFields.BOMCreator;
 export type BOMCreatorItem = FrappeDocTypeFields.BOMCreatorItem;
+export type BOMCreatorMaterial = FrappeDocTypeFields.BOMCreatorMaterial;
+export type BOMCreatorOperation = FrappeDocTypeFields.BOMCreatorOperation;
 export type BOMExplosionItem = FrappeDocTypeFields.BOMExplosionItem;
 export type BOMItem = FrappeDocTypeFields.BOMItem;
 export type BOMOperation = FrappeDocTypeFields.BOMOperation;
