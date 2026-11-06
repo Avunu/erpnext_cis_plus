@@ -596,6 +596,13 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
+bench-dev = [
+    { name = "faker" },
+    { name = "freezegun" },
+    { name = "hypothesis" },
+    { name = "pyngrok" },
+    { name = "watchdog" },
+]
 dev = [
     { name = "coverage" },
     { name = "pydantic" },
@@ -612,6 +619,13 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
+bench-dev = [
+    { name = "faker", specifier = "~=18.10.1" },
+    { name = "freezegun", specifier = "~=1.5.5" },
+    { name = "hypothesis", specifier = "~=6.77.0" },
+    { name = "pyngrok", specifier = "~=7.5.0" },
+    { name = "watchdog", specifier = "~=6.0.0" },
+]
 dev = [
     { name = "coverage", specifier = ">=7.10" },
     { name = "pydantic", specifier = ">=2.12.5" },
@@ -967,7 +981,7 @@ wheels = [
 [[package]]
 name = "frappe-runtime"
 version = "0.1.0"
-source = { git = "https://github.com/Avunu/frappe-nix?subdirectory=runtime#a2431bc670e092f0b376ab492fb193ec5e53bfdd" }
+source = { git = "https://github.com/Avunu/frappe-nix?subdirectory=runtime#04099a627db36b5a6af54f8a5212f1aae07bf5ab" }
 dependencies = [
     { name = "a2wsgi" },
     { name = "httpx" },
@@ -2159,27 +2173,27 @@ wheels = [
 
 [[package]]
 name = "python-engineio"
-version = "4.15.1"
+version = "4.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "simple-websocket" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dd/91/b565807fa922620ed575b412bf978d032e4c5d79558b400fdbfe1008c95a/python_engineio-4.15.1.tar.gz", hash = "sha256:1a412e798a90c64fabe7b20798939ae6d4a03f34da8a33d5a21a25a8bbbc3612", size = 93104, upload-time = "2026-10-28T23:53:30.846Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/65/f8bae11b228647e2e2f45b63dec7448efaddb7cb51f529de1fdba69e63b5/python_engineio-4.14.0.tar.gz", hash = "sha256:eaa1e386baf9c2c7959eef7f9d9165c5ea910c5b392f5316e78d29ed073cb43d", size = 80863, upload-time = "2026-08-30T19:52:01.32Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/5c/552f1dce2443dc33ce6b2ee7f67599ba5c83ef5582e2235a9878ac239049/python_engineio-4.15.1-py3-none-any.whl", hash = "sha256:745cb3c07701c719a2906439a00b67e44ef042904036568530a2c3a8cf18c89a", size = 60775, upload-time = "2026-10-28T23:53:29.304Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/de/07cfd386974c2a26a7bde41f2111be29bbfc92b9ea0bb76694415a4a1a78/python_engineio-4.14.0-py3-none-any.whl", hash = "sha256:9f0fe275fb7d67bfc1a632421adf22949fd4843bd9c458c004b0a89cede302a2", size = 60291, upload-time = "2026-08-30T19:51:59.776Z" },
 ]
 
 [[package]]
 name = "python-socketio"
-version = "5.18.1"
+version = "5.17.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bidict" },
     { name = "python-engineio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/71/b9/4ab083267c1f8ece9a9e019808412af7c7a03321411a1263cd863321baa2/python_socketio-5.18.1.tar.gz", hash = "sha256:07ab0e7c94a52833a67af1dc05958ad6fb0de69adc87de9198a61b22588c40d4", size = 132106, upload-time = "2026-11-03T12:19:20.723Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/04/8647675c93b5e74a3daa41a2a03930bac0cbdcfcf307900f0441ae6550ba/python_socketio-5.17.0.tar.gz", hash = "sha256:c3bbfc4937dcfea7c4d1b182afa94d4a30335d153987e8f2078b344beacf95a0", size = 134574, upload-time = "2026-09-14T22:51:02.968Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/e2/cdc630aef7da00698af4ed061ff873297f806cc049cc5c67bf89077cb7e4/python_socketio-5.18.1-py3-none-any.whl", hash = "sha256:e768c473842be811f6dd24bd0a49cd0d4a0c994182e3eba23cc9d1489c7a697e", size = 83022, upload-time = "2026-11-03T12:19:19.136Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/be/44b558c944bc16618483967ecd3424c578705aa33ceee7df8c1e4ab43ea0/python_socketio-5.17.0-py3-none-any.whl", hash = "sha256:b5826fd2f8aa02e11347816349b74ac6b53e8a4f4e4b1cf1388e1aff19b7f3f4", size = 82548, upload-time = "2026-09-14T22:51:01.405Z" },
 ]
 
 [[package]]
