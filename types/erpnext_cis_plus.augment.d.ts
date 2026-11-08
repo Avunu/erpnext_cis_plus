@@ -1,11 +1,10 @@
 // Copyright (c) 2026, Avunu LLC and contributors
 // For license information, please see license.txt
 
-// The names erpnext_cis_plus's desk scripts add (public/js/party_records.js), and the parts of
-// frappe's side panel (frappe/public/js/frappe/ui/side_panel.js) they wrap, which frappe-types
-// does not declare.
+// The names erpnext_cis_plus's desk scripts add (public/js/party_records.js). frappe's own,
+// the side panel's included, come from frappe-types.
 
-import type { DocField, FieldGroup, Form, SidePanel } from "frappe-types";
+import type { DocPreview, Form } from "frappe-types";
 
 declare global {
 	namespace erpnext_cis_plus {
@@ -21,30 +20,12 @@ declare global {
 			frm: PartyForm;
 			primary_fields: PrimaryFields;
 		}
-		/** What `frappe.desk.doc_preview.get_preview` returns, and the panel caches. */
-		interface SidePanelPreview {
-			doc: Record<string, unknown> & { doctype?: string; name?: string; __islocal?: 0 | 1 };
-			permlevels?: number[];
-		}
-		/** The side panel with the members party_records.js reads and wraps. */
-		interface SidePanelInternals extends SidePanel {
-			previews: Record<string, SidePanelPreview>;
-			render(): void;
-			render_doc(doctype: string, preview: SidePanelPreview): void;
-			set_header(doctype: string, docname: string, preview: SidePanelPreview | null): void;
-			__cis_plus_party_records?: boolean;
-			cis_plus_editors?: Record<string, JQuery<HTMLElement>>;
-		}
-		/** What `party_utils.save_party_record` returns. */
-		interface SavePartyRecordResponse {
-			doc: SidePanelPreview["doc"];
-			permlevels: number[];
+		/** What `party_utils.save_party_record` returns: the saved record's preview, and more. */
+		interface SavePartyRecordResponse extends DocPreview {
 			addr_list: unknown[];
 			contact_list: unknown[];
 			location: { latitude: number; longitude: number; location: string | null } | null;
 		}
-		type FieldDefinition = DocField & { data?: Record<string, unknown>[]; fields?: DocField[] };
-		type EditorGroup = FieldGroup;
 		interface PartyRecords {
 			bind_cards(frm: PartyForm, primary_fields: PrimaryFields): void;
 			select_default_primary(
@@ -73,15 +54,11 @@ declare global {
 }
 
 declare module "frappe-types" {
-	interface Frappe {
-		/** frappe/public/js/frappe/model/perm.js:50-76. */
-		perm: {
-			get_perm(doctype: string): Array<Record<string, number | undefined> | undefined>;
-			has_perm(doctype: string, permlevel?: number, ptype?: string): boolean;
-		};
-		/** frappe/public/js/frappe/utils/address_and_contact.js. */
-		contacts: {
-			render_address_and_contact(frm: Form): void;
-		};
+	/** The members party_records.js adds to the side panel. */
+	interface SidePanel {
+		/** Set on the prototype once party_records.js has wrapped it. */
+		__cis_plus_party_records?: boolean;
+		/** The editor's wrapper, one per doctype, like the panel's own layouts. */
+		cis_plus_editors?: Record<string, JQuery<HTMLElement>>;
 	}
 }
