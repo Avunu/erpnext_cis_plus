@@ -118,7 +118,7 @@ if (!erpnext_cis_plus.party_records) {
 	 * Fill the panel with a form for the record, and a Save button.
 	 *
 	 * @param {JQuery<HTMLElement>} $wrapper
-	 * @param {erpnext_cis_plus.SidePanelInternals} panel
+	 * @param {frappe.ui.SidePanel} panel
 	 * @param {frappe.ui.DocPreview} preview
 	 * @param {erpnext_cis_plus.PartyRecordEditor} editor
 	 */
@@ -174,7 +174,7 @@ if (!erpnext_cis_plus.party_records) {
 	}
 
 	/**
-	 * @param {erpnext_cis_plus.SidePanelInternals} panel
+	 * @param {frappe.ui.SidePanel} panel
 	 * @param {frappe.ui.FieldGroup} group
 	 * @param {frappe.ui.DocPreview} preview
 	 * @param {erpnext_cis_plus.PartyRecordEditor} editor
@@ -265,14 +265,14 @@ if (!erpnext_cis_plus.party_records) {
 
 	// The panel has no hook for a view of its own, so its prototype is wrapped once it has
 	// loaded. Only the documents in `editors` are taken over.
-	/** @param {erpnext_cis_plus.SidePanelInternals} proto */
+	/** @param {frappe.ui.SidePanel} proto */
 	function patch(proto) {
 		if (proto.__cis_plus_party_records) return;
 		proto.__cis_plus_party_records = true;
 
 		const { render_doc, set_header, close } = proto;
 
-		/** @param {erpnext_cis_plus.SidePanelInternals} panel */
+		/** @param {frappe.ui.SidePanel} panel */
 		const editor_for = (panel) =>
 			panel.current ? editors.get(key(panel.current.doctype, panel.current.docname)) : undefined;
 
@@ -305,13 +305,13 @@ if (!erpnext_cis_plus.party_records) {
 		};
 	}
 
-	/** @returns {Promise<erpnext_cis_plus.SidePanelInternals>} */
+	/** @returns {Promise<frappe.ui.SidePanel>} */
 	async function get_side_panel() {
 		await frappe.require("side_panel.bundle.js");
 		const { SidePanel, get_side_panel: panel } = frappe.ui;
 		if (!SidePanel || !panel) throw new Error("side_panel.bundle.js did not load");
-		patch(/** @type {erpnext_cis_plus.SidePanelInternals} */ (SidePanel.prototype));
-		return /** @type {erpnext_cis_plus.SidePanelInternals} */ (panel());
+		patch(SidePanel.prototype);
+		return panel();
 	}
 
 	/**
