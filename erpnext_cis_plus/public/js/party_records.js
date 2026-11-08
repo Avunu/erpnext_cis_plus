@@ -18,6 +18,8 @@
 //
 // customer.js and supplier.js call this, and are concatenated after it into one doctype script.
 
+/** @typedef {import("frappe-types").DocField} DocField */
+
 frappe.provide("erpnext_cis_plus");
 
 if (!erpnext_cis_plus.party_records) {
@@ -69,9 +71,9 @@ if (!erpnext_cis_plus.party_records) {
 	 * read-only and the ones they may not read left out.
 	 *
 	 * @param {string} doctype
-	 * @param {Record<string, unknown>} doc
+	 * @param {frappe.Doc} doc
 	 * @param {number[]} permlevels
-	 * @returns {erpnext_cis_plus.FieldDefinition[]}
+	 * @returns {DocField[]}
 	 */
 	function editor_fields(doctype, doc, permlevels) {
 		const fields = [];
@@ -80,7 +82,7 @@ if (!erpnext_cis_plus.party_records) {
 			const permlevel = cint(df.permlevel);
 			if (!permlevels.includes(permlevel)) continue;
 
-			/** @type {erpnext_cis_plus.FieldDefinition} */
+			/** @type {DocField} */
 			const field = { ...df };
 			if (!frappe.perm.has_perm(doctype, permlevel, "write")) field.read_only = 1;
 			if (TABLE_FIELDTYPES.has(String(df.fieldtype)) && typeof df.options === "string") {
@@ -126,7 +128,7 @@ if (!erpnext_cis_plus.party_records) {
 	 *
 	 * @param {JQuery<HTMLElement>} $wrapper
 	 * @param {erpnext_cis_plus.SidePanelInternals} panel
-	 * @param {erpnext_cis_plus.SidePanelPreview} preview
+	 * @param {frappe.ui.DocPreview} preview
 	 * @param {erpnext_cis_plus.PartyRecordEditor} editor
 	 */
 	function render_editor($wrapper, panel, preview, editor) {
@@ -137,7 +139,11 @@ if (!erpnext_cis_plus.party_records) {
 		const $actions = $('<div class="cis-plus-editor-actions"></div>').appendTo($wrapper);
 		const $form = $("<div></div>").appendTo($wrapper);
 		const group = new frappe.ui.FieldGroup({
-			fields: editor_fields(doctype, doc, (preview.permlevels || []).map(cint)),
+			fields: editor_fields(
+				doctype,
+				doc,
+				(preview.permlevels || []).map((permlevel) => cint(permlevel)),
+			),
 			body: $form,
 			card_layout: true,
 		});
@@ -179,7 +185,7 @@ if (!erpnext_cis_plus.party_records) {
 	/**
 	 * @param {erpnext_cis_plus.SidePanelInternals} panel
 	 * @param {frappe.ui.FieldGroup} group
-	 * @param {erpnext_cis_plus.SidePanelPreview} preview
+	 * @param {frappe.ui.DocPreview} preview
 	 * @param {erpnext_cis_plus.PartyRecordEditor} editor
 	 * @param {JQuery<HTMLElement>} $save
 	 */
@@ -209,16 +215,15 @@ if (!erpnext_cis_plus.party_records) {
 
 		// Show the saved record: under its real name if it was new.
 		const name = String(saved.doc.name);
-		const previews = /** @type {erpnext_cis_plus.SidePanelInternals} */ (panel).previews;
 		if (was_new) {
 			editors.delete(key(doctype, String(preview.doc.name)));
-			delete previews[key(doctype, String(preview.doc.name))];
+			delete panel.previews[key(doctype, String(preview.doc.name))];
 		}
 		editors.set(key(doctype, name), editor);
-		previews[key(doctype, name)] = { doc: saved.doc, permlevels: saved.permlevels };
+		panel.previews[key(doctype, name)] = { doc: saved.doc, permlevels: saved.permlevels };
 		if (panel.is_open() && panel.current?.doctype === doctype) {
 			panel.current = { doctype, docname: name };
-			/** @type {erpnext_cis_plus.SidePanelInternals} */ (panel).render();
+			panel.render();
 		}
 
 		// The form may have moved on to another party while the record was saved.
@@ -241,7 +246,7 @@ if (!erpnext_cis_plus.party_records) {
 		const onload = /** @type {Record<string, unknown>} */ (frm.doc.__onload || {});
 		onload.addr_list = saved.addr_list;
 		onload.contact_list = saved.contact_list;
-		/** @type {Record<string, unknown>} */ (frm.doc).__onload = onload;
+		frm.doc.__onload = onload;
 
 		// An Address save may have moved the map point, which the server already stored on the
 		// party; show it without marking the form changed.
@@ -332,7 +337,7 @@ if (!erpnext_cis_plus.party_records) {
 		const current = panel.current;
 		if (panel.is_open() && current?.doctype === doctype && current.docname === name) {
 			// Already shown, perhaps as a read-only preview: draw it again as the editor.
-			/** @type {erpnext_cis_plus.SidePanelInternals} */ (panel).render();
+			panel.render();
 			return;
 		}
 		panel.open(doctype, name);
@@ -350,7 +355,7 @@ if (!erpnext_cis_plus.party_records) {
 		const panel = await get_side_panel();
 		// With the defaults a new form would have (an Address Type, a Contact's status). It
 		// stays in locals, so the panel's "Open in full page" opens it as a new form.
-		/** @type {Record<string, unknown>} */
+		/** @type {frappe.Doc} */
 		const doc = { ...frappe.model.get_new_doc(doctype), links: [] };
 		const name = String(doc.name);
 		if (doctype === "Address") {
@@ -359,7 +364,7 @@ if (!erpnext_cis_plus.party_records) {
 		}
 		editors.set(key(doctype, name), { frm, primary_fields });
 		// The panel shows a document it already has without fetching it.
-		/** @type {erpnext_cis_plus.SidePanelInternals} */ (panel).previews[key(doctype, name)] = {
+		panel.previews[key(doctype, name)] = {
 			doc,
 			permlevels: readable_permlevels(doctype),
 		};
