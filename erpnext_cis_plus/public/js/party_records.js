@@ -124,7 +124,7 @@ if (!erpnext_cis_plus.party_records) {
 	 */
 	function render_editor($wrapper, panel, preview, editor) {
 		const doc = preview.doc;
-		const doctype = String(doc.doctype);
+		const doctype = doc.doctype;
 		$wrapper.empty();
 
 		const $actions = $('<div class="cis-plus-editor-actions"></div>').appendTo($wrapper);
@@ -205,10 +205,10 @@ if (!erpnext_cis_plus.party_records) {
 		frappe.show_alert({ message: __("{0} saved", [__(doctype)]), indicator: "green" });
 
 		// Show the saved record: under its real name if it was new.
-		const name = String(saved.doc.name);
+		const name = saved.doc.name;
 		if (was_new) {
-			editors.delete(key(doctype, String(preview.doc.name)));
-			delete panel.previews[key(doctype, String(preview.doc.name))];
+			editors.delete(key(doctype, preview.doc.name));
+			delete panel.previews[key(doctype, preview.doc.name)];
 		}
 		editors.set(key(doctype, name), editor);
 		panel.previews[key(doctype, name)] = { doc: saved.doc, permlevels: saved.permlevels };
@@ -348,7 +348,7 @@ if (!erpnext_cis_plus.party_records) {
 		// stays in locals, so the panel's "Open in full page" opens it as a new form.
 		/** @type {frappe.Doc} */
 		const doc = { ...frappe.model.get_new_doc(doctype), links: [] };
-		const name = String(doc.name);
+		const name = doc.name;
 		if (doctype === "Address") {
 			// Frappe would name the Address after its link anyway; show it in the form.
 			doc.address_title = frm.doc.customer_name || frm.doc.supplier_name || frm.docname;
