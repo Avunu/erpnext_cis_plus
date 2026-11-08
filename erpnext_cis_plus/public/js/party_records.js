@@ -53,15 +53,6 @@ if (!erpnext_cis_plus.party_records) {
 		"cis-plus-party-records",
 	);
 
-	// Same rule as frappe.ui.split_view_enabled, which report.bundle.js defines on every desk
-	// page: on unless the user turned it off, never on mobile.
-	const split_view_enabled = () => {
-		if (frappe.ui.split_view_enabled) return frappe.ui.split_view_enabled();
-		if (frappe.is_mobile()) return false;
-		const enabled = frappe.boot.desk_settings?.report_split_view;
-		return enabled === undefined || cint(enabled) === 1;
-	};
-
 	/** The permlevels of `doctype` the user may read, as the panel's preview lists them. */
 	const readable_permlevels = (/** @type {string} */ doctype) =>
 		(frappe.perm.get_perm(doctype) || []).flatMap((perm, permlevel) => (perm?.read ? [permlevel] : []));
@@ -379,7 +370,7 @@ if (!erpnext_cis_plus.party_records) {
 	 * @param {erpnext_cis_plus.PrimaryFields} primary_fields
 	 */
 	function bind_cards(frm, primary_fields) {
-		if (frm.is_new() || !split_view_enabled()) return;
+		if (frm.is_new() || !frappe.ui.split_view_enabled()) return;
 		for (const doctype of RECORD_DOCTYPES) {
 			const { wrapper_field, card, button } = CARDS[doctype];
 			const $wrapper = $(frm.fields_dict[wrapper_field]?.wrapper || []);
