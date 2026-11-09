@@ -18,8 +18,8 @@
 	"devDependencies": {
 		"@types/node": "^26.6.6",
 		"frappe-types": "^16.6.0",
-		"oxfmt": "^0.76.0",
-		"oxlint": "^1.90.0",
+		"oxfmt": "^0.77.0",
+		"oxlint": "^1.92.0",
 		"typescript": "^7.0.2"
 	},
 	"engines": {
