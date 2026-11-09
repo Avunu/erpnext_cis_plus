@@ -126,6 +126,7 @@ declare global {
 		"Communication Medium": FrappeDocTypeFields.CommunicationMedium;
 		"Communication Medium Timeslot": FrappeDocTypeFields.CommunicationMediumTimeslot;
 		"Company": FrappeDocTypeFields.Company;
+		"Company Restriction": FrappeDocTypeFields.CompanyRestriction;
 		"Competitor": FrappeDocTypeFields.Competitor;
 		"Competitor Detail": FrappeDocTypeFields.CompetitorDetail;
 		"Contract": FrappeDocTypeFields.Contract;
@@ -355,6 +356,8 @@ declare global {
 		"Production Plan Material Request Warehouse": FrappeDocTypeFields.ProductionPlanMaterialRequestWarehouse;
 		"Production Plan Sales Order": FrappeDocTypeFields.ProductionPlanSalesOrder;
 		"Production Plan Sub Assembly Item": FrappeDocTypeFields.ProductionPlanSubAssemblyItem;
+		"Proforma Invoice": FrappeDocTypeFields.ProformaInvoice;
+		"Proforma Invoice Item": FrappeDocTypeFields.ProformaInvoiceItem;
 		"Project": FrappeDocTypeFields.Project;
 		"Project Template": FrappeDocTypeFields.ProjectTemplate;
 		"Project Template Task": FrappeDocTypeFields.ProjectTemplateTask;
@@ -1244,6 +1247,8 @@ declare global {
 			total_asset_cost?: number | null;
 			/** Additional Asset Cost · Currency */
 			additional_asset_cost?: number | null;
+			/** Value Adjustment Amount · Currency */
+			value_adjustment_amount?: number | null;
 			/** Purchase Amount · Currency */
 			purchase_amount?: number | null;
 			/** Opening Number of Booked Depreciations · Int */
@@ -1521,8 +1526,12 @@ declare global {
 			expected_value_after_useful_life?: number | null;
 			/** Value After Depreciation · Currency */
 			value_after_depreciation?: number | null;
+			/** Value Adjustment Amount · Currency */
+			value_adjustment_amount?: number | null;
 			/** Rate of Depreciation (%) · Percent */
 			rate_of_depreciation?: number | null;
+			/** Is Rate of Depreciation Entered · Check */
+			is_rate_of_depreciation_entered?: 0 | 1;
 			/** Salvage Value Percentage · Percent */
 			salvage_value_percentage?: number | null;
 			/** Depreciate based on daily pro-rata · Check */
@@ -1542,7 +1551,7 @@ declare global {
 		interface AssetMaintenance {
 			/** Asset Name · Link → Asset */
 			asset_name?: string | null;
-			/** Asset Category · Read Only */
+			/** Asset Category · Link → Asset Category */
 			asset_category?: string | null;
 			/** Item Code · Read Only */
 			item_code?: string | null;
@@ -1738,6 +1747,8 @@ declare global {
 			total_repair_cost?: number | null;
 			/** Increase In Asset Life(Months) · Int */
 			increase_in_asset_life?: number | null;
+			/** Asset Value Updated · Check */
+			asset_value_updated?: 0 | 1;
 			/** Company · Link → Company */
 			company?: string | null;
 			/** Repair Purchase Invoices · Table → Asset Repair Purchase Invoice */
@@ -1795,6 +1806,8 @@ declare global {
 			asset?: string | null;
 			/** Finance Book · Link → Finance Book */
 			finance_book?: string | null;
+			/** Previous Depreciation Schedule · Link → Asset Depreciation Schedule */
+			previous_depreciation_schedule?: string | null;
 			/** Depreciation Schedule · Table → Depreciation Schedule */
 			depreciation_schedule: FrappeChildRow<"Depreciation Schedule">[];
 			/** Naming Series · Select */
@@ -3638,6 +3651,8 @@ declare global {
 		interface ChequePrintTemplate {
 			/** Has Print Format · Check */
 			has_print_format?: 0 | 1;
+			/** Print Format Creation · Datetime */
+			print_format_creation?: string | null;
 			/** Bank Name · Data */
 			bank_name?: string | null;
 			/** Cheque Size · Select */
@@ -3974,6 +3989,17 @@ declare global {
 			accounts_frozen_till_date?: string | null;
 			/** Roles Allowed to Set and Edit Frozen Account Entries · Link → Role */
 			role_allowed_for_frozen_entries?: string | null;
+		}
+
+		/**
+		 * DocType "Company Restriction" — erpnext, module Stock.
+		 * `erpnext/erpnext/stock/doctype/company_restriction/company_restriction.json`
+		 */
+		interface CompanyRestriction {
+			/** The DocTypes on this bench with a Table of Company Restriction: the forms its events run on. */
+			parenttype: "Customer" | "Item" | "Supplier";
+			/** Company · Link → Company */
+			company?: string | null;
 		}
 
 		/**
@@ -4315,6 +4341,10 @@ declare global {
 			industry?: string | null;
 			/** Is Frozen · Check */
 			is_frozen?: 0 | 1;
+			/** Block Customer · Check */
+			on_hold?: 0 | 1;
+			/** Release Date · Date */
+			release_date?: string | null;
 			/** Loyalty Program · Link → Loyalty Program */
 			loyalty_program?: string | null;
 			/** Loyalty Program Tier · Data */
@@ -4337,6 +4367,10 @@ declare global {
 			tax_withholding_category?: string | null;
 			/** Opportunity · Link → Opportunity */
 			opportunity_name?: string | null;
+			/** Restrict to Companies · Check */
+			restrict_to_companies?: 0 | 1;
+			/** Allowed Companies · Table MultiSelect → Company Restriction */
+			allowed_companies: FrappeChildRow<"Company Restriction">[];
 			/** Customer Portal Users · Table → Portal User */
 			portal_users: FrappeChildRow<"Portal User">[];
 			/** Prospect · Link → Prospect */
@@ -5150,6 +5184,8 @@ declare global {
 			grand_total?: number | null;
 			/** Status · Select */
 			status?: "Draft" | "Resolved" | "Unresolved" | "Cancelled" | "" | null;
+			/** Superseded By · Link → Dunning */
+			superseded_by?: string | null;
 			/** Income Account · Link → Account */
 			income_account?: string | null;
 			/** Overdue Payments · Table → Overdue Payment */
@@ -6358,6 +6394,10 @@ declare global {
 			purchase_tax_withholding_category?: string | null;
 			/** Sales Tax Withholding Category · Link → Tax Withholding Category */
 			sales_tax_withholding_category?: string | null;
+			/** Restrict to Companies · Check */
+			restrict_to_companies?: 0 | 1;
+			/** Allowed Companies · Table MultiSelect → Company Restriction */
+			allowed_companies: FrappeChildRow<"Company Restriction">[];
 		}
 
 		/**
@@ -7522,6 +7562,8 @@ declare global {
 			account_name?: string | null;
 			/** Is Group · Check */
 			is_group?: 0 | 1;
+			/** Account Type · Data */
+			account_type?: string | null;
 		}
 
 		/**
@@ -8420,6 +8462,8 @@ declare global {
 			status?: "Open" | "Quotation" | "Converted" | "Lost" | "Replied" | "Closed" | "" | null;
 			/** Detailed Reason · Small Text */
 			order_lost_reason?: string | null;
+			/** Lost On · Date */
+			lost_on?: string | null;
 			/** Expected Closing Date · Date */
 			expected_closing?: string | null;
 			/** Currency · Link → Currency */
@@ -9465,6 +9509,8 @@ declare global {
 			delivered_by_supplier?: 0 | 1;
 			/** Requested Qty · Float */
 			requested_qty?: number | null;
+			/** Reserve Stock · Check */
+			reserve_stock?: 0 | 1;
 		}
 
 		/**
@@ -9733,6 +9779,8 @@ declare global {
 			tax_withholding_entries: FrappeChildRow<"Tax Withholding Entry">[];
 			/** Edit Tax Withholding Entries · Check */
 			override_tax_withholding_entries?: 0 | 1;
+			/** Payment Term Discounts Calculated · Check */
+			payment_term_discounts_calculated?: 0 | 1;
 		}
 
 		/**
@@ -9801,6 +9849,8 @@ declare global {
 			advance_voucher_type?: string | null;
 			/** Advance Voucher No · Dynamic Link */
 			advance_voucher_no?: string | null;
+			/** Payment Term Discount · Currency */
+			payment_term_discount?: number | null;
 		}
 
 		/**
@@ -11139,6 +11189,8 @@ declare global {
 			consider_minimum_order_qty?: 0 | 1;
 			/** Reserve Stock · Check */
 			reserve_stock?: 0 | 1;
+			/** Consider Process Loss · Check */
+			consider_process_loss?: 0 | 1;
 		}
 
 		/**
@@ -11156,6 +11208,8 @@ declare global {
 			bom_no?: string | null;
 			/** Planned Qty · Float */
 			planned_qty?: number | null;
+			/** % Process Loss · Percent */
+			process_loss_percentage?: number | null;
 			/** Finished Goods Warehouse · Link → Warehouse */
 			warehouse?: string | null;
 			/** Planned Start Date · Datetime */
@@ -11295,6 +11349,8 @@ declare global {
 			wo_produced_qty?: number | null;
 			/** Required Qty · Float */
 			required_qty?: number | null;
+			/** % Process Loss · Percent */
+			process_loss_percentage?: number | null;
 			/** Stock Reserved Qty · Float */
 			stock_reserved_qty?: number | null;
 			/** Ordered Qty · Float */
@@ -11303,6 +11359,76 @@ declare global {
 			sales_order?: string | null;
 			/** Sales Order Item · Data */
 			sales_order_item?: string | null;
+		}
+
+		/**
+		 * DocType "Proforma Invoice" — erpnext, module Selling.
+		 * `erpnext/erpnext/selling/doctype/proforma_invoice/proforma_invoice.json`
+		 */
+		interface ProformaInvoice {
+			/** Series · Select */
+			naming_series?: string | null;
+			/** Sales Order · Link → Sales Order */
+			sales_order?: string | null;
+			/** Customer · Link → Customer */
+			customer?: string | null;
+			/** Customer Name · Data */
+			customer_name?: string | null;
+			/** Date · Date */
+			proforma_date?: string | null;
+			/** Company · Link → Company */
+			company?: string | null;
+			/** Currency · Link → Currency */
+			currency?: string | null;
+			/** Based On · Select */
+			based_on?: "Quantity" | "Amount" | "" | null;
+			/** Hide Item Quantity in Print · Check */
+			hide_item_qty?: 0 | 1;
+			/** Items · Table → Proforma Invoice Item */
+			items: FrappeChildRow<"Proforma Invoice Item">[];
+			/** Total Quantity · Float */
+			total_qty?: number | null;
+			/** Grand Total · Currency */
+			grand_total?: number | null;
+			/** Print Format · Link → Print Format */
+			print_format?: string | null;
+			/** Letter Head · Link → Letter Head */
+			letter_head?: string | null;
+			/** Proforma PDF · Attach */
+			proforma_pdf?: string | null;
+			/** Status · Select */
+			status?: "Draft" | "Issued" | "Cancelled" | "" | null;
+			/** Sent On · Datetime */
+			sent_on?: string | null;
+			/** Emailed To · Small Text */
+			emailed_to?: string | null;
+			/** Amended From · Link → Proforma Invoice */
+			amended_from?: string | null;
+		}
+
+		/**
+		 * DocType "Proforma Invoice Item" — erpnext, module Selling.
+		 * `erpnext/erpnext/selling/doctype/proforma_invoice_item/proforma_invoice_item.json`
+		 */
+		interface ProformaInvoiceItem {
+			/** The DocTypes on this bench with a Table of Proforma Invoice Item: the forms its events run on. */
+			parenttype: "Proforma Invoice";
+			/** Item Code · Link → Item */
+			item_code?: string | null;
+			/** Item Name · Data */
+			item_name?: string | null;
+			/** Description · Text Editor */
+			description?: string | null;
+			/** Quantity · Float */
+			qty?: number | null;
+			/** UOM · Link → UOM */
+			uom?: string | null;
+			/** Rate · Currency */
+			rate?: number | null;
+			/** Amount · Currency */
+			amount?: number | null;
+			/** Sales Order Item · Data */
+			so_detail?: string | null;
 		}
 
 		/**
@@ -12363,6 +12489,8 @@ declare global {
 			party_account_currency?: string | null;
 			/** Inter Company Order Reference · Link → Sales Order */
 			inter_company_order_reference?: string | null;
+			/** Remarks · Small Text */
+			remarks?: string | null;
 			/** % Received · Percent */
 			per_received?: number | null;
 			/** % Billed · Percent */
@@ -15530,6 +15658,12 @@ declare global {
 			enable_utm?: 0 | 1;
 			/** Deliver secondary Items · Check */
 			deliver_secondary_items?: 0 | 1;
+			/** Enable Proforma Invoice · Check */
+			enable_proforma_invoice?: 0 | 1;
+			/** Default Proforma Print Format · Link → Print Format */
+			default_proforma_print_format?: string | null;
+			/** Proforma Email Template · Link → Email Template */
+			proforma_email_template?: string | null;
 			/** Naming Series options · Small Text */
 			naming_series_details?: string | null;
 		}
@@ -17672,6 +17806,10 @@ declare global {
 			primary_address?: string | null;
 			/** Primary Address · Link → Address */
 			supplier_primary_address?: string | null;
+			/** Restrict to Companies · Check */
+			restrict_to_companies?: 0 | 1;
+			/** Allowed Companies · Table MultiSelect → Company Restriction */
+			allowed_companies: FrappeChildRow<"Company Restriction">[];
 			/** Supplier Portal Users · Table → Portal User */
 			portal_users: FrappeChildRow<"Portal User">[];
 			/** Customer Numbers · Table → Customer Number At Supplier */
@@ -17868,7 +18006,7 @@ declare global {
 			/** Auto Repeat · Link → Auto Repeat */
 			auto_repeat?: string | null;
 			/** Status · Select */
-			status?: "Draft" | "Submitted" | "Stopped" | "Cancelled" | "Expired" | "" | null;
+			status?: "Draft" | "Submitted" | "Partially Ordered" | "Ordered" | "Stopped" | "Cancelled" | "Expired" | "" | null;
 			/** Is Subcontracted · Check */
 			is_subcontracted?: 0 | 1;
 			/** Opportunity · Link → Opportunity */
@@ -17934,6 +18072,8 @@ declare global {
 			conversion_factor?: number | null;
 			/** Qty as per Stock UOM · Float */
 			stock_qty?: number | null;
+			/** Ordered Qty · Float */
+			ordered_qty?: number | null;
 			/** Price List Rate (Company Currency) · Currency */
 			base_price_list_rate?: number | null;
 			/** Rate · Currency */
@@ -19415,6 +19555,10 @@ declare global {
 			required_qty?: number | null;
 			/** Transferred Qty · Float */
 			transferred_qty?: number | null;
+			/** Requested Qty · Float */
+			requested_qty?: number | null;
+			/** Picked Qty · Float */
+			picked_qty?: number | null;
 			/** Allow Alternative Item · Check */
 			allow_alternative_item?: 0 | 1;
 			/** Include Item In Manufacturing · Check */
@@ -19733,6 +19877,7 @@ export type CommonCode = FrappeDocTypeFields.CommonCode;
 export type CommunicationMedium = FrappeDocTypeFields.CommunicationMedium;
 export type CommunicationMediumTimeslot = FrappeDocTypeFields.CommunicationMediumTimeslot;
 export type Company = FrappeDocTypeFields.Company;
+export type CompanyRestriction = FrappeDocTypeFields.CompanyRestriction;
 export type Competitor = FrappeDocTypeFields.Competitor;
 export type CompetitorDetail = FrappeDocTypeFields.CompetitorDetail;
 export type Contract = FrappeDocTypeFields.Contract;
@@ -19962,6 +20107,8 @@ export type ProductionPlanMaterialRequest = FrappeDocTypeFields.ProductionPlanMa
 export type ProductionPlanMaterialRequestWarehouse = FrappeDocTypeFields.ProductionPlanMaterialRequestWarehouse;
 export type ProductionPlanSalesOrder = FrappeDocTypeFields.ProductionPlanSalesOrder;
 export type ProductionPlanSubAssemblyItem = FrappeDocTypeFields.ProductionPlanSubAssemblyItem;
+export type ProformaInvoice = FrappeDocTypeFields.ProformaInvoice;
+export type ProformaInvoiceItem = FrappeDocTypeFields.ProformaInvoiceItem;
 export type Project = FrappeDocTypeFields.Project;
 export type ProjectTemplate = FrappeDocTypeFields.ProjectTemplate;
 export type ProjectTemplateTask = FrappeDocTypeFields.ProjectTemplateTask;

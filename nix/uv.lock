@@ -666,11 +666,11 @@ wheels = [
 
 [[package]]
 name = "filelock"
-version = "3.20.4"
+version = "4.2.9"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/db/81/cfe075b6ce057ce595c61d52a0bd6452f425f923b6c02ecee6c0c8d6e5a7/filelock-3.20.4.tar.gz", hash = "sha256:92b98bb6be1a4e6c1b00f8aedae011c6e2d367c195000a049daa34f554af3d94", size = 31347, upload-time = "2026-02-12T15:31:04.971Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a3/1d/d730c664fcb4f1d264a722722a3134cf0881854f73c1fd58abf87572f232/filelock-4.2.9.tar.gz", hash = "sha256:96530b7c538d4ea08493ab067247aab7948c54d8cd622cce711c97cccc5d9896", size = 663116, upload-time = "2026-11-04T18:37:10.014Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/30/076a6014a380889df7d2cd7d486dd457a3e2ad341223f540304727bb7437/filelock-3.20.4-py3-none-any.whl", hash = "sha256:3334d8af34a55fbebfceeee137220e844799d75650d2d6140e4a9ed536e5f7f5", size = 21379, upload-time = "2026-02-12T15:31:03.793Z" },
+    { url = "https://files.pythonhosted.org/packages/00/05/76184fe08339723d643ab47887a8e4de8f2921ca4e008617ab7490af7857/filelock-4.2.9-py3-none-any.whl", hash = "sha256:a379c50a729e5b68c8519a4d26489f755d9769960a236ecd838190e2a78db2e9", size = 164734, upload-time = "2026-11-04T18:37:08.273Z" },
 ]
 
 [[package]]
@@ -734,6 +734,7 @@ dependencies = [
     { name = "email-reply-parser" },
     { name = "filelock" },
     { name = "filetype" },
+    { name = "fonttools", extra = ["woff"] },
     { name = "gitpython" },
     { name = "google-api-python-client" },
     { name = "google-auth" },
@@ -758,6 +759,7 @@ dependencies = [
     { name = "pdfkit" },
     { name = "phonenumbers" },
     { name = "pillow" },
+    { name = "plutoprint", marker = "(platform_machine == 'arm64' and sys_platform == 'darwin') or (platform_machine == 'x86_64' and sys_platform == 'linux') or sys_platform == 'win32'" },
     { name = "premailer" },
     { name = "psutil" },
     { name = "psycopg2-binary" },
@@ -857,8 +859,9 @@ requires-dist = [
     { name = "duckdb", specifier = "~=1.4.3" },
     { name = "email-reply-parser", specifier = "~=0.5.12" },
     { name = "faker", marker = "extra == 'test'", specifier = "~=18.10.1" },
-    { name = "filelock", specifier = "~=3.20.1" },
+    { name = "filelock", specifier = "~=4.2.4" },
     { name = "filetype", specifier = "~=1.2.0" },
+    { name = "fonttools", extras = ["woff"], specifier = ">=4.68.0" },
     { name = "freezegun", marker = "extra == 'test'", specifier = "~=1.5.1" },
     { name = "gitpython", specifier = "~=3.1.45" },
     { name = "google-api-python-client", specifier = "~=2.188.0" },
@@ -885,6 +888,7 @@ requires-dist = [
     { name = "pdfkit", specifier = "~=1.0.0" },
     { name = "phonenumbers", specifier = "~=9.0.23" },
     { name = "pillow", specifier = "~=13.0.0" },
+    { name = "plutoprint", marker = "(platform_machine == 'arm64' and sys_platform == 'darwin') or (platform_machine == 'x86_64' and sys_platform == 'linux') or sys_platform == 'win32'", specifier = "~=0.22.0" },
     { name = "premailer", specifier = "~=3.10.0" },
     { name = "psutil", specifier = "~=7.0.0" },
     { name = "psycopg2-binary", specifier = "~=2.9.11" },
@@ -1761,6 +1765,17 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/bf/db/7fc19e6f2dc92a966727031389fc2e08b558f0f25eb7403c1119ad4713cd/pluggy-1.7.0.tar.gz", hash = "sha256:d1eaa46ebb595891b860ab086b4d09c8588af65ebd4361b8e8f4bb8920b90ba8", size = 123304, upload-time = "2026-10-15T09:50:58.343Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/40/9e/2b38731e0fc536806f16490e1a12d7f0dc2a1235aa8cc07bcc75416a7daa/pluggy-1.7.0-py3-none-any.whl", hash = "sha256:7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec", size = 27082, upload-time = "2026-10-15T09:50:56.808Z" },
+]
+
+[[package]]
+name = "plutoprint"
+version = "0.22.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/83/d7/c15fb7d9d017f09777ee8b70c04091a490e56c3b289c6a23706d62942a8b/plutoprint-0.22.0.tar.gz", hash = "sha256:3660300fe57880782f2488fddbdab19bf3e7fde6d6713a696c0c2869006dca10", size = 41526, upload-time = "2026-08-04T16:19:10.36Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e7/20/82769eac4586bed2d27929111330e02110c6d13f102b3699e56c56295ed2/plutoprint-0.22.0-cp314-cp314-macosx_14_0_arm64.whl", hash = "sha256:617dba010d9e72e58340c5c26b2ec7afc541a713b481d0aff424034608e92de4", size = 18293383, upload-time = "2026-08-04T16:19:01.157Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/cb/857d3a11b6a0ead4351974dd8a5cb7ce2c934eabcba8737d77ac76d7db01/plutoprint-0.22.0-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:72985ef1494d6b062be14bec56d78be2d112c7b0925ccf011ab18666548b1ae0", size = 20267743, upload-time = "2026-08-04T16:19:04.711Z" },
+    { url = "https://files.pythonhosted.org/packages/89/9a/3cc008a477a3d05909393c2bcf268a2ba8203ea5fd04d2f05311ae8bc046/plutoprint-0.22.0-cp314-cp314-win_amd64.whl", hash = "sha256:df1a87163561b183625780620d60c3b4aa6547aa8775cf3290aa12b42ca83006", size = 20248019, upload-time = "2026-08-04T16:19:07.942Z" },
 ]
 
 [[package]]
