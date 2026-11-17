@@ -6,6 +6,8 @@ contact, and always the email on the customer's billing address. The virtual `em
 field (custom/sales_invoice.json) carries the list to the form, where it fills the email composer,
 and lets a Notification address it through "Receiver By Document Field"."""
 
+from typing import cast
+
 import frappe
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice
 from frappe.email.doctype.notification.notification import Notification
@@ -86,7 +88,8 @@ class VirtualReceiverNotification(Notification):
 		"""Core reads a receiver field from the document's values, where a virtual field has none;
 		fill those in from the field's property first."""
 		for recipient in self.recipients:
-			fieldname = recipient.receiver_by_document_field
+			# typed Literal[None]: its Select options are filled in on the form, per document type
+			fieldname = cast(str | None, recipient.receiver_by_document_field)
 			if not fieldname or "," in fieldname or doc.__dict__.get(fieldname) is not None:
 				continue
 			df = doc.meta.get_field(fieldname)

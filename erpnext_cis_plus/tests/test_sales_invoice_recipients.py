@@ -11,6 +11,7 @@ from frappe.email.doctype.notification.notification import Notification
 from erpnext_cis_plus.erpnext_cis_plus.hooks.sales_invoice import (
 	SalesInvoiceEmailRecipients,
 	get_email_recipients,
+	get_sales_invoice_email_recipients,
 )
 from erpnext_cis_plus.tests.utils import GeocodingTestCase
 
@@ -53,19 +54,16 @@ class TestSalesInvoiceRecipients(GeocodingTestCase):
 	def setUp(self):
 		super().setUp()
 		# a customer of its own per test: the contacts and addresses of the others aren't rolled back
-		self.customer = (
-			frappe.get_doc(
-				{
-					"doctype": "Customer",
-					"customer_name": f"_Test CIS Plus Recipients {frappe.generate_hash(length=6)}",
-					"customer_type": "Company",
-					"customer_group": "_Test Customer Group",
-					"territory": "_Test Territory",
-				}
-			)
-			.insert()
-			.name
-		)
+		customer = frappe.get_doc(
+			{
+				"doctype": "Customer",
+				"customer_name": f"_Test CIS Plus Recipients {frappe.generate_hash(length=6)}",
+				"customer_type": "Company",
+				"customer_group": "_Test Customer Group",
+				"territory": "_Test Territory",
+			}
+		).insert()
+		self.customer = cast(str, customer.name)
 
 	def test_contact_person_and_billing_address(self):
 		person = make_contact(self.customer, "Invoice", "person@example.com")
@@ -107,8 +105,9 @@ class TestSalesInvoiceRecipients(GeocodingTestCase):
 		invoice = frappe.new_doc("Sales Invoice")
 		invoice.update({"customer": self.customer, "contact_person": person, "customer_address": address})
 		self.assertIsInstance(invoice, SalesInvoiceEmailRecipients)
+		invoice = cast(SalesInvoiceEmailRecipients, invoice)
 		self.assertEqual(invoice.email_recipients, "person@example.com\nap@example.com")
-		self.assertEqual(invoice.as_dict().email_recipients, "person@example.com\nap@example.com")
+		self.assertEqual(invoice.as_dict().get("email_recipients"), "person@example.com\nap@example.com")
 
 		notification = cast(Notification, frappe.new_doc("Notification"))
 		notification.update(
@@ -120,3 +119,13 @@ class TestSalesInvoiceRecipients(GeocodingTestCase):
 		)
 		recipients, _cc, _bcc = notification.get_list_of_recipients(invoice, {"doc": invoice})
 		self.assertCountEqual(recipients, ["person@example.com", "ap@example.com"])
+
+	def test_whitelisted_method_checks_customer_permission(self):
+		person = make_contact(self.customer, "Invoice", "person@example.com")
+		self.assertEqual(get_sales_invoice_email_recipients(self.customer, person), ["person@example.com"])
+		frappe.set_user("Guest")
+		try:
+			with self.assertRaises(frappe.PermissionError):
+				get_sales_invoice_email_recipients(self.customer, person)
+		finally:
+			frappe.set_user("Administrator")

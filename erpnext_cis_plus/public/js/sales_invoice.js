@@ -32,10 +32,12 @@ async function refresh_email_recipients(frm) {
 		frm.doc.email_recipients = "";
 		return;
 	}
-	const r = await frappe.call({
-		method: "erpnext_cis_plus.erpnext_cis_plus.hooks.sales_invoice.get_sales_invoice_email_recipients",
-		args: { customer, contact_person, customer_address },
-	});
+	const recipients = /** @type {string[]} */ (
+		await frappe.xcall(
+			"erpnext_cis_plus.erpnext_cis_plus.hooks.sales_invoice.get_sales_invoice_email_recipients",
+			{ customer, contact_person, customer_address },
+		)
+	);
 	// a direct assignment: the field is virtual, so this must not mark the form dirty
-	frm.doc.email_recipients = (r.message || []).join("\n");
+	frm.doc.email_recipients = recipients.join("\n");
 }
