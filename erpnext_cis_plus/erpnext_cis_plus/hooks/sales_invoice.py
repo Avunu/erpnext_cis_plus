@@ -11,22 +11,6 @@ from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice
 from frappe.email.doctype.notification.notification import Notification
 
 
-def get_email_recipients(
-	customer: str | None, contact_person: str | None = None, customer_address: str | None = None
-) -> list[str]:
-	contact_email = contact_person and frappe.db.get_value("Contact", contact_person, "email_id")
-	if not contact_email and customer:
-		contact_email = get_billing_contact_email(customer)
-
-	address_email = get_billing_address_email(customer, customer_address)
-
-	recipients: list[str] = []
-	for email in (contact_email, address_email):
-		if email and email.lower() not in (r.lower() for r in recipients):
-			recipients.append(email)
-	return recipients
-
-
 def get_billing_contact_email(customer: str) -> str | None:
 	emails = frappe.get_all(
 		"Contact",
@@ -63,6 +47,22 @@ def get_billing_address_email(customer: str | None, customer_address: str | None
 		limit=1,
 	)
 	return emails[0] if emails else None
+
+
+def get_email_recipients(
+	customer: str | None, contact_person: str | None = None, customer_address: str | None = None
+) -> list[str]:
+	contact_email = contact_person and frappe.db.get_value("Contact", contact_person, "email_id")
+	if not contact_email and customer:
+		contact_email = get_billing_contact_email(customer)
+
+	address_email = get_billing_address_email(customer, customer_address)
+
+	recipients: list[str] = []
+	for email in (contact_email, address_email):
+		if email and email.lower() not in (r.lower() for r in recipients):
+			recipients.append(email)
+	return recipients
 
 
 @frappe.whitelist()
