@@ -28,8 +28,14 @@ required_apps = ["erpnext"]
 doctype_js = {
 	"Customer": ["public/js/party_records.js", "public/js/customer.js"],
 	"Supplier": ["public/js/party_records.js", "public/js/supplier.js"],
+	"Sales Invoice": "public/js/sales_invoice.js",
 }
 doctype_list_js = {"Customer": "public/js/customer_list.js"}
+
+extend_doctype_class = {
+	"Notification": "erpnext_cis_plus.erpnext_cis_plus.hooks.sales_invoice.VirtualReceiverNotification",
+	"Sales Invoice": "erpnext_cis_plus.erpnext_cis_plus.hooks.sales_invoice.SalesInvoiceEmailRecipients",
+}
 
 # Document Events
 # ---------------
