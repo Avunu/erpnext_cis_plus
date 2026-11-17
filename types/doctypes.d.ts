@@ -14726,6 +14726,8 @@ declare global {
 			override_tax_withholding_entries?: 0 | 1;
 			/** Title · Data */
 			title?: string | null;
+			/** Email Recipients · Small Text · Custom Field, erpnext_cis_plus/erpnext_cis_plus/erpnext_cis_plus/custom/sales_invoice.json */
+			email_recipients?: string | null;
 		}
 
 		/**
