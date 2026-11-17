@@ -1,5 +1,13 @@
 # Changelog
 
+## [16.1.0](https://github.com/Avunu/erpnext_cis_plus/compare/v16.0.0...v16.1.0) (2026-11-17)
+
+
+### Features
+
+* default email recipients for Sales Invoices ([#88](https://github.com/Avunu/erpnext_cis_plus/issues/88)) ([81fdcff](https://github.com/Avunu/erpnext_cis_plus/commit/81fdcff691ce01f789a070c0097d0266ba2276a1))
+* show the app's logo in the About dialog, on frappe-nix 2.4.0 ([#71](https://github.com/Avunu/erpnext_cis_plus/issues/71)) ([107f036](https://github.com/Avunu/erpnext_cis_plus/commit/107f0365505c5878035b5b9dc201ba2abf036ac3))
+
 ## [16.0.0](https://github.com/Avunu/erpnext_cis_plus/compare/v0.0.1...v16.0.0) (2026-10-29)
 
 
