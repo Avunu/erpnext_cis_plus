@@ -7010,6 +7010,8 @@ declare global {
 			sub_operation?: string | null;
 			/** Completed Qty · Float */
 			completed_qty?: number | null;
+			/** Process Loss Qty · Float */
+			process_loss_qty?: number | null;
 		}
 
 		/**
@@ -7065,6 +7067,8 @@ declare global {
 			time_in_mins?: number | null;
 			/** Completed Qty · Float */
 			completed_qty?: number | null;
+			/** Process Loss Qty · Float */
+			process_loss_qty?: number | null;
 			/** Employee · Link → Employee */
 			employee?: string | null;
 			/** Sub Operation · Link → Operation */
@@ -17481,6 +17485,8 @@ declare global {
 			warehouse?: string | null;
 			/** Rejected Warehouse · Link → Warehouse */
 			rejected_warehouse?: string | null;
+			/** Return Qty from Rejected Warehouse · Check */
+			return_qty_from_rejected_warehouse?: 0 | 1;
 			/** Quality Inspection · Link → Quality Inspection */
 			quality_inspection?: string | null;
 			/** Subcontracting Order · Link → Subcontracting Order */
@@ -18922,9 +18928,9 @@ declare global {
 			amended_from?: string | null;
 			/** Status · Select */
 			status?: "Queued" | "Running" | "Failed" | "Completed" | "Cancelled" | "" | null;
-			/** Delete Bins · Select */
+			/** Rebuild Bins · Select */
 			delete_bin_data_status?: "Pending" | "Completed" | "Skipped" | "" | null;
-			/** Delete Leads and Addresses · Select */
+			/** Delete Leads, Addresses and Contacts · Select */
 			delete_leads_and_addresses_status?: "Pending" | "Completed" | "Skipped" | "" | null;
 			/** Reset Company Default Values · Select */
 			reset_company_default_values_status?: "Pending" | "Completed" | "Skipped" | "" | null;
