@@ -108,7 +108,7 @@ repos:
   # agritheory/test_utils: selected hooks only (S19). sql_registry/sql_rewriter abort the run,
   # mypy is replaced by ty, and validate_*_dependencies crash outside a bench, so none of those are here.
   - repo: https://github.com/agritheory/test_utils
-    rev: v1.30.1
+    rev: v1.31.1
     hooks:
       - id: validate_frappe_project
       - id: validate_patches
